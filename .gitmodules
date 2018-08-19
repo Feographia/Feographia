@@ -1,6 +1,9 @@
 [submodule "libs/AndroidLogcatStdouts"]
 	path = libs/AndroidLogcatStdouts
 	url = git@bitbucket.org:nfeotools/androidlogcatstdouts.git
+[submodule "libs/FgKardia"]
+	path = libs/FgKardia
+	url = git@bitbucket.org:feographia/fgkardia.git
 [submodule "libs/HtmlGrapheas"]
 	path = libs/HtmlGrapheas
 	url = git@bitbucket.org:htmlgrapheas/htmlgrapheas.git

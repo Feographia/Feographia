@@ -23,9 +23,9 @@
 
 cmake_minimum_required(VERSION 3.3)
 
-project(HtmlGrapheasAppWx CXX)
+project(FeographiaAppWx CXX)
 
-set(app_NAME "html_grapheas")
+set(app_NAME "feographia")
 
 if(NOT HGKamva_DIR)
   message(FATAL_ERROR
@@ -34,17 +34,12 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Set vars to HtmlGrapheasAppWx
+# Set vars to FeographiaAppWx
 #-----------------------------------------------------------------------
-
-# Standard CMake vars.
-#set(BUILD_SHARED_LIBS ON)
-
-# Library specific vars.
 
 
 #-----------------------------------------------------------------------
-# HtmlGrapheasAppWx
+# FeographiaAppWx
 #-----------------------------------------------------------------------
 
 set(private_src_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
@@ -80,7 +75,7 @@ target_include_directories(${app_NAME} PRIVATE ${private_src_DIR})
 
 target_sources(${app_NAME}
   PRIVATE
-    ${private_src_DIR}/hgapp/main.cpp
+    ${private_src_DIR}/fgapp/main.cpp
 )
 
 
@@ -109,62 +104,62 @@ endif()
 #-----------------------------------------------------------------------
 
 if(BUILD_TESTING)
-  set(WX_HGRAPH_TEST_DIR "${PROJECT_BINARY_DIR}")
+  set(WX_FG_TEST_DIR "${PROJECT_BINARY_DIR}")
   if(MSVC)
-    set(WX_HGRAPH_TEST_DIR "${PROJECT_BINARY_DIR}/$<CONFIG>")
+    set(WX_FG_TEST_DIR "${PROJECT_BINARY_DIR}/$<CONFIG>")
   endif()
-  set(WX_HGRAPH_TEST_FONT_DIR "${WX_HGRAPH_TEST_DIR}/fonts")
-  set(WX_HGRAPH_TEST_DATA_DIR "${WX_HGRAPH_TEST_DIR}/data")
+  set(WX_FG_TEST_FONT_DIR "${WX_FG_TEST_DIR}/fonts")
+  set(WX_FG_TEST_DATA_DIR "${WX_FG_TEST_DIR}/data")
 
   add_custom_target(prepare_wx_test_fonts
     COMMAND
-      ${CMAKE_COMMAND} -E make_directory "${WX_HGRAPH_TEST_FONT_DIR}"
+      ${CMAKE_COMMAND} -E make_directory "${WX_FG_TEST_FONT_DIR}"
 
     # Arimo font files
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Arimo/Arimo-BoldItalic.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Arimo/Arimo-Bold.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Arimo/Arimo-Italic.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Arimo/Arimo-Regular.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
 
     # Tinos font files
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Tinos/Tinos-BoldItalic.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Tinos/Tinos-Bold.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Tinos/Tinos-Italic.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/fonts/Tinos/Tinos-Regular.ttf"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
   )
 
   add_custom_target(prepare_wx_test_font_conf
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${CMAKE_INSTALL_PREFIX}/etc/fonts"
-      "${WX_HGRAPH_TEST_FONT_DIR}"
+      "${WX_FG_TEST_FONT_DIR}"
   )
 
   add_custom_target(prepare_wx_test_data
     COMMAND
-      ${CMAKE_COMMAND} -E make_directory "${WX_HGRAPH_TEST_DATA_DIR}"
+      ${CMAKE_COMMAND} -E make_directory "${WX_FG_TEST_DATA_DIR}"
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/test/data/master.css"
-      "${WX_HGRAPH_TEST_DATA_DIR}"
+      "${WX_FG_TEST_DATA_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${HGKamva_DIR}/test/data/test.html"
-      "${WX_HGRAPH_TEST_DATA_DIR}"
+      "${WX_FG_TEST_DATA_DIR}"
   )
 
   add_dependencies(${app_NAME}

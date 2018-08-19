@@ -21,7 +21,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-package ru.htmlgrapheas.htmlgrapheasapp;
+package ru.feographia.feographiaapp;
 
 import org.junit.Test;
 

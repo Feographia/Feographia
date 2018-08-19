@@ -35,7 +35,7 @@
 
 #include "hgkamva/platform/wxwidgets/HgKamvaWxWindow.h"
 
-namespace hg
+namespace fg
 {
 //////// class MainFrame ////////
 
@@ -124,7 +124,7 @@ MainFrame::MainFrame(wxFrame* parent,
 
   CreateStatusBar(2);
   SetMenuBar(mMenuBar);
-  updateStatus(_("Html Grapheas status bar."));
+  updateStatus(_("Feographia status bar."));
 }
 
 MainFrame::~MainFrame()
@@ -158,7 +158,7 @@ void MainFrame::onAbout(wxCommandEvent& WXUNUSED(event))
 {
   wxMessageBox(
       _("Example of combining wxWidgets and the Anti-Grain Geometry renderer."),
-      _("About Html Grapheas"));
+      _("About Feographia"));
 }
 
 void MainFrame::updateStatus(const wxString& s)
@@ -218,7 +218,7 @@ Application::Application()
 bool Application::OnInit()
 {
   // Create a new window.
-  mFrame = new MainFrame((wxFrame*) nullptr, _("Html Grapheas"),
+  mFrame = new MainFrame((wxFrame*) nullptr, _("Feographia"),
       wxDefaultPosition, wxSize(640, 480));
 
   //SetTopWindow(frame);
@@ -230,7 +230,7 @@ bool Application::OnInit()
   return true;
 }
 
-}  // namespace hg
+}  // namespace fg
 
 //////// main() function ////////
 
@@ -239,7 +239,7 @@ bool Application::OnInit()
 // GUI app in Windows with console.
 // Attaching a console and writing std outputs to console.
 // https://forums.wxwidgets.org/viewtopic.php?t=34374
-IMPLEMENT_APP_NO_MAIN(hg::Application)
+IMPLEMENT_APP_NO_MAIN(fg::Application)
 
 // Application entry.
 int main(int argc, char* argv[])
@@ -258,6 +258,6 @@ int main(int argc, char* argv[])
 
 // "allows wxWindows to dynamically create an instance of the application
 //  object at the appropriate point in wxWindows initialization"
-IMPLEMENT_APP(hg::Application)
+IMPLEMENT_APP(fg::Application)
 
 #endif  // defined(__WINDOWS__) && defined(ATTACH_WX_CONSOLE)

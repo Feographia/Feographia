@@ -1,3 +1,4 @@
+<!--
 /*****************************************************************************
  * Project:  HtmlGrapheas
  * Purpose:  HTML text editor library
@@ -20,28 +21,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
+  -->
 
-package ru.htmlgrapheas.htmlgrapheasapp;
-
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import ru.htmlgrapheas.htmlgrapheaskamva.HtmlGrapheasView;
-import ru.nfeotools.alogstd.AndroidLogcatStdoutsJni;
-
-
-public class MainActivity
-    extends AppCompatActivity
-{
-  private HtmlGrapheasView mMainView;
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState)
-  {
-    super.onCreate(savedInstanceState);
-
-    AndroidLogcatStdoutsJni.init("HtmlGrapheas", "-Hg--");
-
-    mMainView = new HtmlGrapheasView(this);
-    setContentView(mMainView);
-  }
-}
+<resources>
+  <string name="app_name">Feographia</string>
+</resources>

@@ -24,12 +24,12 @@
 cmake_minimum_required(VERSION 3.3)
 
 # FindThreads work in environments, where only CXX is enabled, since CMake 3.4.
-project(HtmlGrapheasKamvaHostTools CXX C)
-set(lib_NAME "hgkamva_host_tools")
+project(FeographiaHostTools CXX C)
+set(lib_NAME "feographia_host_tools")
 
-if(NOT HGMainProject_DIR)
+if(NOT FgMainProject_DIR)
   message(FATAL_ERROR
-    "Please set HGMainProject_DIR with path to main project root directory.")
+    "Please set FgMainProject_DIR with path to main project root directory.")
 endif()
 if(NOT LibCMaker_DIR)
   message(FATAL_ERROR
@@ -67,7 +67,7 @@ set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 #-----------------------------------------------------------------------
 
 list(APPEND CMAKE_MODULE_PATH
-  "${HGMainProject_DIR}/cmake/libcmaker"
+  "${FgMainProject_DIR}/cmake/libcmaker"
   "${LibCMaker_DIR}/cmake"
 )
 
@@ -85,7 +85,7 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Set vars to HtmlGrapheasKamvaHostTools
+# Set vars to FeographiaHostTools
 #-----------------------------------------------------------------------
 
 

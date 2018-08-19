@@ -22,9 +22,9 @@
  ****************************************************************************/
 
 // https://stackoverflow.com/a/24978161
-include "HtmlGrapheasApp"
-project(":HtmlGrapheasApp").projectDir =
-    new File("${rootDir}/platform/android/HtmlGrapheasApp")
+include "FeographiaApp"
+project(":FeographiaApp").projectDir =
+    new File("${rootDir}/platform/android/FeographiaApp")
 
 include "AndroidLogcatStdouts"
 project(":AndroidLogcatStdouts").projectDir =

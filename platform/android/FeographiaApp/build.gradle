@@ -137,13 +137,13 @@ android {
   buildToolsVersion buildToolsVer
 
   defaultConfig {
-    applicationId "ru.htmlgrapheas.htmlgrapheasapp"
+    applicationId "ru.feographia.feographiaapp"
     minSdkVersion minSdkVer
     targetSdkVersion targetSdkVer
     versionCode 1
     versionName "1.0"
 
-    archivesBaseName = "htmlgrapheasapp-${versionName}-rev.${versionCode}"
+    archivesBaseName = "feographia-${versionName}-rev.${versionCode}"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
 
@@ -240,7 +240,7 @@ def hostToolsStampFileName = "host_tools_stamp"
 // https://github.com/awrichar/gradle-external-build
 model {
   components {
-    // Task HtmlGrapheasKamva:hostToolsExecutable
+    // Task FeographiaApp:hostToolsExecutable
     hostTools(ExternalNativeExecutableSpec) {
       buildConfig(CMake) {
         // Uncomment for easier debugging.
@@ -255,7 +255,7 @@ model {
 
         cmakeArgs "-DNOT_USED_STUB_CMAKE_VAR=OFF",
 
-            "-DHGMainProject_DIR=${rootDir}",
+            "-DFgMainProject_DIR=${rootDir}",
             "-DLibCMaker_DIR=${rootDir}/libs/LibCMaker",
             "-DHGKamva_DIR=${rootDir}/libs/HtmlGrapheasKamva",
             "-Dcmr_DOWNLOAD_DIR=${downloadDir}",
@@ -324,7 +324,6 @@ android {
         // the underlying variables with commenting.
         arguments "-DNOT_USED_STUB_CMAKE_VAR=OFF",
 
-            "-DHGKamva_DIR=${projectDir}",
             "-Dcmr_DOWNLOAD_DIR=${downloadDir}",
             "-Dcmr_UNPACKED_DIR=${downloadDir}/.unpacked_android",
             "-DHG_APP_ASSETS_DIR=${appAssetDir}",

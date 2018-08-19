@@ -24,7 +24,7 @@
 cmake_minimum_required(VERSION 3.3)
 
 # FindThreads work in environments, where only CXX is enabled, since CMake 3.4.
-project(HtmlGrapheasProject CXX C)
+project(FeographiaProject CXX C)
 
 if(WIN32 OR (UNIX AND NOT ANDROID))
   set(wxWidgets_PLATFORM ON)
@@ -255,9 +255,9 @@ if(wxWidgets_PLATFORM)
   set(HGKamvaWx_DIR "${HGKamva_DIR}/platform/wxwidgets")
   add_subdirectory("${HGKamvaWx_DIR}" "${build_libs_DIR}/HtmlGrapheasKamvaWx")
 
-  # HtmlGrapheasAppWx
-  set(HGAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/platform/wxwidgets)
-  add_subdirectory("${HGAppWx_DIR}" "${PROJECT_BINARY_DIR}/HtmlGrapheasAppWx")
+  # FeographiaAppWx
+  set(FgAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/platform/wxwidgets)
+  add_subdirectory("${FgAppWx_DIR}" "${PROJECT_BINARY_DIR}/FeographiaAppWx")
 endif()
 
 

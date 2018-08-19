@@ -1,4 +1,3 @@
-<!--
 /*****************************************************************************
  * Project:  HtmlGrapheas
  * Purpose:  HTML text editor library
@@ -21,8 +20,34 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
-  -->
 
-<resources>
-  <string name="app_name">Html Grapheas</string>
-</resources>
+package ru.feographia.feographiaapp;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.*;
+
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class ExampleInstrumentedTest
+{
+  @Test
+  public void useAppContext()
+      throws Exception
+  {
+    // Context of the app under test.
+    Context appContext = InstrumentationRegistry.getTargetContext();
+
+    assertEquals("ru.nfeotools.alogstd", appContext.getPackageName());
+  }
+}

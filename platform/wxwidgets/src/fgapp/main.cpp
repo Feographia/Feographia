@@ -81,7 +81,7 @@ protected:
   void initStandardGUI();
 
 private:
-  HgKamvaWxWindow mHgKamva;  ///< The AGG bitmap display panel
+  hg::HgKamvaWxWindow mHgKamva;  ///< The AGG bitmap display panel
 
   wxMenuBar* mMenuBar;  ///< Menu bar
   wxMenu* mFileMenu;  ///< File menu

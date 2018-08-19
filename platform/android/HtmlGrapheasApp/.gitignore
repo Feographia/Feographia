@@ -1,0 +1,6 @@
+/build
+keystore.properties
+
+# Test data
+src/main/assets/data
+src/main/assets/fonts

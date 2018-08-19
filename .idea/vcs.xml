@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/HtmlGrapheas" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/HtmlGrapheas/external/litehtml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_AGG" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_Dirent" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_Expat" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_FontConfig" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_FreeType" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_GoogleTest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_HarfBuzz" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_ICU" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_STLCache" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/HtmlGrapheasKamva/cmake/libcmaker/LibCMaker_wxWidgets" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/external/android/AndroidLogcatStdouts" vcs="Git" />
+  </component>
+</project>

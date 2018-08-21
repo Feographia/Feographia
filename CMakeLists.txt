@@ -52,6 +52,10 @@ endif()
 # Compiler flags
 #-----------------------------------------------------------------------
 
+# Used by 'build_boost'.
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+
 if(MSVC AND NOT BUILD_SHARED_LIBS)
   set(cmr_USE_MSVC_STATIC_RUNTIME ON)
 
@@ -184,6 +188,7 @@ endif()
 include(build_stlcache)
 include(build_expat)
 include(build_icu)
+include(build_boost)
 include(build_freetype_with_harfbuzz)
 include(build_fontconfig)
 include(build_agg)

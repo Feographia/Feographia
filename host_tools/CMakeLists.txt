@@ -101,6 +101,7 @@ include(cmr_find_package)
 set(LibCMaker_libs_DIR "${LibCMaker_DIR}/libs")
 
 include(build_icu_host_tools)
+include(build_boost_host_tools)
 
 
 #-----------------------------------------------------------------------

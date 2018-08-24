@@ -180,7 +180,7 @@ include(cmr_find_package)
 set(LibCMaker_libs_DIR "${LibCMaker_DIR}/libs")
 
 if(wxWidgets_PLATFORM)
-  include(build_wxwidgets)  # Must be 1st, before the other LibCMaker libs.
+  include(build_wxwidgets)  # Must be 1st, before the other LibCMaker's libs.
 endif()
 if(MSVC)
   include(build_dirent)
@@ -194,6 +194,9 @@ include(build_boost)
 include(build_freetype_with_harfbuzz)
 include(build_fontconfig)
 include(build_agg)
+if(BUILD_TESTING)
+  include(build_googletest)
+endif()
 
 
 #-----------------------------------------------------------------------
@@ -240,6 +243,14 @@ add_subdirectory(${HGraph_DIR} "${build_libs_DIR}/HtmlGrapheas")
 
 set(HGKamva_DIR "${libs_DIR}/HtmlGrapheasKamva")
 add_subdirectory("${HGKamva_DIR}" "${build_libs_DIR}/HtmlGrapheasKamva")
+
+
+#-----------------------------------------------------------------------
+# FgKardia
+#-----------------------------------------------------------------------
+
+set(FgKardia_DIR "${libs_DIR}/FgKardia")
+#add_subdirectory("${FgKardia_DIR}" "${build_libs_DIR}/FgKardia")
 
 
 #-----------------------------------------------------------------------

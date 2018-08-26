@@ -25,19 +25,21 @@
 # Lib's name, version, paths
 #-----------------------------------------------------------------------
 
-set(SQLITEORM_lib_NAME      "SQLiteORM")
-set(SQLITEORM_lib_VERSION   "1.2")
-set(SQLITEORM_lib_DIR   "${LibCMaker_libs_DIR}/LibCMaker_${SQLITEORM_lib_NAME}")
+set(SQLITEMODERNCPP_lib_NAME     "SQLiteModernCPP")
+set(SQLITEMODERNCPP_lib_VERSION  "3.2")
+set(SQLITEMODERNCPP_lib_DIR
+  "${LibCMaker_libs_DIR}/LibCMaker_${SQLITEMODERNCPP_lib_NAME}"
+)
 
 # To use our Find<LibName>.cmake.
-list(APPEND CMAKE_MODULE_PATH "${SQLITEORM_lib_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${SQLITEMODERNCPP_lib_DIR}/cmake/modules")
 
 
 #-----------------------------------------------------------------------
 # LibCMaker_<LibName> specific vars and options
 #-----------------------------------------------------------------------
 
-set(COPY_SQLITEORM_CMAKE_BUILD_SCRIPTS ON)
+set(COPY_SQLITEMODERNCPP_CMAKE_BUILD_SCRIPTS ON)
 
 
 #-----------------------------------------------------------------------
@@ -51,8 +53,8 @@ set(COPY_SQLITEORM_CMAKE_BUILD_SCRIPTS ON)
 
 cmr_find_package(
   LibCMaker_DIR   ${LibCMaker_DIR}
-  NAME            ${SQLITEORM_lib_NAME}
-  VERSION         ${SQLITEORM_lib_VERSION}
-  LIB_DIR         ${SQLITEORM_lib_DIR}
+  NAME            ${SQLITEMODERNCPP_lib_NAME}
+  VERSION         ${SQLITEMODERNCPP_lib_VERSION}
+  LIB_DIR         ${SQLITEMODERNCPP_lib_DIR}
   REQUIRED
 )

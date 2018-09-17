@@ -21,10 +21,9 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.4)
 
-# FindThreads work in environments, where only CXX is enabled, since CMake 3.4.
-project(FeographiaProject CXX C)
+project(FeographiaProject CXX)
 
 if(WIN32 OR (UNIX AND NOT ANDROID))
   set(wxWidgets_PLATFORM ON)

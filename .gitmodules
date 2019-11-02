@@ -49,3 +49,6 @@
 [submodule "libs/LibCMaker_zlib"]
 	path = libs/LibCMaker_zlib
 	url = git@github.com:LibCMaker/LibCMaker_zlib.git
+[submodule "libs/AndroidLogcatStdouts"]
+	path = libs/AndroidLogcatStdouts
+	url = git@github.com:NFeoTools/AndroidLogcatStdouts.git

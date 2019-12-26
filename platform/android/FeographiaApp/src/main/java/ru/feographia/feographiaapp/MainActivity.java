@@ -23,8 +23,10 @@
 
 package ru.feographia.feographiaapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import ru.htmlgrapheas.htmlgrapheaskamva.HtmlGrapheasView;
 import ru.nfeotools.alogstd.AndroidLogcatStdoutsJni;
 

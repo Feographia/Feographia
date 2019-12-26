@@ -28,6 +28,10 @@
 *.out
 *.app
 
+# QtCreator
+build-*/
+CMakeLists.txt.user*
+
 # Eclipse
 .externalToolBuilders/
 .settings/
@@ -50,4 +54,5 @@ build/
 
 # Main project
 .downloads/
-build*/
+build_*/
+/.prj_options.cmake

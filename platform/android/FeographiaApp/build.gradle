@@ -144,7 +144,7 @@ android {
     versionName "1.0"
 
     archivesBaseName = "feographia-${versionName}-rev.${versionCode}"
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildTypes {
@@ -183,12 +183,12 @@ dependencies {
   implementation fileTree(dir: "libs", include: ["*.jar"])
   implementation project(":AndroidLogcatStdouts")
   implementation project(":HtmlGrapheasKamva")
-  implementation "com.android.support:appcompat-v7:${supportLibVer}"
-  implementation "com.android.support.constraint:constraint-layout:1.1.0"
+  implementation "androidx.appcompat:appcompat:1.1.0"
+  implementation "androidx.constraintlayout:constraintlayout:1.1.3"
 
   testImplementation "junit:junit:4.12"
-  androidTestImplementation "com.android.support.test:runner:1.0.2"
-  androidTestImplementation "com.android.support.test.espresso:espresso-core:3.0.2"
+  androidTestImplementation "androidx.test.ext:junit:1.1.1"
+  androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
 }
 
 
@@ -256,16 +256,17 @@ model {
         cmakeArgs "-DNOT_USED_STUB_CMAKE_VAR=OFF",
 
             "-DFgMainProject_DIR=${rootDir}",
-            "-DLibCMaker_DIR=${rootDir}/libs/LibCMaker",
-            "-DHGKamva_DIR=${rootDir}/libs/HtmlGrapheasKamva",
+// TODO: Use litehtml for viewing of dictionaries and other HTML texts.
+//            "-DHGKamva_DIR=${rootDir}/libs/HtmlGrapheasKamva",
+
+            "-DLibCMaker_LIB_DIR=${rootDir}/libs",
+            "-DHOST_TOOLS_STAMP_FILE_NAME=${hostToolsStampFileName}",
             "-Dcmr_DOWNLOAD_DIR=${downloadDir}",
             "-Dcmr_UNPACKED_DIR=${downloadDir}/.unpacked_android_host_tools",
             "-DCMAKE_INSTALL_PREFIX=${hostToolsInstallDir}",
 
             "-DBUILD_SHARED_LIBS=OFF",
             "-DCMAKE_BUILD_TYPE=Release",
-
-            "-DHOST_TOOLS_STAMP_FILE_NAME=${hostToolsStampFileName}",
 
             "-Dcmr_BUILD_MULTIPROC=${cmr_BUILD_MULTIPROC}",
             "-Dcmr_BUILD_MULTIPROC_CNT=${cmr_BUILD_MULTIPROC_CNT}",
@@ -324,6 +325,8 @@ android {
         // the underlying variables with commenting.
         arguments "-DNOT_USED_STUB_CMAKE_VAR=OFF",
 
+// TODO: Use litehtml for viewing of dictionaries and other HTML texts.
+//            "-DHGKamva_DIR=${projectDir}",
             "-Dcmr_DOWNLOAD_DIR=${downloadDir}",
             "-Dcmr_UNPACKED_DIR=${downloadDir}/.unpacked_android",
             "-DHG_APP_ASSETS_DIR=${appAssetDir}",

@@ -25,6 +25,8 @@
 # Lib's name, version, paths
 #-----------------------------------------------------------------------
 
+# TODO: use U_CHARSET_IS_UTF8=1, see http://userguide.icu-project.org/strings/utf-8
+
 set(ICU_lib_NAME        "ICU")
 set(ICU_lib_VERSION     "61.1")
 set(ICU_lib_COMPONENTS  i18n uc data)

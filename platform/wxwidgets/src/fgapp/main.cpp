@@ -127,9 +127,7 @@ MainFrame::MainFrame(wxFrame* parent,
   updateStatus(_("Feographia status bar."));
 }
 
-MainFrame::~MainFrame()
-{
-}
+MainFrame::~MainFrame() {}
 
 void MainFrame::onClose(wxCloseEvent& WXUNUSED(event))
 {
@@ -218,8 +216,8 @@ Application::Application()
 bool Application::OnInit()
 {
   // Create a new window.
-  mFrame = new MainFrame((wxFrame*) nullptr, _("Feographia"),
-      wxDefaultPosition, wxSize(640, 480));
+  mFrame = new MainFrame(
+      (wxFrame*) nullptr, _("Feographia"), wxDefaultPosition, wxSize(640, 480));
 
   //SetTopWindow(frame);
   mFrame->Show(true);

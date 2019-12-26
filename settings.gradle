@@ -22,10 +22,6 @@
  ****************************************************************************/
 
 // https://stackoverflow.com/a/24978161
-include "FeographiaApp"
-project(":FeographiaApp").projectDir =
-    new File("${rootDir}/platform/android/FeographiaApp")
-
 include "AndroidLogcatStdouts"
 project(":AndroidLogcatStdouts").projectDir =
     new File("${rootDir}/libs/AndroidLogcatStdouts")
@@ -33,3 +29,7 @@ project(":AndroidLogcatStdouts").projectDir =
 include "HtmlGrapheasKamva"
 project(":HtmlGrapheasKamva").projectDir =
     new File("${rootDir}/libs/HtmlGrapheasKamva")
+
+include "FeographiaApp"
+project(":FeographiaApp").projectDir =
+    new File("${rootDir}/platform/android/FeographiaApp")

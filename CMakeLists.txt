@@ -21,73 +21,95 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-cmake_minimum_required(VERSION 3.4)
+set(prj_options "${CMAKE_CURRENT_LIST_DIR}/.prj_options.cmake")
+if(EXISTS ${prj_options})
+  include(${prj_options})
+endif()
+
+cmake_minimum_required(VERSION 3.8)
+# C++17 compiler:
+#   GCC 8
+#   Clang 8 (Android NDK r19)
+#   Apple Clang 11.0.0, Xcode 11.0
+#   MSVC 19.15, VS 2017 15.8
+# See: https://en.cppreference.com/w/cpp/compiler_support
 
 project(FeographiaProject CXX)
 
-if(WIN32 OR (UNIX AND NOT ANDROID))
-  set(wxWidgets_PLATFORM ON)
-endif()
+option(BUILD_SHARED_LIBS "BUILD_SHARED_LIBS" OFF)
 
-set(libs_DIR "${CMAKE_CURRENT_LIST_DIR}/libs")
-set(build_libs_DIR "${PROJECT_BINARY_DIR}/build_libs")
-set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install")
-
-#set(CMAKE_VERBOSE_MAKEFILE ON)
-#set(cmr_PRINT_DEBUG ON)
-
-
-#-----------------------------------------------------------------------
-# Testing
-#-----------------------------------------------------------------------
-
-option(BUILD_TESTING "Build the testing tree." OFF)
-if(BUILD_TESTING)
-  enable_testing()
-endif()
+option(CMAKE_VERBOSE_MAKEFILE "CMAKE_VERBOSE_MAKEFILE" OFF)
+option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
 
 
 #-----------------------------------------------------------------------
 # Compiler flags
 #-----------------------------------------------------------------------
 
-# Used by 'build_boost'.
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 14)
+# Used by LibCMaker_Boost.
+set(CMAKE_CXX_STANDARD 17)
 
-if(MSVC AND NOT BUILD_SHARED_LIBS)
-  set(cmr_USE_MSVC_STATIC_RUNTIME ON)
+if(NOT BUILD_SHARED_LIBS)
+  set(cmr_USE_STATIC_RUNTIME ON)
+endif()
 
-  # Set MSVC static runtime flags for all configurations.
+# Set compile flags.
+if(MSVC)
+  # Determine MSVC runtime library flag
+  set(MSVC_LIB_USE "/MD")
+  set(MSVC_LIB_REPLACE "/MT")
+  if(cmr_USE_STATIC_RUNTIME AND NOT BUILD_SHARED_LIBS)
+    set(MSVC_LIB_USE "/MT")
+    set(MSVC_LIB_REPLACE "/MD")
+  endif()
+  # Set MSVC runtime flags for all configurations
   # See:
   # https://stackoverflow.com/a/20804336
   # https://stackoverflow.com/a/14172871
   foreach(cfg "" ${CMAKE_CONFIGURATION_TYPES})
-    set(c_flag_var   CMAKE_C_FLAGS)
+    set(c_flag_var CMAKE_C_FLAGS)
     set(cxx_flag_var CMAKE_CXX_FLAGS)
     if(cfg)
       string(TOUPPER ${cfg} cfg_upper)
       set(c_flag_var   "${c_flag_var}_${cfg_upper}")
       set(cxx_flag_var "${cxx_flag_var}_${cfg_upper}")
     endif()
-    if(${c_flag_var} MATCHES "/MD")
-      string(REPLACE "/MD" "/MT" ${c_flag_var} "${${c_flag_var}}")
+    if(${c_flag_var} MATCHES ${MSVC_LIB_REPLACE})
+      string(REPLACE
+        ${MSVC_LIB_REPLACE} ${MSVC_LIB_USE} ${c_flag_var} "${${c_flag_var}}"
+      )
       set(${c_flag_var} ${${c_flag_var}} CACHE STRING
         "Flags used by the C compiler during ${cfg_upper} builds." FORCE
       )
     endif()
-    if(${cxx_flag_var} MATCHES "/MD")
-      string(REPLACE "/MD" "/MT" ${cxx_flag_var} "${${cxx_flag_var}}")
+    if(${cxx_flag_var} MATCHES ${MSVC_LIB_REPLACE})
+      string(REPLACE
+        ${MSVC_LIB_REPLACE} ${MSVC_LIB_USE} ${cxx_flag_var} "${${cxx_flag_var}}"
+      )
       set(${cxx_flag_var} ${${cxx_flag_var}} CACHE STRING
         "Flags used by the CXX compiler during ${cfg_upper} builds." FORCE
       )
     endif()
   endforeach()
+
+elseif(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    OR ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
+  if(cmr_USE_STATIC_RUNTIME AND NOT BUILD_SHARED_LIBS)
+    if(MINGW)
+      set(STATIC_LINKER_FLAGS "-static")
+    elseif(NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND APPLE))
+      set(STATIC_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+    endif()
+    set(CMAKE_EXE_LINKER_FLAGS
+      "${CMAKE_EXE_LINKER_FLAGS} ${STATIC_LINKER_FLAGS}"
+    )
+    set(CMAKE_SHARED_LINKER_FLAGS
+      "${CMAKE_SHARED_LINKER_FLAGS} ${STATIC_LINKER_FLAGS}"
+    )
+  endif()
 endif()
 
-if(NOT DEFINED cmr_BUILD_MULTIPROC)
-  set(cmr_BUILD_MULTIPROC ON)
-endif()
+option(cmr_BUILD_MULTIPROC "cmr_BUILD_MULTIPROC" ON)
 
 if(cmr_BUILD_MULTIPROC)
   # Enable /MP flag for Visual Studio 2008 and greater.
@@ -99,8 +121,12 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Configure LibCMaker directories
+# Set path vars
 #-----------------------------------------------------------------------
+
+set(libs_DIR "${CMAKE_CURRENT_LIST_DIR}/libs")
+set(build_libs_DIR "${PROJECT_BINARY_DIR}/build_libs")
+set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install")
 
 if(NOT cmr_DOWNLOAD_DIR)
   set(cmr_DOWNLOAD_DIR "${CMAKE_CURRENT_LIST_DIR}/.downloads")
@@ -109,12 +135,14 @@ endif()
 if(NOT cmr_UNPACKED_DIR)
   if(UNIX AND NOT APPLE AND NOT ANDROID)
     set(platform_DIR "_linux")
-  elseif(APPLE)
+  elseif(APPLE AND NOT IOS)
     set(platform_DIR "_macos")
   elseif(WIN32)
     set(platform_DIR "_windows")
   elseif(ANDROID)
     set(platform_DIR "_android")
+  elseif(IOS)
+    set(platform_DIR "_ios")
   endif()
 
   if(MSVC)
@@ -143,61 +171,85 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Set path to LibCMaker root
-#-----------------------------------------------------------------------
-
-set(LibCMaker_DIR "${libs_DIR}/LibCMaker")
-
-list(APPEND CMAKE_MODULE_PATH
-#  "${CMAKE_CURRENT_LIST_DIR}/cmake"
-  "${CMAKE_CURRENT_LIST_DIR}/cmake/libcmaker"
-  "${LibCMaker_DIR}/cmake"
-)
-
-
-#-----------------------------------------------------------------------
 # Configure to find_package()
 #-----------------------------------------------------------------------
 
 # Set CMake's search path for find_*() commands.
 list(APPEND CMAKE_PREFIX_PATH "${cmr_INSTALL_DIR}")
 
-if(ANDROID)
+if(ANDROID OR IOS)
   list(APPEND CMAKE_FIND_ROOT_PATH "${cmr_INSTALL_DIR}")
 endif()
 
 
 #-----------------------------------------------------------------------
-# Build, install and find required libraries
+# LibCMaker settings
 #-----------------------------------------------------------------------
 
-# Used by ICU.
-find_package(Threads REQUIRED)
+set(LibCMaker_LIB_DIR "${libs_DIR}")
+set(LibCMaker_DIR "${LibCMaker_LIB_DIR}/LibCMaker")
+
+list(APPEND CMAKE_MODULE_PATH
+#  "${CMAKE_CURRENT_LIST_DIR}/cmake"
+  "${LibCMaker_DIR}/cmake"
+)
 
 include(cmr_find_package)
 
-set(LibCMaker_libs_DIR "${LibCMaker_DIR}/libs")
 
-if(wxWidgets_PLATFORM)
-  include(build_wxwidgets)  # Must be 1st, before the other LibCMaker's libs.
-endif()
-if(MSVC)
-  include(build_dirent)
-endif()
-include(build_stlcache)
-include(build_expat)
-include(build_icu)
-include(build_sqlite3)
-include(build_sqlitemoderncpp)
-include(build_boost)
-include(build_freetype_with_harfbuzz)
-include(build_fontconfig)
-include(build_agg)
+#-----------------------------------------------------------------------
+# Download, configure, build, install and find the required libraries
+#-----------------------------------------------------------------------
+
+# TODO: In LibCMaker:
+# 1. Make vars in Find*.cmake files as advanced.
+# 2. Print "Found: <lib path>" from all Find*.cmake files.
+# 3. Add Libname::Libname targets to all Find*.cmake files.
+
+option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." ON)
+# TODO:
+#option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
+#option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
+
+option(BUILD_TESTING "Build the testing tree." OFF)
 if(BUILD_TESTING)
-  include(build_googletest)
+  enable_testing()
+  include(${LibCMaker_LIB_DIR}/LibCMaker_GoogleTest/cmr_build_googletest.cmake)
 endif()
 
+# wxWidgets must be 1st, before Cairo and other libs
+if(WIN32 OR (UNIX AND NOT ANDROID) OR (APPLE AND NOT IOS))
+  set(wxWidgets_PLATFORM ON)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
+endif()
 
+find_package(Threads REQUIRED)  # Used in Cairo and ICU
+
+if(MSVC)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_Dirent/cmr_build_dirent.cmake)
+endif()
+include(${LibCMaker_LIB_DIR}/LibCMaker_zlib/cmr_build_zlib.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_libpng/cmr_build_libpng.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_STLCache/cmr_build_stlcache.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
+if(APPLE)
+  # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
+  set(USE_BOOST ON)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
+endif()
+#include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
+include(
+  ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake
+)
+include(${LibCMaker_LIB_DIR}/LibCMaker_FontConfig/cmr_build_fontconfig.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_Pixman/cmr_build_pixman.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_Cairo/cmr_build_cairo.cmake)
+
+
+#[==[  # TODO: Use litehtml for viewing of dictionaries and other HTML texts.
 #-----------------------------------------------------------------------
 # LiteHtml
 #-----------------------------------------------------------------------
@@ -242,6 +294,7 @@ add_subdirectory(${HGraph_DIR} "${build_libs_DIR}/HtmlGrapheas")
 
 set(HGKamva_DIR "${libs_DIR}/HtmlGrapheasKamva")
 add_subdirectory("${HGKamva_DIR}" "${build_libs_DIR}/HtmlGrapheasKamva")
+]==]
 
 
 #-----------------------------------------------------------------------

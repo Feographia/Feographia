@@ -43,9 +43,15 @@
 [submodule "libs/LibCMaker_STLCache"]
   path = libs/LibCMaker_STLCache
   url = git@github.com:LibCMaker/LibCMaker_STLCache.git
+[submodule "libs/LibCMaker_fmt"]
+  path = libs/LibCMaker_fmt
+  url = git@github.com:LibCMaker/LibCMaker_fmt.git
 [submodule "libs/LibCMaker_libpng"]
   path = libs/LibCMaker_libpng
   url = git@github.com:LibCMaker/LibCMaker_libpng.git
+[submodule "libs/LibCMaker_spdlog"]
+  path = libs/LibCMaker_spdlog
+  url = git@github.com:LibCMaker/LibCMaker_spdlog.git
 [submodule "libs/LibCMaker_wxWidgets"]
   path = libs/LibCMaker_wxWidgets
   url = git@github.com:LibCMaker/LibCMaker_wxWidgets.git

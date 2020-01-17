@@ -34,8 +34,8 @@ project(FeographiaAppWx CXX)
 set(app_NAME "feographia")
 
 if(NOT HGKamva_DIR)
-  message(FATAL_ERROR
-    "Please set HGKamva_DIR with path to HtmlGrapheasKamva library.")
+  #message(FATAL_ERROR
+  #  "Please set HGKamva_DIR with path to HtmlGrapheasKamva library.")
 endif()
 
 

@@ -323,10 +323,10 @@ set(FgKardia_DIR "${libs_DIR}/FgKardia")
 if(wxWidgets_PLATFORM)
   # HtmlGrapheasKamvaWx
   set(HGKamvaWx_DIR "${HGKamva_DIR}/platform/wxwidgets")
-  add_subdirectory("${HGKamvaWx_DIR}" "${build_libs_DIR}/HtmlGrapheasKamvaWx")
+  #add_subdirectory("${HGKamvaWx_DIR}" "${build_libs_DIR}/HtmlGrapheasKamvaWx")
 
   # FeographiaAppWx
-  set(FgAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/platform/wxwidgets)
+  set(FgAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/src/fg/platform/wxwidgets)
   add_subdirectory("${FgAppWx_DIR}" "${PROJECT_BINARY_DIR}/FeographiaAppWx")
 endif()
 
@@ -337,7 +337,7 @@ endif()
 
 if(ANDROID)
   # HtmlGrapheasKamvaAndroid
-  set(HGKamvaAndroid_DIR ${HGKamva_DIR}/platform/android/main/cpp)
+  set(HGKamvaAndroid_DIR ${HGKamva_DIR}/src/fg/platform/android/main/cpp)
   add_subdirectory(
     "${HGKamvaAndroid_DIR}" "${build_libs_DIR}/HtmlGrapheasKamvaAndroid"
   )

@@ -32,4 +32,4 @@ project(":HtmlGrapheasKamva").projectDir =
 
 include "FeographiaApp"
 project(":FeographiaApp").projectDir =
-    new File("${rootDir}/platform/android/FeographiaApp")
+    new File("${rootDir}/src/fg/platform/android/FeographiaApp")

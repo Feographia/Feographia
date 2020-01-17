@@ -48,7 +48,7 @@ endif()
 # FeographiaAppWx
 #-----------------------------------------------------------------------
 
-set(private_src_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
+set(private_src_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(interface_src_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
 set(build_src_DIR
   "$<BUILD_INTERFACE:${private_src_DIR}>"

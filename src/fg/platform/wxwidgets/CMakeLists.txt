@@ -21,16 +21,6 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-cmake_minimum_required(VERSION 3.8)
-# C++17 compiler:
-#   GCC 8
-#   Clang 8 (Android NDK r19)
-#   Apple Clang 11.0.0, Xcode 11.0
-#   MSVC 19.15, VS 2017 15.8
-# See: https://en.cppreference.com/w/cpp/compiler_support
-
-project(FeographiaAppWx CXX)
-
 set(app_NAME "feographia")
 
 if(NOT HGKamva_DIR)
@@ -89,7 +79,7 @@ target_sources(${app_NAME}
 #-----------------------------------------------------------------------
 
 # HtmlGrapheasKamvaWx
-target_link_libraries(${app_NAME} PRIVATE hgkamva_wx)
+#target_link_libraries(${app_NAME} PRIVATE hgkamva_wx)
 
 # wxWidgets
 if(WX_USE_FIND_PACKAGE_MODULE)

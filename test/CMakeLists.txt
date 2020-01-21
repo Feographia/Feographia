@@ -3,7 +3,7 @@
 #  Purpose:  HTML text editor library
 #  Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2018 NikitaFeodonit
+#    Copyright (c) 2017-2020 NikitaFeodonit
 #
 #    This file is part of the HtmlGrapheas project.
 #
@@ -25,192 +25,193 @@
 if(BUILD_TESTING)
   find_package(GTest REQUIRED)
 
-  set(private_src_DIR "${PROJECT_SOURCE_DIR}/src")
-
-  set(HGKamva_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-  if(MSVC)
-    set(HGKamva_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
+  set(test_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
+  set(font_SRC_DIR "${PROJECT_SOURCE_DIR}/fonts")
+  set(data_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/data")
+  set(graphics_SRC_DIR "${data_SRC_DIR}")
+  if(MINGW)
+    set(graphics_SRC_DIR "${graphics_SRC_DIR}/MinGW")
   endif()
-  set(HGKamva_TEST_FONT_DIR "${HGKamva_TEST_DIR}/fonts")
-  set(HGKamva_TEST_DATA_DIR "${HGKamva_TEST_DIR}/data")
 
-  add_custom_target(clean_test_temp_dir
-    COMMAND
-      ${CMAKE_COMMAND} -E remove_directory "${HGKamva_TEST_DIR}/temp"
-  )
+  set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+  if(MSVC)
+    set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
+  endif()
+  set(font_BIN_DIR "${test_BIN_DIR}/fonts")
+  set(data_BIN_DIR "${test_BIN_DIR}/data")
+
+  #add_custom_target(clean_test_temp_dir
+  #  COMMAND
+  #    ${CMAKE_COMMAND} -E remove_directory "${test_BIN_DIR}/temp"
+  #)
 
   add_custom_target(prepare_test_fonts
     COMMAND
-      ${CMAKE_COMMAND} -E make_directory "${HGKamva_TEST_FONT_DIR}"
+      ${CMAKE_COMMAND} -E make_directory "${font_BIN_DIR}"
 
     # Arimo font files
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Arimo/Arimo-BoldItalic.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Arimo/Arimo-BoldItalic.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Arimo/Arimo-Bold.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Arimo/Arimo-Bold.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Arimo/Arimo-Italic.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Arimo/Arimo-Italic.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Arimo/Arimo-Regular.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Arimo/Arimo-Regular.ttf"
+      "${font_BIN_DIR}"
 
     # Tinos font files
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Tinos/Tinos-BoldItalic.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Tinos/Tinos-BoldItalic.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Tinos/Tinos-Bold.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Tinos/Tinos-Bold.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Tinos/Tinos-Italic.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Tinos/Tinos-Italic.ttf"
+      "${font_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${PROJECT_SOURCE_DIR}/fonts/Tinos/Tinos-Regular.ttf"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_SRC_DIR}/Tinos/Tinos-Regular.ttf"
+      "${font_BIN_DIR}"
   )
 
   add_custom_target(prepare_test_font_conf
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${CMAKE_INSTALL_PREFIX}/etc/fonts"
-      "${HGKamva_TEST_FONT_DIR}"
+      "${font_BIN_DIR}"
   )
-
-  set(HGKamva_TEST_GRAPHICS_DIR "${CMAKE_CURRENT_LIST_DIR}/data")
-  if(MINGW)
-    set(HGKamva_TEST_GRAPHICS_DIR "${HGKamva_TEST_GRAPHICS_DIR}/MinGW")
-  endif()
 
   add_custom_target(prepare_test_data
     COMMAND
-      ${CMAKE_COMMAND} -E make_directory "${HGKamva_TEST_DATA_DIR}"
+      ${CMAKE_COMMAND} -E make_directory "${data_BIN_DIR}"
 
     # Graphic data
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${HGKamva_TEST_GRAPHICS_DIR}/HgContainer_1.ppm"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${graphics_SRC_DIR}/HgContainer_1.ppm"
+      "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${HGKamva_TEST_GRAPHICS_DIR}/HgContainer_2.ppm"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${graphics_SRC_DIR}/HgContainer_2.ppm"
+      "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${HGKamva_TEST_GRAPHICS_DIR}/HgFontTest_1.ppm"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${graphics_SRC_DIR}/HgFontTest_1.ppm"
+      "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${HGKamva_TEST_GRAPHICS_DIR}/HgFontTest_2.ppm"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${graphics_SRC_DIR}/HgFontTest_2.ppm"
+      "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${HGKamva_TEST_GRAPHICS_DIR}/HtmlDocument_1.ppm"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${graphics_SRC_DIR}/HtmlDocument_1.ppm"
+      "${data_BIN_DIR}"
 
     # master.css
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${CMAKE_CURRENT_LIST_DIR}/data/master.css"
-      "${HGKamva_TEST_DATA_DIR}"
+      "${data_SRC_DIR}/master.css"
+      "${data_BIN_DIR}"
   )
 
-  macro(add_hg_test test_NAME test_SRC_FILES test_LIBS)
-    add_executable(${test_NAME} "")
-    target_sources(${test_NAME}
+  function(add_fg_test test_TARGET test_SRC_FILES test_LIBS)
+    add_executable(${test_TARGET} "")
+    target_sources(${test_TARGET}
       PRIVATE
         ${test_SRC_FILES}
     )
-    set_target_properties(${test_NAME} PROPERTIES
+    set_target_properties(${test_TARGET} PROPERTIES
       CXX_STANDARD 17
     )
 
     # HtmlGrapheas
-    #target_link_libraries(${test_NAME} PRIVATE hgraph)
+    #target_link_libraries(${test_TARGET} PRIVATE hgraph)
 
     # Cairo
-    target_link_libraries(${test_NAME} PRIVATE Cairo::Cairo)
+    target_link_libraries(${test_TARGET} PRIVATE Cairo::Cairo)
 
     # Pixman
-    target_link_libraries(${test_NAME} PRIVATE Pixman::Pixman)
+    target_link_libraries(${test_TARGET} PRIVATE Pixman::Pixman)
 
     # FontConfig
-    target_link_libraries(${test_NAME} PRIVATE Fontconfig::Fontconfig)
+    target_link_libraries(${test_TARGET} PRIVATE Fontconfig::Fontconfig)
 
     # FreeType
-    target_link_libraries(${test_NAME} PRIVATE Freetype::Freetype)
+    target_link_libraries(${test_TARGET} PRIVATE Freetype::Freetype)
 
     # HarfBuzz
-    target_include_directories(${test_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
-    target_link_libraries(${test_NAME} PRIVATE
+    target_include_directories(${test_TARGET} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
+    target_link_libraries(${test_TARGET} PRIVATE
       ${HARFBUZZ_LIBRARY} Freetype::Freetype
     )
 
     if(USE_BOOST)
-      target_compile_definitions(${test_NAME} PRIVATE USE_BOOST)
+      target_compile_definitions(${test_TARGET} PRIVATE USE_BOOST)
 
       # Boost
-      target_link_libraries(${test_NAME} PRIVATE
+      target_link_libraries(${test_TARGET} PRIVATE
         Boost::disable_autolinking Boost::filesystem Boost::system
       )
     endif()
 
     # SQLiteModernCPP
     target_include_directories(
-      ${test_NAME} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
+      ${test_TARGET} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
     )
 
     # SQLite3
-    target_link_libraries(${test_NAME} PRIVATE sqlite3)
+    target_link_libraries(${test_TARGET} PRIVATE sqlite3)
 
     # ICU
     if(NOT BUILD_SHARED_LIBS)
-      target_compile_definitions(${test_NAME} PRIVATE U_STATIC_IMPLEMENTATION)
+      target_compile_definitions(${test_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
     endif()
-    target_link_libraries(${test_NAME} PRIVATE ICU::i18n ICU::uc ICU::data)
+    target_link_libraries(${test_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
 
     # Expat
-    target_include_directories(${test_NAME} PRIVATE ${EXPAT_INCLUDE_DIR})
-    target_link_libraries(${test_NAME} PRIVATE ${EXPAT_LIBRARY})
+    target_include_directories(${test_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})
+    target_link_libraries(${test_TARGET} PRIVATE ${EXPAT_LIBRARY})
 
     # STLCache
-    target_include_directories(${test_NAME} PRIVATE ${STLCACHE_INCLUDE_DIR})
+    target_include_directories(${test_TARGET} PRIVATE ${STLCACHE_INCLUDE_DIR})
 
     # spdlog
-    target_link_libraries(${test_NAME} PRIVATE spdlog::spdlog)
+    target_link_libraries(${test_TARGET} PRIVATE spdlog::spdlog)
 
     # fmt
-    target_link_libraries(${test_NAME} PRIVATE fmt::fmt)
+    target_link_libraries(${test_TARGET} PRIVATE fmt::fmt)
 
     # libpng
-    target_link_libraries(${test_NAME} PRIVATE PNG::PNG)
+    target_link_libraries(${test_TARGET} PRIVATE PNG::PNG)
 
     # zlib
-    target_link_libraries(${test_NAME} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
+    target_link_libraries(${test_TARGET} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
 
     # Threads, pthread
     if(CMAKE_USE_PTHREADS_INIT)
-      target_link_libraries(${test_NAME} PRIVATE Threads::Threads)
+      target_link_libraries(${test_TARGET} PRIVATE Threads::Threads)
     endif()
 
     # android_support
-    target_link_libraries(${test_NAME} PRIVATE
+    target_link_libraries(${test_TARGET} PRIVATE
       ${test_LIBS}
       GTest::GTest GTest::Main
     )
 
     if(ANDROID AND ANDROID_NATIVE_API_LEVEL LESS 21)
-      target_link_libraries(${test_NAME} PRIVATE android_support)
+      target_link_libraries(${test_TARGET} PRIVATE android_support)
     endif()
 
-    add_dependencies(${test_NAME}
-      clean_test_temp_dir
+    add_dependencies(${test_TARGET}
+      #clean_test_temp_dir
       prepare_test_fonts
       prepare_test_font_conf
       prepare_test_data
     )
 
-    add_test(NAME ${test_NAME} COMMAND ${test_NAME})
-  endmacro()
+    add_test(NAME ${test_TARGET} COMMAND ${test_TARGET})
+  endfunction()
 
   # Stub tests.
-  add_hg_test("Stub_test"
-    ${private_src_DIR}/fg/stub.cpp
+  add_fg_test("Stub_test"
+    ${test_SRC_DIR}/fg/stub.cpp
     sqlite3
   )
 endif()

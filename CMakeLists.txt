@@ -42,9 +42,7 @@ option(CMAKE_VERBOSE_MAKEFILE "CMAKE_VERBOSE_MAKEFILE" OFF)
 option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
 
 
-list(APPEND CMAKE_MODULE_PATH
-  "${CMAKE_CURRENT_LIST_DIR}/cmake"
-)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 include(compile_flags)
 include(find_libraries)
@@ -56,12 +54,8 @@ include(find_libraries)
 # Feographia sources
 #-----------------------------------------------------------------------
 
-set(Feographia_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
-add_subdirectory("${Feographia_DIR}" "${PROJECT_BINARY_DIR}/Feographia")
-
-
-#-----------------------------------------------------------------------
-# Testing
-#-----------------------------------------------------------------------
-
+add_subdirectory(
+  "${CMAKE_CURRENT_LIST_DIR}/src"
+  "${PROJECT_BINARY_DIR}/Feographia"
+)
 add_subdirectory(test)

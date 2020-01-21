@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-set(lib_NAME "feographiakardia")
+set(fgkardia_TARGET "feographiakardia")
 
 include(GNUInstallDirs)
 
@@ -51,15 +51,15 @@ set(install_src_DIR
 )
 set(public_src_DIR "${build_src_DIR}${install_src_DIR}")
 
-add_library(${lib_NAME} "")
-set_target_properties(${lib_NAME} PROPERTIES
+add_library(${fgkardia_TARGET} "")
+set_target_properties(${fgkardia_TARGET} PROPERTIES
   CXX_STANDARD 17
   C_STANDARD 11
 )
 # Export HtmlGrapheasKamva include dirs.
-target_include_directories(${lib_NAME} PUBLIC ${public_src_DIR})
+target_include_directories(${fgkardia_TARGET} PUBLIC ${public_src_DIR})
 
-target_sources(${lib_NAME}
+target_sources(${fgkardia_TARGET}
   PRIVATE
     ${private_src_DIR}/fg/stub.cpp
 
@@ -72,80 +72,80 @@ target_sources(${lib_NAME}
 #-----------------------------------------------------------------------
 
 # Cairo
-target_link_libraries(${lib_NAME} PRIVATE Cairo::Cairo)
+target_link_libraries(${fgkardia_TARGET} PRIVATE Cairo::Cairo)
 
 # Pixman
-target_link_libraries(${lib_NAME} PRIVATE Pixman::Pixman)
+target_link_libraries(${fgkardia_TARGET} PRIVATE Pixman::Pixman)
 
 # FontConfig
-target_link_libraries(${lib_NAME} PRIVATE Fontconfig::Fontconfig)
+target_link_libraries(${fgkardia_TARGET} PRIVATE Fontconfig::Fontconfig)
 
 # FreeType
-target_link_libraries(${lib_NAME} PRIVATE Freetype::Freetype)
+target_link_libraries(${fgkardia_TARGET} PRIVATE Freetype::Freetype)
 
 # HarfBuzz
-target_include_directories(${lib_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
+target_include_directories(${fgkardia_TARGET} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
 # From <freetype sources>/docs/CHANGES:
 #  Note that HarfBuzz depends on FreeType.
-target_link_libraries(${lib_NAME} PRIVATE
+target_link_libraries(${fgkardia_TARGET} PRIVATE
   ${HARFBUZZ_LIBRARY} Freetype::Freetype
 )
 
 if(USE_BOOST)
-  target_compile_definitions(${lib_NAME} PRIVATE USE_BOOST)
+  target_compile_definitions(${fgkardia_TARGET} PRIVATE USE_BOOST)
 
   # Boost
-  target_link_libraries(${lib_NAME} PRIVATE
+  target_link_libraries(${fgkardia_TARGET} PRIVATE
     Boost::disable_autolinking Boost::filesystem Boost::system
   )
 endif()
 
 # SQLiteModernCPP
 target_include_directories(
-  ${lib_NAME} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
+  ${fgkardia_TARGET} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
 )
 
 # SQLite3
-target_link_libraries(${lib_NAME} PRIVATE sqlite3)
+target_link_libraries(${fgkardia_TARGET} PRIVATE sqlite3)
 
 # ICU
 if(NOT BUILD_SHARED_LIBS)
-  target_compile_definitions(${lib_NAME} PRIVATE U_STATIC_IMPLEMENTATION)
+  target_compile_definitions(${fgkardia_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
 endif()
-target_link_libraries(${lib_NAME} PRIVATE ICU::i18n ICU::uc ICU::data)
+target_link_libraries(${fgkardia_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
 
 # Expat
-target_include_directories(${lib_NAME} PRIVATE ${EXPAT_INCLUDE_DIR})
-target_link_libraries(${lib_NAME} PRIVATE ${EXPAT_LIBRARY})
+target_include_directories(${fgkardia_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})
+target_link_libraries(${fgkardia_TARGET} PRIVATE ${EXPAT_LIBRARY})
 
 # STLCache
-target_include_directories(${lib_NAME} PRIVATE ${STLCACHE_INCLUDE_DIR})
+target_include_directories(${fgkardia_TARGET} PRIVATE ${STLCACHE_INCLUDE_DIR})
 
 # spdlog
-target_link_libraries(${lib_NAME} PRIVATE spdlog::spdlog)
+target_link_libraries(${fgkardia_TARGET} PRIVATE spdlog::spdlog)
 
 # fmt
-target_link_libraries(${lib_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${fgkardia_TARGET} PRIVATE fmt::fmt)
 
 # libpng
-target_link_libraries(${lib_NAME} PRIVATE PNG::PNG)
+target_link_libraries(${fgkardia_TARGET} PRIVATE PNG::PNG)
 
 # zlib
-target_link_libraries(${lib_NAME} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
+target_link_libraries(${fgkardia_TARGET} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
 
 if(MSVC)
   # Dirent
-  target_include_directories(${lib_NAME} PRIVATE ${DIRENT_INCLUDE_DIR})
+  target_include_directories(${fgkardia_TARGET} PRIVATE ${DIRENT_INCLUDE_DIR})
 endif()
 
 # Threads, pthread
 if(CMAKE_USE_PTHREADS_INIT)
-  target_link_libraries(${lib_NAME} PRIVATE Threads::Threads)
+  target_link_libraries(${fgkardia_TARGET} PRIVATE Threads::Threads)
 endif()
 
 # android_support
 if(ANDROID AND ANDROID_NATIVE_API_LEVEL LESS 21)
-  target_link_libraries(${lib_NAME} PRIVATE android_support)
+  target_link_libraries(${fgkardia_TARGET} PRIVATE android_support)
 endif()
 
 

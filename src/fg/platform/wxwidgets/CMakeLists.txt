@@ -3,7 +3,7 @@
 #  Purpose:  The application to work with the biblical text
 #  Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2018 NikitaFeodonit
+#    Copyright (c) 2017-2020 NikitaFeodonit
 #
 #    This file is part of the Feographia project.
 #
@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-set(app_NAME "feographia")
+set(fgapp_TARGET "feographia")
 
 if(NOT HGKamva_DIR)
   #message(FATAL_ERROR
@@ -55,20 +55,20 @@ else()
   set(WIN32GUI "")
 endif()
 
-add_executable(${app_NAME} ${WIN32GUI} "")
-set_target_properties(${app_NAME} PROPERTIES
+add_executable(${fgapp_TARGET} ${WIN32GUI} "")
+set_target_properties(${fgapp_TARGET} PROPERTIES
   CXX_STANDARD 17
 )
-set_property(TARGET ${app_NAME}
+set_property(TARGET ${fgapp_TARGET}
   PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
 )
 if(ATTACH_WX_CONSOLE)
-  target_compile_definitions(${app_NAME} PRIVATE ATTACH_WX_CONSOLE)
+  target_compile_definitions(${fgapp_TARGET} PRIVATE ATTACH_WX_CONSOLE)
 endif()
 
-target_include_directories(${app_NAME} PRIVATE ${private_src_DIR})
+target_include_directories(${fgapp_TARGET} PRIVATE ${private_src_DIR})
 
-target_sources(${app_NAME}
+target_sources(${fgapp_TARGET}
   PRIVATE
     ${private_src_DIR}/fgapp/main.cpp
 )
@@ -79,22 +79,22 @@ target_sources(${app_NAME}
 #-----------------------------------------------------------------------
 
 # HtmlGrapheasKamvaWx
-#target_link_libraries(${app_NAME} PRIVATE hgkamva_wx)
+#target_link_libraries(${fgapp_TARGET} PRIVATE hgkamva_wx)
 
 # wxWidgets
 if(WX_USE_FIND_PACKAGE_MODULE)
   find_package(wxWidgets REQUIRED)
 
   #include(${wxWidgets_USE_FILE})
-  #target_link_libraries(${app_NAME} ${wxWidgets_LIBRARIES})
+  #target_link_libraries(${fgapp_TARGET} ${wxWidgets_LIBRARIES})
 
-  target_compile_definitions(${app_NAME} PRIVATE ${wxWidgets_DEFINITIONS})
-  target_compile_definitions(${app_NAME} PRIVATE
+  target_compile_definitions(${fgapp_TARGET} PRIVATE ${wxWidgets_DEFINITIONS})
+  target_compile_definitions(${fgapp_TARGET} PRIVATE
       $<$<CONFIG:Debug>:${wxWidgets_DEFINITIONS_DEBUG}>
   )
-  target_compile_options(${app_NAME} PRIVATE ${wxWidgets_CXX_FLAGS})
-  target_include_directories(${app_NAME} PRIVATE ${wxWidgets_INCLUDE_DIRS})
-  target_link_libraries(${app_NAME} PRIVATE ${wxWidgets_LIBRARIES})
+  target_compile_options(${fgapp_TARGET} PRIVATE ${wxWidgets_CXX_FLAGS})
+  target_include_directories(${fgapp_TARGET} PRIVATE ${wxWidgets_INCLUDE_DIRS})
+  target_link_libraries(${fgapp_TARGET} PRIVATE ${wxWidgets_LIBRARIES})
 
   if(MINGW AND NOT BUILD_SHARED_LIBS)
     if(NOT MINGW_HOME)
@@ -110,46 +110,46 @@ if(WX_USE_FIND_PACKAGE_MODULE)
 
     find_library(comdlg32_LIB comdlg32)
     if(comdlg32_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${comdlg32_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${comdlg32_LIB})
     endif()
 
     find_library(gdi32_LIB gdi32)
     if(gdi32_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${gdi32_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${gdi32_LIB})
     endif()
 
     find_library(ole32_LIB ole32)
     if(ole32_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${ole32_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${ole32_LIB})
     endif()
 
     find_library(oleacc_LIB oleacc)
     if(oleacc_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${oleacc_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${oleacc_LIB})
     endif()
 
     find_library(oleaut32_LIB oleaut32)
     if(oleaut32_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${oleaut32_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${oleaut32_LIB})
     endif()
 
     find_library(uuid_LIB uuid)
     if(uuid_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${uuid_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${uuid_LIB})
     endif()
 
     find_library(uxtheme_LIB uxtheme)
     if(uxtheme_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${uxtheme_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${uxtheme_LIB})
     endif()
 
     find_library(winspool_LIB winspool)
     if(winspool_LIB)
-      target_link_libraries(${app_NAME} PRIVATE ${winspool_LIB})
+      target_link_libraries(${fgapp_TARGET} PRIVATE ${winspool_LIB})
     endif()
   endif()
 else()
-  target_link_libraries(${app_NAME} PRIVATE ${WX_lib_COMPONENTS})
+  target_link_libraries(${fgapp_TARGET} PRIVATE ${WX_lib_COMPONENTS})
 endif()
 
 
@@ -217,7 +217,7 @@ if(BUILD_TESTING)
       "${WX_FG_TEST_DATA_DIR}"
   )
 
-  add_dependencies(${app_NAME}
+  add_dependencies(${fgapp_TARGET}
     prepare_wx_test_fonts
     prepare_wx_test_font_conf
     prepare_wx_test_data

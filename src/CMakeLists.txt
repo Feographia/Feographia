@@ -1,27 +1,27 @@
 # ****************************************************************************
-#  Project:  Feographia
-#  Purpose:  The application to work with the biblical text
-#  Author:   NikitaFeodonit, nfeodonit@yandex.com
+#   Project:  Feographia
+#   Purpose:  The application to work with the biblical text
+#   Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2020 NikitaFeodonit
+#     Copyright (c) 2017-2020 NikitaFeodonit
 #
-#    This file is part of the Feographia project.
+#     This file is part of the Feographia project.
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published
-#    by the Free Software Foundation, either version 3 of the License,
-#    or (at your option) any later version.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License,
+#     or (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#    See the GNU General Public License for more details.
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#     See the GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program. If not, see <http://www.gnu.org/licenses/>.
+#     You should have received a copy of the GNU General Public License
+#     along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-set(fgkardia_TARGET "feographiakardia")
+set(fgkardia_TARGET "feographia_kardia")
 
 include(GNUInstallDirs)
 
@@ -54,16 +54,56 @@ set(public_src_DIR "${build_src_DIR}${install_src_DIR}")
 add_library(${fgkardia_TARGET} "")
 set_target_properties(${fgkardia_TARGET} PROPERTIES
   CXX_STANDARD 17
-  C_STANDARD 11
 )
-# Export HtmlGrapheasKamva include dirs.
+# Export Feographia's include dirs.
 target_include_directories(${fgkardia_TARGET} PUBLIC ${public_src_DIR})
 
 target_sources(${fgkardia_TARGET}
   PRIVATE
-    ${private_src_DIR}/fg/stub.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Base/Deque.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Base/Fragment.cpp
+    ${private_src_DIR}/Fg/Module/Bible/Base/View.cpp
+
+#    ${private_src_DIR}/Fg/Module/Bible/Block/Block.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Block/BlockDeque.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Block/BlockView.cpp
+
+    ${private_src_DIR}/Fg/Module/Bible/Block/Word/Item.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Block/Word/ItemDeque.cpp
+    ${private_src_DIR}/Fg/Module/Bible/Block/Word/ItemView.cpp
+    ${private_src_DIR}/Fg/Module/Bible/Block/Word/WordPartView.cpp
+
+    ${private_src_DIR}/Fg/Renderer/Cairo.cpp
+
+    ${private_src_DIR}/Fg/Renderer/FontLibrary/Font.cpp
+    ${private_src_DIR}/Fg/Renderer/FontLibrary/FontLibrary.cpp
+
+    ${private_src_DIR}/Fg/Util/FileUtil.cpp
 
   PUBLIC
+    ${public_src_DIR}/Fg/Shared/Types.h
+
+#    ${public_src_DIR}/Fg/Module/Bible/Base/Deque.h
+#    ${public_src_DIR}/Fg/Module/Bible/Base/Fragment.h
+    ${public_src_DIR}/Fg/Module/Bible/Base/View.h
+
+#    ${public_src_DIR}/Fg/Module/Bible/Block/Block.h
+#    ${public_src_DIR}/Fg/Module/Bible/Block/BlockDeque.h
+#    ${public_src_DIR}/Fg/Module/Bible/Block/BlockView.h
+
+    ${public_src_DIR}/Fg/Module/Bible/Block/Word/Item.h
+#    ${public_src_DIR}/Fg/Module/Bible/Block/Word/ItemDeque.h
+    ${public_src_DIR}/Fg/Module/Bible/Block/Word/ItemView.h
+    ${public_src_DIR}/Fg/Module/Bible/Block/Word/WordPartView.h
+
+    ${public_src_DIR}/Fg/Renderer/Cairo.h
+
+    ${public_src_DIR}/Fg/Renderer/FontLibrary/Font.h
+    ${public_src_DIR}/Fg/Renderer/FontLibrary/FontLibrary.h
+
+    ${public_src_DIR}/Fg/Util/FileUtil.h
+    ${public_src_DIR}/Fg/Util/Filesystem.h
+    ${public_src_DIR}/Fg/Util/StringUtil.h
 )
 
 
@@ -165,6 +205,6 @@ endif()
 
 if(wxWidgets_PLATFORM)
   # FeographiaAppWx
-  set(FgAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/fg/platform/wxwidgets)
-  add_subdirectory("${FgAppWx_DIR}" "${PROJECT_BINARY_DIR}/FeographiaAppWx")
+  set(FgAppWx_DIR ${CMAKE_CURRENT_LIST_DIR}/Fg/platform/wxwidgets)
+#  add_subdirectory("${FgAppWx_DIR}" "${PROJECT_BINARY_DIR}/FeographiaAppWx")
 endif()

@@ -1,28 +1,30 @@
 # ****************************************************************************
-#  Project:  HtmlGrapheas
-#  Purpose:  HTML text editor library
-#  Author:   NikitaFeodonit, nfeodonit@yandex.com
+#   Project:  Feographia
+#   Purpose:  The application to work with the biblical text
+#   Author:   NikitaFeodonit, nfeodonit@yandex.com
 # ****************************************************************************
-#    Copyright (c) 2017-2020 NikitaFeodonit
+#     Copyright (c) 2017-2020 NikitaFeodonit
 #
-#    This file is part of the HtmlGrapheas project.
+#     This file is part of the Feographia project.
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published
-#    by the Free Software Foundation, either version 3 of the License,
-#    or (at your option) any later version.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License,
+#     or (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#    See the GNU General Public License for more details.
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#     See the GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program. If not, see <http://www.gnu.org/licenses/>.
+#     You should have received a copy of the GNU General Public License
+#     along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
 # Testing with Google Test.
 if(BUILD_TESTING)
+  set(fgkardia_TARGET "feographia_kardia")
+
   find_package(GTest REQUIRED)
 
   set(test_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
@@ -90,24 +92,10 @@ if(BUILD_TESTING)
 
     # Graphic data
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/HgContainer_1.ppm"
+      "${graphics_SRC_DIR}/FontTest_1.ppm"
       "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/HgContainer_2.ppm"
-      "${data_BIN_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/HgFontTest_1.ppm"
-      "${data_BIN_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/HgFontTest_2.ppm"
-      "${data_BIN_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/HtmlDocument_1.ppm"
-      "${data_BIN_DIR}"
-
-    # master.css
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${data_SRC_DIR}/master.css"
+      "${graphics_SRC_DIR}/FontTest_2.ppm"
       "${data_BIN_DIR}"
   )
 
@@ -119,6 +107,11 @@ if(BUILD_TESTING)
     )
     set_target_properties(${test_TARGET} PROPERTIES
       CXX_STANDARD 17
+    )
+
+    # Test libraries
+    target_link_libraries(${test_TARGET} PRIVATE
+      ${test_LIBS}
     )
 
     # HtmlGrapheas
@@ -189,12 +182,12 @@ if(BUILD_TESTING)
       target_link_libraries(${test_TARGET} PRIVATE Threads::Threads)
     endif()
 
-    # android_support
+    # Google Test
     target_link_libraries(${test_TARGET} PRIVATE
-      ${test_LIBS}
       GTest::GTest GTest::Main
     )
 
+    # android_support
     if(ANDROID AND ANDROID_NATIVE_API_LEVEL LESS 21)
       target_link_libraries(${test_TARGET} PRIVATE android_support)
     endif()
@@ -209,10 +202,22 @@ if(BUILD_TESTING)
     add_test(NAME ${test_TARGET} COMMAND ${test_TARGET})
   endfunction()
 
-  # Stub tests.
-  add_fg_test("Stub_test"
-    ${test_SRC_DIR}/fg/stub.cpp
-    sqlite3
+  # FontLibrary tests
+  add_fg_test("FontLibrary_test"
+    ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
+    ${fgkardia_TARGET}
+  )
+
+  # Font tests
+  add_fg_test("Font_test"
+    ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
+    ${fgkardia_TARGET}
+  )
+
+  # StringUtil tests
+  add_fg_test("StringUtil_test"
+    ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
+    ${fgkardia_TARGET}
   )
 endif()
 

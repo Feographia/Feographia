@@ -140,7 +140,7 @@ typename Font::TextLayoutPtr Font::getTextLayout(const std::string& text)
 
   clearBuffer();
 
-  // TODO: set Direction, Script and Language through HgContainer's methods.
+  // TODO: set Direction, Script and Language through Container's methods.
   setDirection(HB_DIRECTION_LTR);
   setScript(HB_SCRIPT_LATIN);
   setLanguage("eng");

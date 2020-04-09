@@ -149,3 +149,4 @@ include(
 include(${LibCMaker_LIB_DIR}/LibCMaker_FontConfig/cmr_build_fontconfig.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_Pixman/cmr_build_pixman.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_Cairo/cmr_build_cairo.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_litehtml/cmr_build_litehtml.cmake)

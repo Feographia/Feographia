@@ -80,6 +80,9 @@ target_sources(${fgkardia_TARGET}
 
     ${private_src_DIR}/Fg/Util/FileUtil.cpp
 
+    ${private_src_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer.cpp
+    ${private_src_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer.cpp
+
   PUBLIC
     ${public_src_DIR}/Fg/Shared/Types.h
 
@@ -104,12 +107,18 @@ target_sources(${fgkardia_TARGET}
     ${public_src_DIR}/Fg/Util/FileUtil.h
     ${public_src_DIR}/Fg/Util/Filesystem.h
     ${public_src_DIR}/Fg/Util/StringUtil.h
+
+    ${public_src_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer.h
+    ${public_src_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer.h
 )
 
 
 #-----------------------------------------------------------------------
 # Link to the libraries
 #-----------------------------------------------------------------------
+
+# litehtml
+target_link_libraries(${fgkardia_TARGET} PRIVATE litehtml::litehtml)
 
 # Cairo
 target_link_libraries(${fgkardia_TARGET} PRIVATE Cairo::Cairo)

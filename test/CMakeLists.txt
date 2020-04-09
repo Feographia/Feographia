@@ -97,6 +97,21 @@ if(BUILD_TESTING)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${graphics_SRC_DIR}/FontTest_2.ppm"
       "${data_BIN_DIR}"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${graphics_SRC_DIR}/LiteHtmlContainer_1.ppm"
+      "${data_BIN_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${graphics_SRC_DIR}/LiteHtmlContainer_2.ppm"
+      "${data_BIN_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${graphics_SRC_DIR}/LiteHtmlDocument_1.ppm"
+      "${data_BIN_DIR}"
+
+    # master.css
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_CURRENT_LIST_DIR}/data/master.css"
+      "${data_BIN_DIR}"
   )
 
   function(add_fg_test test_TARGET test_SRC_FILES test_LIBS)
@@ -116,6 +131,9 @@ if(BUILD_TESTING)
 
     # HtmlGrapheas
     #target_link_libraries(${test_TARGET} PRIVATE hgraph)
+
+    # litehtml
+    target_link_libraries(${test_TARGET} PRIVATE litehtml::litehtml)
 
     # Cairo
     target_link_libraries(${test_TARGET} PRIVATE Cairo::Cairo)
@@ -202,21 +220,29 @@ if(BUILD_TESTING)
     add_test(NAME ${test_TARGET} COMMAND ${test_TARGET})
   endfunction()
 
+  # Util tests
+  add_fg_test("StringUtil_test"
+    ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
+    ${fgkardia_TARGET}
+  )
+
   # FontLibrary tests
   add_fg_test("FontLibrary_test"
     ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
     ${fgkardia_TARGET}
   )
-
-  # Font tests
   add_fg_test("Font_test"
     ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
     ${fgkardia_TARGET}
   )
 
-  # StringUtil tests
-  add_fg_test("StringUtil_test"
-    ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
+  # litehtml renderer tests
+  add_fg_test("Container_test"
+    ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
+    ${fgkardia_TARGET}
+  )
+  add_fg_test("HtmlRenderer_test.cpp"
+    ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
     ${fgkardia_TARGET}
   )
 endif()

@@ -49,6 +49,9 @@
 [submodule "libs/LibCMaker_libpng"]
   path = libs/LibCMaker_libpng
   url = git@github.com:LibCMaker/LibCMaker_libpng.git
+[submodule "libs/LibCMaker_litehtml"]
+  path = libs/LibCMaker_litehtml
+  url = git@github.com:LibCMaker/LibCMaker_litehtml.git
 [submodule "libs/LibCMaker_spdlog"]
   path = libs/LibCMaker_spdlog
   url = git@github.com:LibCMaker/LibCMaker_spdlog.git

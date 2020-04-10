@@ -117,7 +117,7 @@ target_sources(${fgkardia_TARGET}
 # Link to the libraries
 #-----------------------------------------------------------------------
 
-# litehtml
+# litehtml, gumbo (embedded into litehtml)
 target_link_libraries(${fgkardia_TARGET} PRIVATE litehtml::litehtml)
 
 # Cairo

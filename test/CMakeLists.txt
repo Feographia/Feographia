@@ -132,7 +132,7 @@ if(BUILD_TESTING)
     # HtmlGrapheas
     #target_link_libraries(${test_TARGET} PRIVATE hgraph)
 
-    # litehtml
+    # litehtml, gumbo (embedded into litehtml)
     target_link_libraries(${test_TARGET} PRIVATE litehtml::litehtml)
 
     # Cairo

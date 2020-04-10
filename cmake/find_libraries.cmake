@@ -137,11 +137,11 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
-#if(APPLE)
+if(APPLE)
   # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
   set(USE_BOOST ON)
   include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
-#endif()
+endif()
 #include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
 include(
   ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake

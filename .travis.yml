@@ -272,7 +272,7 @@ build_macos: &build_macos
   env: &build_macos_env
     - cmr_TARGET_OS=macos
 
-    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
+    - cmr_CMAKE_RELEASE_VER=3.12
     - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-Darwin-x86_64
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
     - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
@@ -325,6 +325,8 @@ build_macos_make: &build_macos_make
 
   script:
     - cd ${cmr_BUILD_DIR}
+
+    - ${cmr_CMAKE_CMD} --version
 
     - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}

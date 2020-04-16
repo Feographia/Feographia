@@ -42,6 +42,9 @@ env:
     - cmr_CMAKE_RELEASE_MIN_VER=3.8
     - cmr_JOBS_CNT=4
 
+git:
+  submodules: false
+
 
 # === Linux ===
 
@@ -74,6 +77,8 @@ build_linux: &build_linux
     - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
+
+    - git submodule update --init --recursive
 
   script:
     - cd ${cmr_BUILD_DIR}
@@ -141,6 +146,8 @@ build_windows: &build_windows
     - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
+
+    - git submodule update --init --recursive
 
   script:
     - cd ${cmr_BUILD_DIR}
@@ -252,6 +259,8 @@ build_android: &build_android
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 
+    - git submodule update --init --recursive
+
   script:
     - cd ${cmr_BUILD_DIR}
 
@@ -313,6 +322,8 @@ build_macos: &build_macos
     - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
+
+    - git submodule update --init --recursive
 
 
 build_macos_xcode: &build_macos_xcode
@@ -406,6 +417,8 @@ build_ios: &build_ios_xcode
     - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
+
+    - git submodule update --init --recursive
 
   script:
     - cd ${cmr_BUILD_DIR}

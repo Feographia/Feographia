@@ -85,7 +85,7 @@ build_linux: &build_linux
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -154,7 +154,7 @@ build_windows: &build_windows
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -266,7 +266,7 @@ build_android: &build_android
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -337,7 +337,7 @@ build_macos_xcode: &build_macos_xcode
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -367,7 +367,7 @@ build_macos_make: &build_macos_make
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -425,7 +425,7 @@ build_ios: &build_ios_xcode
 
     - ${cmr_CMAKE_CMD} --version
 
-    - ${cmr_CMAKE_CMD} ${cmr_SAMPLE_DIR}
+    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
@@ -722,14 +722,14 @@ jobs:
 
       before_install:
         - gem install travis
-        - mkdir ${cmr_SAMPLE_DIR}
-        - mkdir ${cmr_SAMPLE_LIB_DIR}
-        - git clone https://github.com/LibCMaker/LibCMaker.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker
+        - mkdir ${cmr_REPO_DIR}
+        - mkdir ${cmr_SAMPLE_LIB_DIR} # TODO: change dir
+        - git clone https://github.com/LibCMaker/LibCMaker.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker # TODO: change dir
 
       script:
-        - cp ${cmr_SAMPLE_LIB_DIR}/LibCMaker/ci/travis/trigger.sh ${TRAVIS_BUILD_DIR}/
-        - cp ${cmr_SAMPLE_LIB_DIR}/LibCMaker/ci/travis/trigger-travis.sh ${TRAVIS_BUILD_DIR}/
-        - cd ${TRAVIS_BUILD_DIR}
+        - cp ${cmr_SAMPLE_LIB_DIR}/LibCMaker/ci/travis/trigger.sh ${TRAVIS_BUILD_DIR}/ # TODO: change dir
+        - cp ${cmr_SAMPLE_LIB_DIR}/LibCMaker/ci/travis/trigger-travis.sh ${TRAVIS_BUILD_DIR}/ # TODO: change dir
+        - cd ${TRAVIS_BUILD_DIR} # TODO: change dir
 
         # NOTE: LibCMaker lib triggers.
         - ./trigger.sh LibCMaker LibCMaker_FontConfig       master $TRAVIS_ACCESS_TOKEN

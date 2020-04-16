@@ -55,4 +55,5 @@ build/
 # Main project
 .downloads/
 build_*/
+ci/TravisCiKey
 /.prj_options.cmake

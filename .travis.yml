@@ -68,6 +68,13 @@ build_linux: &build_linux
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
 
+    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
+      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+    - chmod 600 ci/TravisCiKey
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - eval "$(ssh-agent -s)"
+    - ssh-add ci/TravisCiKey
+
   script:
     - cd ${cmr_BUILD_DIR}
 
@@ -127,6 +134,13 @@ build_windows: &build_windows
 
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.zip
     - 7z.exe x -aoa -o${cmr_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.zip
+
+    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
+      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+    - chmod 600 ci/TravisCiKey
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - eval "$(ssh-agent -s)"
+    - ssh-add ci/TravisCiKey
 
   script:
     - cd ${cmr_BUILD_DIR}
@@ -231,6 +245,13 @@ build_android: &build_android
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
     - unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_INSTALL_DIR}
 
+    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
+      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+    - chmod 600 ci/TravisCiKey
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - eval "$(ssh-agent -s)"
+    - ssh-add ci/TravisCiKey
+
   script:
     - cd ${cmr_BUILD_DIR}
 
@@ -285,6 +306,13 @@ build_macos: &build_macos
 
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
+
+    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
+      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+    - chmod 600 ci/TravisCiKey
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - eval "$(ssh-agent -s)"
+    - ssh-add ci/TravisCiKey
 
 
 build_macos_xcode: &build_macos_xcode
@@ -371,6 +399,13 @@ build_ios: &build_ios_xcode
 
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
+
+    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
+      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+    - chmod 600 ci/TravisCiKey
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - eval "$(ssh-agent -s)"
+    - ssh-add ci/TravisCiKey
 
   script:
     - cd ${cmr_BUILD_DIR}

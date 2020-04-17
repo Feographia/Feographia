@@ -45,11 +45,11 @@ Feographia is tested with Travis CI and AppVeyor.
 
 Following configurations are in the Travis CI (2019-02-23):
 
-1. Linux -- Ubuntu Xenial 18.04, CMake 3.8.0, Make, Matrix: [GCC 5.4.0 | Clang 7.0.0], [Debug | Release], [shared | static].
+1. Linux -- Ubuntu Xenial 18.04, CMake 3.12.0, Make, Matrix: [GCC 9.2.1 | Clang 9.0.0], [Debug | Release], [shared | static].
 
-2. Android -- Ubuntu Xenial 18.04, CMake 3.8.0, Android NDK r19, Clang 8.0.2, Ninja, Release, Matrix: [shared + c++_shared | static + c++_static], [armeabi-v7a + API 16 | arm64-v8a + API 21 | x86 + API 16 | x86_64 + API 21].
+2. Android -- Ubuntu Xenial 18.04, CMake 3.12.0, Android NDK r19, Clang 8.0.2, Ninja, Release, Matrix: [shared + c++_shared | static + c++_static], [armeabi-v7a + API 16 | arm64-v8a + API 21 | x86 + API 16 | x86_64 + API 21].
 
-3. [Disabled, used AppVeyor] Windows -- Windows Server 1803, CMake 3.11.0, MSVC 2017, MSVC 19.16.27023.1, Release, Matrix: [x64 | x32 | WinXP], [shared | static].
+3. [Disabled, used AppVeyor] Windows -- Windows Server 1803, CMake 3.12.0, MSVC 2017, MSVC 19.16.27023.1, Release, Matrix: [x64 | x32 | WinXP], [shared | static].
 
 4. macOS -- Mac OS X 10.14.4, 3.12.0, Xcode 10.2.1, Apple Clang 10.0.1, Matrix: CMake generator ["Xcode" | "Unix Makefiles"], [Debug | Release], [shared | static].
 

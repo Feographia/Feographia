@@ -122,6 +122,8 @@ if(BUILD_TESTING)
     )
     set_target_properties(${test_TARGET} PROPERTIES
       CXX_STANDARD 17
+      # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
+      LINK_WHAT_YOU_USE ON
     )
 
     # Test libraries

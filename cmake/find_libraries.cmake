@@ -111,6 +111,13 @@ option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." ON)
 #option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
 #option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
 
+if(ANDROID OR IOS)
+  option(ICU_CROSS_COMPILING "Enable cross compiling" ON)
+endif()
+# TODO: review all options from all libs.
+option(BOOST_WITHOUT_ICU "Disable Unicode/ICU support in Regex" OFF)
+option(SQLITE_ENABLE_ICU "the ICU extension to SQLite to be added" ON)
+
 option(BUILD_TESTING "Build the testing tree." OFF)
 if(BUILD_TESTING)
   enable_testing()
@@ -144,7 +151,7 @@ if(ANDROID OR APPLE)
   # https://android.googlesource.com/platform/ndk/+/master/docs/Roadmap.md#c_file-system-api
   # TODO: Apple:
   # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
-  set(USE_BOOST ON)
+  set(USE_BOOST ON)  # TODO: rename to USE_BOOST_FILESYSTEM
   include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
 endif()
 #include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)

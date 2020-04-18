@@ -60,7 +60,7 @@ if(NOT cmr_UNPACKED_DIR)
   set(cmr_UNPACKED_DIR "${PROJECT_BINARY_DIR}/host_tools/sources")
 endif()
 if(NOT cmr_BUILD_DIR)
-  set(cmr_BUILD_DIR "${PROJECT_BINARY_DIR}/host_tools/build")
+  set(cmr_BUILD_DIR "${PROJECT_BINARY_DIR}")
 endif()
 
 set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
@@ -95,7 +95,9 @@ include(cmr_find_package)
 find_package(Threads REQUIRED)
 
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu_host_tools.cmake)
+# NOTE: See notes in 'cmake/find_libraries.cmake' in the main project.
 include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost_host_tools.cmake)
+
 
 #-----------------------------------------------------------------------
 # Stub target

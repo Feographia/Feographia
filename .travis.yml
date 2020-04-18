@@ -34,10 +34,14 @@ env:
 
     - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
     - cmr_WORK_DIR=${cmr_REPO_DIR}
+    - cmr_HOST_TOOLS_PROJECT_DIR=${cmr_REPO_DIR}/host_tools
 
     - cmr_BUILD_DIR=${cmr_WORK_DIR}/build
     - cmr_INSTALL_DIR=${cmr_BUILD_DIR}/install
     - cmr_DOWNLOAD_DIR=${cmr_BUILD_DIR}/download
+
+    - cmr_HOST_BUILD_DIR=${cmr_BUILD_DIR}/host_tools
+    - cmr_HOST_TOOLS_STAMP_FILE_NAME="host_tools_stamp"
 
     - cmr_CMAKE_RELEASE_MIN_VER=3.12
     - cmr_JOBS_CNT=4
@@ -296,6 +300,7 @@ build_android: &build_android
 
   before_install:
     - mkdir ${cmr_BUILD_DIR}
+    - mkdir ${cmr_HOST_BUILD_DIR}
     - mkdir ${cmr_INSTALL_DIR}
     - mkdir ${cmr_DOWNLOAD_DIR}
 
@@ -315,6 +320,31 @@ build_android: &build_android
     - git submodule update --init --recursive
 
   script:
+    # === Build host tools ===
+    - cd ${cmr_HOST_BUILD_DIR}
+
+    - ${cmr_CMAKE_CMD} --version
+    - ${CC} --version
+    - ${CXX} --version
+
+    - ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR}
+        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
+        -Dcmr_PRINT_DEBUG:BOOL=ON
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
+        -DBUILD_TESTING:BOOL=OFF
+        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
+        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
+        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked_host_tools
+          -DCMAKE_BUILD_TYPE:STRING=Release
+          -DBUILD_SHARED_LIBS:BOOL=OFF
+        -DFgMainProject_DIR:PATH=${cmr_REPO_DIR}
+          -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs
+          -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME}
+
+    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
+
+    # === Build Android libs ===
     - cd ${cmr_BUILD_DIR}
 
     - ${cmr_CMAKE_CMD} --version
@@ -340,6 +370,7 @@ build_android: &build_android
           -DANDROID_TOOLCHAIN:STRING=${cmr_ANDROID_TOOLCHAIN}
           -DANDROID_STL:STRING=${cmr_ANDROID_STL}
           -DANDROID_CPP_FEATURES:STRING="${cmr_ANDROID_CPP_FEATURES}"
+        -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR}
 
     - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
 
@@ -464,6 +495,7 @@ build_ios: &build_ios_xcode
 
   before_install:
     - mkdir ${cmr_BUILD_DIR}
+    - mkdir ${cmr_HOST_BUILD_DIR}
     - mkdir ${cmr_INSTALL_DIR}
     - mkdir ${cmr_DOWNLOAD_DIR}
 
@@ -480,6 +512,16 @@ build_ios: &build_ios_xcode
     - git submodule update --init --recursive
 
   script:
+    # === Build host tools ===
+    - cd ${cmr_HOST_BUILD_DIR}
+
+    - ${cmr_CMAKE_CMD} --version
+    - ${CC} --version
+    - ${CXX} --version
+
+    # TODO: Build host tools
+
+    # === Build iOS libs ===
     - cd ${cmr_BUILD_DIR}
 
     - ${cmr_CMAKE_CMD} --version
@@ -502,6 +544,7 @@ build_ios: &build_ios_xcode
         -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_SAMPLE_LIB_DIR}/LibCMaker/cmake/ios.toolchain.cmake
           -DPLATFORM:STRING="SIMULATOR64"
           -DENABLE_VISIBILITY:BOOL=${cmr_BUILD_SHARED_LIBS}
+        -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR}
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 

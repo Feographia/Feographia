@@ -145,12 +145,16 @@ build_linux_clang: &build_linux_clang
   addons:
     apt:
       sources:
+#        - ubuntu-toolchain-r-test
+        - sourceline: "ppa:ubuntu-toolchain-r/test"
 #        - llvm-toolchain-bionic-9
         - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
           key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
       packages:
         - *packages_linux
-        - clang-9
+        - gcc-9
+        - g++-9
+        - clang-9  # g++-9 is needed as clang uses its libraries by default.
   env: &build_linux_clang_env
     - *build_linux_env
     - CC=clang-9

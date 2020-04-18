@@ -94,13 +94,13 @@ if(cmr_BUILD_MULTIPROC)
   endif()
 endif()
 
-if(ANDROID)
-  # https://github.com/android/ndk/issues/1183
-  # https://developer.android.com/ndk/downloads/revision_history
-  set(CMAKE_EXE_LINKER_FLAGS
-    "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld"
-  )
-  set(CMAKE_SHARED_LINKER_FLAGS
-    "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld"
-  )
-endif()
+#if(ANDROID)
+#  # https://github.com/android/ndk/issues/1183
+#  # https://developer.android.com/ndk/downloads/revision_history
+#  set(CMAKE_EXE_LINKER_FLAGS
+#    "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld"
+#  )
+#  set(CMAKE_SHARED_LINKER_FLAGS
+#    "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld"
+#  )
+#endif()

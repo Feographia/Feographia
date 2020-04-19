@@ -259,7 +259,7 @@ if(BUILD_TESTING)
 
   if(wxWidgets_PLATFORM)
     foreach(fg_test IN LISTS fg_TEST_LIST)
-      add_test(NAME ${fg_test} COMMAND ${font_BIN_DIR} ${fg_test})
+      add_test(NAME ${fg_test} COMMAND ${fg_test})
     endforeach()
   endif()
 

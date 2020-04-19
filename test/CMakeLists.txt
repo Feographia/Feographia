@@ -114,7 +114,8 @@ if(BUILD_TESTING)
       "${data_BIN_DIR}"
   )
 
-  function(add_fg_test test_TARGET test_SRC_FILES test_LIBS)
+  function(add_fg_test_executable
+      test_TARGET test_SRC_FILES test_LIBS out_TEST_LIST)
     add_executable(${test_TARGET} "")
     target_sources(${test_TARGET}
       PRIVATE
@@ -219,34 +220,85 @@ if(BUILD_TESTING)
       prepare_test_data
     )
 
-    add_test(NAME ${test_TARGET} COMMAND ${test_TARGET})
+    list(APPEND ${out_TEST_LIST} ${test_TARGET})
+    set(${out_TEST_LIST} ${${out_TEST_LIST}} PARENT_SCOPE)
   endfunction()
 
+  set(fg_TEST_LIST)
+
   # Util tests
-  add_fg_test("StringUtil_test"
+  add_fg_test_executable("StringUtil_test"
     ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
     ${fgkardia_TARGET}
+    fg_TEST_LIST
   )
 
   # FontLibrary tests
-  add_fg_test("FontLibrary_test"
+  add_fg_test_executable("FontLibrary_test"
     ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
     ${fgkardia_TARGET}
+    fg_TEST_LIST
   )
-  add_fg_test("Font_test"
+  add_fg_test_executable("Font_test"
     ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
     ${fgkardia_TARGET}
+    fg_TEST_LIST
   )
 
   # litehtml renderer tests
-  add_fg_test("Container_test"
+  add_fg_test_executable("LiteHtmlContainer_test"
     ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
     ${fgkardia_TARGET}
+    fg_TEST_LIST
   )
-  add_fg_test("HtmlRenderer_test.cpp"
+  add_fg_test_executable("LiteHtmlRenderer_test"
     ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
     ${fgkardia_TARGET}
+    fg_TEST_LIST
   )
+
+  if(wxWidgets_PLATFORM)
+    foreach(fg_test IN LISTS fg_TEST_LIST)
+      add_test(NAME ${fg_test} COMMAND ${font_BIN_DIR} ${fg_test})
+    endforeach()
+  endif()
+
+  if(ANDROID)
+    find_program(adb_exec adb)
+    if(NOT adb_exec)
+      message(FATAL_ERROR "Could not find 'adb'")
+    endif()
+
+    set(DEV_WORK_DIR "/data/local/tmp/fg_test")
+
+    add_test(NAME push_fonts
+      COMMAND ${adb_exec} push "${font_BIN_DIR}" "${DEV_WORK_DIR}"
+    )
+    add_test(NAME push_data
+      COMMAND ${adb_exec} push "${data_BIN_DIR}" "${DEV_WORK_DIR}"
+    )
+    add_test(NAME push_libs
+      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/lib" "${DEV_WORK_DIR}"
+    )
+    add_test(NAME push_icu_data
+      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/share/icu" "${DEV_WORK_DIR}"
+    )
+
+    # 1st -- push all executable files.
+    foreach(fg_test IN LISTS fg_TEST_LIST)
+      add_test(NAME push_${fg_test}
+        COMMAND ${adb_exec} push ${fg_test} "${DEV_WORK_DIR}"
+      )
+    endforeach()
+
+    # 2nd -- run tests.
+    foreach(fg_test IN LISTS fg_TEST_LIST)
+      add_test(NAME ${fg_test} COMMAND ${adb_exec} shell
+        "LD_LIBRARY_PATH=${DEV_WORK_DIR}:${LD_LIBRARY_PATH}"
+        "${DEV_WORK_DIR}/${fg_test}"
+      )
+    endforeach()
+  endif()
 endif()
 
 

@@ -272,30 +272,51 @@ if(BUILD_TESTING)
     set(DEV_WORK_DIR "/data/local/tmp/fg_test")
 
     add_test(NAME push_fonts
-      COMMAND ${adb_exec} push "${font_BIN_DIR}" "${DEV_WORK_DIR}"
+      COMMAND ${adb_exec} push "${font_BIN_DIR}" "${DEV_WORK_DIR}/fonts"
     )
     add_test(NAME push_data
-      COMMAND ${adb_exec} push "${data_BIN_DIR}" "${DEV_WORK_DIR}"
+      COMMAND ${adb_exec} push "${data_BIN_DIR}" "${DEV_WORK_DIR}/data"
     )
     add_test(NAME push_libs
-      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/lib" "${DEV_WORK_DIR}"
+      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/lib" "${DEV_WORK_DIR}/lib"
     )
     add_test(NAME push_icu_data
-      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/share/icu" "${DEV_WORK_DIR}"
+      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/share/icu" "${DEV_WORK_DIR}/share/icu"
     )
+    add_test(NAME push_libfeographia_kardia
+      COMMAND ${adb_exec} push "${PROJECT_BINARY_DIR}/Feographia/libfeographia_kardia.so" "${DEV_WORK_DIR}/lib/libfeographia_kardia.so"
+    )
+    if(BUILD_SHARED_LIBS)
+      find_library(cpp_shared_LIB "c++_shared")
+      if(NOT cpp_shared_LIB)
+        message(FATAL_ERROR "The library 'c++_shared' can not be found.")
+      endif()
+
+      get_filename_component(cpp_shared_LIB_FILE_NAME ${cpp_shared_LIB} NAME)
+
+      add_test(NAME push_cpp_shared
+        COMMAND ${adb_exec} push "${cpp_shared_LIB}" "${DEV_WORK_DIR}/lib/${cpp_shared_LIB_FILE_NAME}"
+      )
+    endif()
 
     # 1st -- push all executable files.
     foreach(fg_test IN LISTS fg_TEST_LIST)
       add_test(NAME push_${fg_test}
-        COMMAND ${adb_exec} push ${fg_test} "${DEV_WORK_DIR}"
+        COMMAND ${adb_exec} push ${fg_test} "${DEV_WORK_DIR}/${fg_test}"
       )
     endforeach()
 
     # 2nd -- run tests.
     foreach(fg_test IN LISTS fg_TEST_LIST)
       add_test(NAME ${fg_test} COMMAND ${adb_exec} shell
-        "LD_LIBRARY_PATH=${DEV_WORK_DIR}:${LD_LIBRARY_PATH}"
+        "LD_LIBRARY_PATH=${DEV_WORK_DIR}/lib"  # :${LD_LIBRARY_PATH} || :/vendor/lib64:/system/lib64
         "${DEV_WORK_DIR}/${fg_test}"
+      )
+      set_tests_properties(${fg_test} PROPERTIES
+        PASS_REGULAR_EXPRESSION "PASSED"
+      )
+      set_tests_properties(${fg_test} PROPERTIES
+        FAIL_REGULAR_EXPRESSION "FAILED"
       )
     endforeach()
   endif()

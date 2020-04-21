@@ -281,12 +281,17 @@ if(BUILD_TESTING)
       COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/lib" "${DEV_WORK_DIR}/lib"
     )
     add_test(NAME push_icu_data
-      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/share/icu" "${DEV_WORK_DIR}/share/icu"
-    )
-    add_test(NAME push_libfeographia_kardia
-      COMMAND ${adb_exec} push "${PROJECT_BINARY_DIR}/Feographia/libfeographia_kardia.so" "${DEV_WORK_DIR}/lib/libfeographia_kardia.so"
+      COMMAND ${adb_exec} push
+        "${cmr_INSTALL_DIR}/share/icu"
+        "${DEV_WORK_DIR}/share/icu"
     )
     if(BUILD_SHARED_LIBS)
+      add_test(NAME push_libfeographia_kardia
+        COMMAND ${adb_exec} push
+          "${PROJECT_BINARY_DIR}/Feographia/libfeographia_kardia.so"
+          "${DEV_WORK_DIR}/lib/libfeographia_kardia.so"
+      )
+
       find_library(cpp_shared_LIB "c++_shared")
       if(NOT cpp_shared_LIB)
         message(FATAL_ERROR "The library 'c++_shared' can not be found.")
@@ -295,7 +300,9 @@ if(BUILD_TESTING)
       get_filename_component(cpp_shared_LIB_FILE_NAME ${cpp_shared_LIB} NAME)
 
       add_test(NAME push_cpp_shared
-        COMMAND ${adb_exec} push "${cpp_shared_LIB}" "${DEV_WORK_DIR}/lib/${cpp_shared_LIB_FILE_NAME}"
+        COMMAND ${adb_exec} push
+          "${cpp_shared_LIB}"
+          "${DEV_WORK_DIR}/lib/${cpp_shared_LIB_FILE_NAME}"
       )
     endif()
 

@@ -54,9 +54,15 @@ set(public_src_DIR "${build_src_DIR}${install_src_DIR}")
 add_library(${fgkardia_TARGET} "")
 set_target_properties(${fgkardia_TARGET} PROPERTIES
   CXX_STANDARD 17
-  # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
-  LINK_WHAT_YOU_USE ON
 )
+if(NOT MINGW AND NOT ANDROID AND NOT IOS
+    AND NOT (APPLE AND CMAKE_GENERATOR MATCHES "Unix Makefiles"))
+  set_target_properties(${fgkardia_TARGET} PROPERTIES
+    # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
+    LINK_WHAT_YOU_USE ON
+  )
+endif()
+
 # Export Feographia's include dirs.
 target_include_directories(${fgkardia_TARGET} PUBLIC ${public_src_DIR})
 

@@ -123,9 +123,14 @@ if(BUILD_TESTING)
     )
     set_target_properties(${test_TARGET} PROPERTIES
       CXX_STANDARD 17
-      # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
-      LINK_WHAT_YOU_USE ON
     )
+    if(NOT MINGW AND NOT ANDROID AND NOT IOS
+        AND NOT (APPLE AND CMAKE_GENERATOR MATCHES "Unix Makefiles"))
+      set_target_properties(${test_TARGET} PROPERTIES
+        # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
+        LINK_WHAT_YOU_USE ON
+      )
+    endif()
 
     # Test libraries
     target_link_libraries(${test_TARGET} PRIVATE
@@ -269,27 +274,49 @@ if(BUILD_TESTING)
       message(FATAL_ERROR "Could not find 'adb'")
     endif()
 
-    set(DEV_WORK_DIR "/data/local/tmp/fg_test")
+    set(TEST_WORK_DIR "/data/local/tmp/fg_test")
+
+    add_test(NAME rm_work_dir
+      COMMAND ${adb_exec} shell "if [ -d \"${TEST_WORK_DIR}\" ] ; then rm -r \"${TEST_WORK_DIR}\" ; fi"
+    )
 
     add_test(NAME push_fonts
-      COMMAND ${adb_exec} push "${font_BIN_DIR}" "${DEV_WORK_DIR}/fonts"
+      COMMAND ${adb_exec} push "${font_BIN_DIR}" "${TEST_WORK_DIR}/fonts"
     )
     add_test(NAME push_data
-      COMMAND ${adb_exec} push "${data_BIN_DIR}" "${DEV_WORK_DIR}/data"
-    )
-    add_test(NAME push_libs
-      COMMAND ${adb_exec} push "${cmr_INSTALL_DIR}/lib" "${DEV_WORK_DIR}/lib"
+      COMMAND ${adb_exec} push "${data_BIN_DIR}" "${TEST_WORK_DIR}/data"
     )
     add_test(NAME push_icu_data
       COMMAND ${adb_exec} push
         "${cmr_INSTALL_DIR}/share/icu"
-        "${DEV_WORK_DIR}/share/icu"
+        "${TEST_WORK_DIR}/share/icu"
     )
     if(BUILD_SHARED_LIBS)
+      # Fix for the adb error on the arm devices if use the adb push
+      # for the directory with the soft symlinks:
+      # adb: error: failed to copy '<soft symlink>' to '/data/local/tmp/<soft symlink>': remote symlink failed: Permission denied
+      # Instead of the direct using of the adb push use tar.
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar cf
+          "${CMAKE_CURRENT_BINARY_DIR}/lib.tar"
+          "${cmr_INSTALL_DIR}/lib"
+        WORKING_DIRECTORY "${cmr_INSTALL_DIR}"
+      )
+      add_test(NAME push_libs_tar
+        COMMAND ${adb_exec} push
+          "${CMAKE_CURRENT_BINARY_DIR}/lib.tar"
+          "${TEST_WORK_DIR}/lib.tar"
+      )
+      add_test(NAME extract_libs_tar
+        COMMAND ${adb_exec} shell tar --no-same-owner
+          -xf "${TEST_WORK_DIR}/lib.tar"
+          -C "${TEST_WORK_DIR}"
+      )
+
       add_test(NAME push_libfeographia_kardia
         COMMAND ${adb_exec} push
           "${PROJECT_BINARY_DIR}/Feographia/libfeographia_kardia.so"
-          "${DEV_WORK_DIR}/lib/libfeographia_kardia.so"
+          "${TEST_WORK_DIR}/lib/libfeographia_kardia.so"
       )
 
       find_library(cpp_shared_LIB "c++_shared")
@@ -302,22 +329,26 @@ if(BUILD_TESTING)
       add_test(NAME push_cpp_shared
         COMMAND ${adb_exec} push
           "${cpp_shared_LIB}"
-          "${DEV_WORK_DIR}/lib/${cpp_shared_LIB_FILE_NAME}"
+          "${TEST_WORK_DIR}/lib/${cpp_shared_LIB_FILE_NAME}"
       )
     endif()
 
     # 1st -- push all executable files.
     foreach(fg_test IN LISTS fg_TEST_LIST)
       add_test(NAME push_${fg_test}
-        COMMAND ${adb_exec} push ${fg_test} "${DEV_WORK_DIR}/${fg_test}"
+        COMMAND ${adb_exec} push ${fg_test} "${TEST_WORK_DIR}/${fg_test}"
+      )
+      add_test(NAME chmod_${fg_test}
+        COMMAND ${adb_exec} shell chmod 775 "${TEST_WORK_DIR}/${fg_test}"
       )
     endforeach()
 
     # 2nd -- run tests.
     foreach(fg_test IN LISTS fg_TEST_LIST)
       add_test(NAME ${fg_test} COMMAND ${adb_exec} shell
-        "LD_LIBRARY_PATH=${DEV_WORK_DIR}/lib"  # :${LD_LIBRARY_PATH} || :/vendor/lib64:/system/lib64
-        "${DEV_WORK_DIR}/${fg_test}"
+        "cd ${TEST_WORK_DIR} && "
+        "LD_LIBRARY_PATH=${TEST_WORK_DIR}/lib ${TEST_WORK_DIR}/${fg_test}"
+        # :${LD_LIBRARY_PATH} || :/vendor/lib64:/system/lib64
       )
       set_tests_properties(${fg_test} PROPERTIES
         PASS_REGULAR_EXPRESSION "PASSED"

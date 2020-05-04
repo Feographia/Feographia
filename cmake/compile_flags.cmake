@@ -96,6 +96,7 @@ if(cmr_BUILD_MULTIPROC)
 endif()
 
 #if(ANDROID)
+# Using an explicit -fuse-ld=lld instead of ANDROID_LD=lld will produce output that cannot be debugged with Android Studio.
 #  # https://github.com/android/ndk/issues/1183
 #  # https://developer.android.com/ndk/downloads/revision_history
 #  set(CMAKE_EXE_LINKER_FLAGS

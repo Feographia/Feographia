@@ -67,7 +67,7 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
     litehtml::font_metrics* fm)
 {
   if(!fm) {
-    return static_cast<litehtml::uint_ptr>(0);
+    return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
 
   litehtml::string_vector fonts;
@@ -82,14 +82,15 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
   fg::filesystem::path filePath = mFontLibrary->getFontFilePath(
       fonts, size, weight, static_cast<FontStyle>(italic), &result);
   if(filePath.empty() || FontLibrary::FontMatches::allMatched != result) {
-    return static_cast<litehtml::uint_ptr>(0);
+    return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
 
   Font* font = new Font(mFontLibrary->ftLibrary(), mFontTextCacheSize);
-
   if(!font->createFtFace(filePath, size)) {
-    return static_cast<litehtml::uint_ptr>(0);
+    return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
+  font->setUnderline(decoration & litehtml::font_decoration_underline);
+  font->setStrikeout(decoration & litehtml::font_decoration_linethrough);
 
   // Note: for font metric precision (in particular for TTF) see
   // https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Size_Metrics
@@ -103,10 +104,6 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
   } else {
     fm->draw_spaces = false;
   }
-
-  font->setPixelSize(size);
-  font->setStrikeout(decoration & litehtml::font_decoration_linethrough);
-  font->setUnderline(decoration & litehtml::font_decoration_underline);
 
   return reinterpret_cast<litehtml::uint_ptr>(font);
 }

@@ -34,6 +34,10 @@ if(BUILD_TESTING)
   if(MINGW)
     set(graphics_SRC_DIR "${graphics_SRC_DIR}/MinGW")
   endif()
+  if(ANDROID AND
+      (ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "x86"))
+    set(graphics_SRC_DIR "${graphics_SRC_DIR}/Android")
+  endif()
 
   set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}")
   if(MSVC)
@@ -357,6 +361,32 @@ if(BUILD_TESTING)
         FAIL_REGULAR_EXPRESSION "FAILED"
       )
     endforeach()
+
+#    add_test(NAME pull_test_result_11
+#      COMMAND ${adb_exec} pull
+#        "${TEST_WORK_DIR}/${fg_test}/FontTest_1.ppm"
+#        "${CMAKE_CURRENT_BINARY_DIR}/FontTest_1.ppm"
+#    )
+#    add_test(NAME pull_test_result_12
+#      COMMAND ${adb_exec} pull
+#        "${TEST_WORK_DIR}/${fg_test}/FontTest_2.ppm"
+#        "${CMAKE_CURRENT_BINARY_DIR}/FontTest_2.ppm"
+#    )
+#    add_test(NAME pull_test_result_21
+#      COMMAND ${adb_exec} pull
+#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlContainer_1.ppm"
+#        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlContainer_1.ppm"
+#    )
+#    add_test(NAME pull_test_result_22
+#      COMMAND ${adb_exec} pull
+#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlContainer_2.ppm"
+#        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlContainer_2.ppm"
+#    )
+#    add_test(NAME pull_test_result_31
+#      COMMAND ${adb_exec} pull
+#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlDocument_1.ppm"
+#        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlDocument_1.ppm"
+#    )
   endif()
 endif()
 

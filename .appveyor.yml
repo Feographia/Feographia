@@ -25,7 +25,7 @@
 
 image:
   - Visual Studio 2017
-  - Visual Studio 2015
+#  - Visual Studio 2015
 
 
 environment:
@@ -35,15 +35,22 @@ environment:
 
     cmr_REPO_DIR: ${APPVEYOR_BUILD_FOLDER}
     cmr_WORK_DIR: ${cmr_REPO_DIR}
+    cmr_HOST_TOOLS_PROJECT_DIR: ${cmr_REPO_DIR}/host_tools
 
     cmr_BUILD_DIR: ${cmr_WORK_DIR}\build
     cmr_INSTALL_DIR: ${cmr_BUILD_DIR}\install
     cmr_DOWNLOAD_DIR: ${cmr_BUILD_DIR}\download
 
+    cmr_HOST_BUILD_DIR: ${cmr_BUILD_DIR}/host_tools
+    cmr_HOST_TOOLS_STAMP_FILE_NAME: "host_tools_stamp"
+
     cmr_CMAKE_BUILD_TYPE: Release
 
-    cmr_CMAKE_VERSION: 3.11
-    cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win64-x64
+    cmr_CMAKE_RELEASE_MIN_VER: 3.12
+
+    #cmr_CMAKE_RELEASE_VER: 3.11
+    cmr_CMAKE_RELEASE_VER: ${cmr_CMAKE_RELEASE_MIN_VER}
+    cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win64-x64
     cmr_CMAKE_DIR: ${cmr_INSTALL_DIR}\${cmr_CMAKE_RELEASE}
     cmr_CMAKE_CMD: cmake
     cmr_CTEST_CMD: ctest
@@ -53,6 +60,9 @@ environment:
     PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
 
     cmr_JOBS_CNT: 4
+
+    AppVeyorKey:
+      secure: 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
 
   matrix:
     # MSVC 2017, x64, shared
@@ -109,23 +119,23 @@ environment:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: OFF
 
-    # MSVC 2015, x64, shared
-    - cmr_MSVC_2015_x64_shared: ON
-      cmr_GENERATOR:    -DCMAKE_GENERATOR:STRING="Visual Studio 14 2015"
-      cmr_GEN_PLATFORM: -DCMAKE_GENERATOR_PLATFORM:STRING="x64"
-      cmr_GEN_TOOLSET:  -DCMAKE_GENERATOR_TOOLSET:STRING="v140,host=x64"
-      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
-      cmr_STD_LIBS:
-      cmr_BUILD_SHARED_LIBS: ON
+#    # MSVC 2015, x64, shared
+#    - cmr_MSVC_2015_x64_shared: ON
+#      cmr_GENERATOR:    -DCMAKE_GENERATOR:STRING="Visual Studio 14 2015"
+#      cmr_GEN_PLATFORM: -DCMAKE_GENERATOR_PLATFORM:STRING="x64"
+#      cmr_GEN_TOOLSET:  -DCMAKE_GENERATOR_TOOLSET:STRING="v140,host=x64"
+#      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
+#      cmr_STD_LIBS:
+#      cmr_BUILD_SHARED_LIBS: ON
 
-    # MSVC 2015, x64, static
-    - cmr_MSVC_2015_x64_static: ON
-      cmr_GENERATOR:    -DCMAKE_GENERATOR:STRING="Visual Studio 14 2015"
-      cmr_GEN_PLATFORM: -DCMAKE_GENERATOR_PLATFORM:STRING="x64"
-      cmr_GEN_TOOLSET:  -DCMAKE_GENERATOR_TOOLSET:STRING="v140,host=x64"
-      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
-      cmr_STD_LIBS:
-      cmr_BUILD_SHARED_LIBS: OFF
+#    # MSVC 2015, x64, static
+#    - cmr_MSVC_2015_x64_static: ON
+#      cmr_GENERATOR:    -DCMAKE_GENERATOR:STRING="Visual Studio 14 2015"
+#      cmr_GEN_PLATFORM: -DCMAKE_GENERATOR_PLATFORM:STRING="x64"
+#      cmr_GEN_TOOLSET:  -DCMAKE_GENERATOR_TOOLSET:STRING="v140,host=x64"
+#      cmr_CONFIG_TYPES: -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
+#      cmr_STD_LIBS:
+#      cmr_BUILD_SHARED_LIBS: OFF
 
     # MinGW-w64, x64, shared
     - cmr_MinGW_w64_x64_shared: ON
@@ -135,8 +145,8 @@ environment:
       cmr_CONFIG_TYPES:
       cmr_STD_LIBS:
       cmr_BUILD_SHARED_LIBS: ON
-      cmr_CMAKE_VERSION: 3.4
-      cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
+      #cmr_CMAKE_RELEASE_VER: 3.4
+      #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
@@ -148,48 +158,48 @@ environment:
       cmr_CONFIG_TYPES:
       cmr_STD_LIBS: -DCMAKE_C_STANDARD_LIBRARIES:STRING="-static" -DCMAKE_CXX_STANDARD_LIBRARIES:STRING="-static"
       cmr_BUILD_SHARED_LIBS: OFF
-      cmr_CMAKE_VERSION: 3.4
-      cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_VERSION}.0-win32-x86
+      #cmr_CMAKE_RELEASE_VER: 3.4
+      #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
 
-matrix:
-  exclude:
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_x64_shared: ON
+#matrix:
+#  exclude:
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_x64_shared: ON
 
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_x64_static: ON
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_x64_static: ON
 
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_x32_shared: ON
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_x32_shared: ON
 
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_x32_static: ON
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_x32_static: ON
 
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_WinXP_shared: ON
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_WinXP_shared: ON
 
-    - image: Visual Studio 2015
-      cmr_MSVC_2017_WinXP_static: ON
+#    - image: Visual Studio 2015
+#      cmr_MSVC_2017_WinXP_static: ON
 
-    - image: Visual Studio 2015
-      cmr_MinGW_w64_x64_shared: ON
-
-    - image: Visual Studio 2015
-      cmr_MinGW_w64_x64_static: ON
-
-    - image: Visual Studio 2017
-      cmr_MSVC_2015_x64_shared: ON
-
-    - image: Visual Studio 2017
-      cmr_MSVC_2015_x64_static: ON
-
-
-# TODO: remove it after fix this build.
-#    - image: Visual Studio 2017
+#    - image: Visual Studio 2015
 #      cmr_MinGW_w64_x64_shared: ON
+
+#    - image: Visual Studio 2015
+#      cmr_MinGW_w64_x64_static: ON
+
+#    - image: Visual Studio 2017
+#      cmr_MSVC_2015_x64_shared: ON
+
+#    - image: Visual Studio 2017
+#      cmr_MSVC_2015_x64_static: ON
+
+
+## TODO: remove it after fix this build.
+##    - image: Visual Studio 2017
+##      cmr_MinGW_w64_x64_shared: ON
 
 
 clone_folder: c:\projects\${cmr_APP_NAME}
@@ -203,16 +213,22 @@ before_build:
   - mkdir %cmr_INSTALL_DIR%
   - mkdir %cmr_DOWNLOAD_DIR%
 
-  - curl -fsS -o %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip https://cmake.org/files/v%cmr_CMAKE_VERSION%/%cmr_CMAKE_RELEASE%.zip
+  - curl -fsS -o %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip https://cmake.org/files/v%cmr_CMAKE_RELEASE_VER%/%cmr_CMAKE_RELEASE%.zip
   - 7z.exe x -aoa -o%cmr_INSTALL_DIR% %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip
 
+  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
+  - ps: $fileContent += $env:AppVeyorKey.Replace(' ', "`n")
+  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
+  - ps: Set-Content $env:userprofile\.ssh\id_rsa $fileContent
+
+  - git submodule update --init --recursive
 
 build_script:
   - cd %cmr_BUILD_DIR%
 
   - cmake --version
 
-  - cmake %cmr_SAMPLE_DIR%
+  - cmake %cmr_REPO_DIR%
       -Dcmr_BUILD_MULTIPROC_CNT:STRING=%cmr_JOBS_CNT%
       -Dcmr_PRINT_DEBUG:BOOL=ON
       -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON

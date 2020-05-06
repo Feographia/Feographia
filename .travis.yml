@@ -57,6 +57,8 @@ build_linux: &build_linux
   os: linux
   dist: bionic
   addons:
+    ssh_known_hosts:
+      - github.com
     apt:
       packages: &packages_linux
 # wxWidgets deps
@@ -92,10 +94,11 @@ build_linux: &build_linux
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
 
+    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
     - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
       -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
     - chmod 600 ci/TravisCiKey
-    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 
@@ -170,6 +173,10 @@ build_linux_clang: &build_linux_clang
 build_windows: &build_windows
   stage: Test
   os: windows
+  addons:
+    ssh_known_hosts:
+      - github.com
+
   env: &build_windows_env
     - cmr_TARGET_OS=windows
 
@@ -197,7 +204,7 @@ build_windows: &build_windows
     - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
       -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
     - chmod 600 ci/TravisCiKey
-    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 
@@ -270,6 +277,8 @@ build_android: &build_android
   os: linux
   dist: bionic
   addons:
+    ssh_known_hosts:
+      - github.com
     apt:
       packages:
         - ninja-build
@@ -328,10 +337,11 @@ build_android: &build_android
     - sdkmanager "platform-tools"
     - sdkmanager "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
 
+    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
     - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
       -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
     - chmod 600 ci/TravisCiKey
-    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 
@@ -415,6 +425,9 @@ build_macos: &build_macos
   os: osx
   osx_image: xcode10.2
   compiler: clang
+  addons:
+    ssh_known_hosts:
+      - github.com
 
   env: &build_macos_env
     - cmr_TARGET_OS=macos
@@ -434,10 +447,11 @@ build_macos: &build_macos
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
 
+    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
     - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
       -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
     - chmod 600 ci/TravisCiKey
-    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 
@@ -512,6 +526,9 @@ build_ios: &build_ios_xcode
   os: osx
   osx_image: xcode10.2
   compiler: clang
+  addons:
+    ssh_known_hosts:
+      - github.com
 
   env: &build_ios_xcode_env
     - cmr_TARGET_OS=ios
@@ -533,10 +550,11 @@ build_ios: &build_ios_xcode
     - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
     - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
 
+    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
     - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
       -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
     - chmod 600 ci/TravisCiKey
-    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
     - eval "$(ssh-agent -s)"
     - ssh-add ci/TravisCiKey
 

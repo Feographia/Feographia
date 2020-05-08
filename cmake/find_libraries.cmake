@@ -144,7 +144,8 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
-if(ANDROID OR APPLE)
+#if(ANDROID OR WIN32 OR APPLE)
+# TODO: Use POCO for work with file system.
   # TODO: Android:
   # std::filesystem support for Android see:
   # https://github.com/android/ndk/issues/609
@@ -153,7 +154,7 @@ if(ANDROID OR APPLE)
   # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
   set(USE_BOOST ON)  # TODO: rename to USE_BOOST_FILESYSTEM
   include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
-endif()
+#endif()
 #include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
 include(
   ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake

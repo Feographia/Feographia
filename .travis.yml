@@ -474,8 +474,6 @@ build_macos_xcode: &build_macos_xcode
     - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
         -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
         -Dcmr_PRINT_DEBUG:BOOL=ON
-        # The job exceeded the maximum log length, and has been terminated.
-        #-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
         -DCMAKE_COLOR_MAKEFILE:BOOL=ON
         -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
@@ -486,6 +484,9 @@ build_macos_xcode: &build_macos_xcode
           -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
         -DCMAKE_GENERATOR:STRING="Xcode"
           -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
+
+        # The job exceeded the maximum log length, and has been terminated.
+        #-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 

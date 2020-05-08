@@ -125,7 +125,7 @@ if(BUILD_TESTING)
 endif()
 
 # wxWidgets must be 1st, before Cairo and other libs
-if(WIN32 OR (UNIX AND NOT ANDROID) OR (APPLE AND NOT IOS))
+if(WIN32 OR (UNIX AND NOT APPLE AND NOT ANDROID) OR (APPLE AND NOT IOS))
   set(wxWidgets_PLATFORM ON)
   include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
 endif()

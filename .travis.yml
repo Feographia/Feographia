@@ -587,6 +587,10 @@ build_ios: &build_ios_xcode
         -DFgMainProject_DIR:PATH=${cmr_REPO_DIR}
           -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs
           -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME}
+        -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
+
+        # The job exceeded the maximum log length, and has been terminated.
+        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
     - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
 
@@ -614,6 +618,10 @@ build_ios: &build_ios_xcode
           -DPLATFORM:STRING="SIMULATOR64"
           -DENABLE_VISIBILITY:BOOL=${cmr_BUILD_SHARED_LIBS}
         -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR}
+        -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
+
+        # The job exceeded the maximum log length, and has been terminated.
+        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 

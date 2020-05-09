@@ -318,6 +318,7 @@ build_android: &build_android
     - mkdir ${cmr_HOST_BUILD_DIR}
     - mkdir ${cmr_INSTALL_DIR}
     - mkdir ${cmr_DOWNLOAD_DIR}
+
     - mkdir -p ${ANDROID_HOME}/cmdline-tools
     # https://stackoverflow.com/a/60598900
     - mkdir -p ${ANDROID_HOME}/platforms  # 'platforms' dir must be, at least empty.
@@ -487,7 +488,7 @@ build_macos_xcode: &build_macos_xcode
         -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
         # The job exceeded the maximum log length, and has been terminated.
-        #-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
     - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
 
@@ -572,7 +573,22 @@ build_ios: &build_ios_xcode
     - ${CC} --version
     - ${CXX} --version
 
-    # TODO: Build host tools
+    - ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR}
+        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
+        -Dcmr_PRINT_DEBUG:BOOL=ON
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
+        -DBUILD_TESTING:BOOL=OFF
+        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
+        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
+        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked_host_tools
+          -DCMAKE_BUILD_TYPE:STRING=Release
+          -DBUILD_SHARED_LIBS:BOOL=OFF
+        -DFgMainProject_DIR:PATH=${cmr_REPO_DIR}
+          -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs
+          -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME}
+
+    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
 
     # === Build iOS libs ===
     - cd ${cmr_BUILD_DIR}

@@ -57,7 +57,10 @@ environment:
     cmr_CMAKE_CMD: cmake
     cmr_CTEST_CMD: ctest
 
-    cmr_MinGW_w64_ROOT_PATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1
+    cmr_MIN_GW_ARCH_NAME: winlibs-x86_64-posix-seh-gcc-9.3.0-llvm-10.0.0-mingw-w64-7.0.0-r4.7z
+    cmr_MIN_GW_URL: https://github.com/brechtsanders/winlibs_mingw/releases/download/9.3.0-10.0.0-7.0.0-r4/${cmr_MIN_GW_ARCH_NAME}
+    cmr_MinGW_w64_ROOT_PATH: ${cmr_INSTALL_DIR}
+    MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
 
     PATH: ${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;%PATH%
 
@@ -149,7 +152,6 @@ environment:
       cmr_BUILD_SHARED_LIBS: ON
       #cmr_CMAKE_RELEASE_VER: 3.4
       #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
-      MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       PATH: ${cmr_BUILD_DIR}\Feographia;${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
     # MinGW-w64, x64, static
@@ -162,7 +164,6 @@ environment:
       cmr_BUILD_SHARED_LIBS: OFF
       #cmr_CMAKE_RELEASE_VER: 3.4
       #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
-      MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
       PATH: ${cmr_BUILD_DIR}\Feographia;${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
 
@@ -215,8 +216,17 @@ before_build:
   - mkdir %cmr_INSTALL_DIR%
   - mkdir %cmr_DOWNLOAD_DIR%
 
-  - curl -fsS -o %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip https://cmake.org/files/v%cmr_CMAKE_RELEASE_VER%/%cmr_CMAKE_RELEASE%.zip
+  # https://stackoverflow.com/a/30807818
+  # In PowerShell curl is a built in alias to Invoke-WebRequest cmdlet,
+  # use curl.exe instead of curl.
+  - curl.exe -fsS -o %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip https://cmake.org/files/v%cmr_CMAKE_RELEASE_VER%/%cmr_CMAKE_RELEASE%.zip
   - 7z.exe x -aoa -o%cmr_INSTALL_DIR% %cmr_DOWNLOAD_DIR%\%cmr_CMAKE_RELEASE%.zip
+
+  # -L option to follow redirects for curl
+  - ps: if ($env:cmr_MinGW_w64_x64_shared -ne $null -Or $env:cmr_MinGW_w64_x64_static -ne $null) {
+          curl.exe -fsSL -o $env:cmr_DOWNLOAD_DIR\$env:cmr_MIN_GW_ARCH_NAME $env:cmr_MIN_GW_URL ;
+          7z.exe x -aoa "-o$env:cmr_INSTALL_DIR" $env:cmr_DOWNLOAD_DIR\$env:cmr_MIN_GW_ARCH_NAME
+        }
 
   - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
   - ps: $fileContent += $env:AppVeyorKey.Replace(' ', "`n")

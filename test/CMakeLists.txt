@@ -30,13 +30,11 @@ if(BUILD_TESTING)
   set(test_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
   set(font_SRC_DIR "${PROJECT_SOURCE_DIR}/fonts")
   set(data_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/data")
-  set(graphics_SRC_DIR "${data_SRC_DIR}")
-  if(MINGW)
-    set(graphics_SRC_DIR "${graphics_SRC_DIR}/MinGW")
-  endif()
-  if(ANDROID AND
-      (ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "x86"))
-    set(graphics_SRC_DIR "${graphics_SRC_DIR}/Android")
+  set(graphics_SRC_DIR "${data_SRC_DIR}/graphics_1")
+  if(MINGW OR (ANDROID AND
+      (ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "x86")))
+    # graphics_1 and graphics_2 differ in some bits.
+    set(graphics_SRC_DIR "${data_SRC_DIR}/graphics_2")
   endif()
 
   set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}")

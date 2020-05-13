@@ -63,6 +63,12 @@ if(NOT MINGW AND NOT ANDROID AND NOT IOS
   )
 endif()
 
+if(MSVC AND BUILD_SHARED_LIBS)
+    set_target_properties(${fgkardia_TARGET} PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
+endif()
+
 # Export Feographia's include dirs.
 target_include_directories(${fgkardia_TARGET} PUBLIC ${public_src_DIR})
 

@@ -43,7 +43,9 @@ bool writePpmFile(const unsigned char* buf,
     unsigned bytePerPixel,
     const fg::filesystem::path& fileName)
 {
-  FILE* fd = fopen(fileName.c_str(), "wb");
+  // FIXME: fileName.string() can be used on Windows only for ASCII code page.
+  const std::string fileNameStr(fileName.string());
+  FILE* fd = fopen(fileNameStr.c_str(), "wb");
   if(fd) {
     fprintf(fd, "P6 %d %d 255 ", width, height);
 

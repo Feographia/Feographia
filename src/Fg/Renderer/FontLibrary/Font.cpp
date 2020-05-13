@@ -50,8 +50,11 @@ bool Font::createFtFace(
   // NOTE: px = pt * DPI / 72
   mPixelSize = pixelSize;
 
+  // FIXME: fileName.string() can be used on Windows only for ASCII code page.
+  // TODO: see: https://stackoverflow.com/questions/10075032/can-freetype-functions-accept-unicode-filenames
+  const std::string pathStr(fontFilePath.string());
   FT_Face ftFace;
-  if(FT_New_Face(mFtLibrary.get(), fontFilePath.c_str(), 0, &ftFace)
+  if(FT_New_Face(mFtLibrary.get(), pathStr.c_str(), 0, &ftFace)
       != FT_Err_Ok) {
     throw std::logic_error("FT_New_Face() != FT_Err_Ok");
   }

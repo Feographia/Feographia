@@ -47,7 +47,9 @@ bool FontLibrary::parseAndLoadConfigFromMemory(
 
 bool FontLibrary::addFontDir(const fg::filesystem::path& dirPath)
 {
-  const FcChar8* dir = reinterpret_cast<const FcChar8*>(dirPath.c_str());
+  // FIXME: fileName.string() can be used on Windows only for ASCII code page.
+  const std::string pathStr(dirPath.string());
+  const FcChar8* dir = reinterpret_cast<const FcChar8*>(pathStr.c_str());
   return FcConfigAppFontAddDir(mFcConfig.get(), dir);
 }
 

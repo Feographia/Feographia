@@ -32,16 +32,18 @@ environment:
   global:
     cmr_APP_NAME: Feographia
     cmr_BUILD_TESTING: ON
+    # TODO: add prefix 'FG_' to all vars, which is defined in project.
+    ATTACH_WX_CONSOLE: ON
 
     cmr_REPO_DIR: ${APPVEYOR_BUILD_FOLDER}
     cmr_WORK_DIR: ${cmr_REPO_DIR}
-    cmr_HOST_TOOLS_PROJECT_DIR: ${cmr_REPO_DIR}/host_tools
+    cmr_HOST_TOOLS_PROJECT_DIR: ${cmr_REPO_DIR}\host_tools
 
     cmr_BUILD_DIR: ${cmr_WORK_DIR}\build
     cmr_INSTALL_DIR: ${cmr_BUILD_DIR}\install
     cmr_DOWNLOAD_DIR: ${cmr_BUILD_DIR}\download
 
-    cmr_HOST_BUILD_DIR: ${cmr_BUILD_DIR}/host_tools
+    cmr_HOST_BUILD_DIR: ${cmr_BUILD_DIR}\host_tools
     cmr_HOST_TOOLS_STAMP_FILE_NAME: "host_tools_stamp"
 
     cmr_CMAKE_BUILD_TYPE: Release
@@ -57,7 +59,7 @@ environment:
 
     cmr_MinGW_w64_ROOT_PATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1
 
-    PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;%PATH%
+    PATH: ${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;%PATH%
 
     cmr_JOBS_CNT: 4
 
@@ -148,7 +150,7 @@ environment:
       #cmr_CMAKE_RELEASE_VER: 3.4
       #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
-      PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
+      PATH: ${cmr_BUILD_DIR}\Feographia;${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
     # MinGW-w64, x64, static
     - cmr_MinGW_w64_x64_static: ON
@@ -161,7 +163,7 @@ environment:
       #cmr_CMAKE_RELEASE_VER: 3.4
       #cmr_CMAKE_RELEASE: cmake-${cmr_CMAKE_RELEASE_VER}.0-win32-x86
       MINGW_HOME: ${cmr_MinGW_w64_ROOT_PATH}\mingw64
-      PATH: ${cmr_INSTALL_DIR}\bin;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
+      PATH: ${cmr_BUILD_DIR}\Feographia;${cmr_INSTALL_DIR}\bin;${cmr_INSTALL_DIR}\lib;${cmr_CMAKE_DIR}\bin;${MINGW_HOME}\bin;%PATH%
 
 
 #matrix:
@@ -239,6 +241,7 @@ build_script:
       -Dcmr_UNPACKED_DIR:PATH=%cmr_DOWNLOAD_DIR%\unpacked
         -DCMAKE_BUILD_TYPE:STRING=%cmr_CMAKE_BUILD_TYPE%
         -DBUILD_SHARED_LIBS:BOOL=%cmr_BUILD_SHARED_LIBS%
+      -DATTACH_WX_CONSOLE:BOOL=%ATTACH_WX_CONSOLE%
       %cmr_GENERATOR% %cmr_GEN_PLATFORM% %cmr_GEN_TOOLSET% %cmr_CONFIG_TYPES% %cmr_STD_LIBS%
 
   - cmake --build . --config %cmr_CMAKE_BUILD_TYPE%

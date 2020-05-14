@@ -254,7 +254,7 @@ build_script:
       -DATTACH_WX_CONSOLE:BOOL=%ATTACH_WX_CONSOLE%
       %cmr_GENERATOR% %cmr_GEN_PLATFORM% %cmr_GEN_TOOLSET% %cmr_CONFIG_TYPES% %cmr_STD_LIBS%
 
-  - cmake --build . --config %cmr_CMAKE_BUILD_TYPE%
+  - cmake --build . --parallel %cmr_JOBS_CNT% --config %cmr_CMAKE_BUILD_TYPE%
 
   - ctest --output-on-failure --build-config %cmr_CMAKE_BUILD_TYPE%
 

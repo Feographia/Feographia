@@ -30,37 +30,629 @@ language: cpp
 env:
   global:
     - cmr_APP_NAME=Feographia
-    - cmr_BUILD_TESTING=ON
 
     - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
-    - cmr_WORK_DIR=${cmr_REPO_DIR}
-    - cmr_HOST_TOOLS_PROJECT_DIR=${cmr_REPO_DIR}/host_tools
+    - cmr_WORK_DIR=$${HOME}/build/work
 
+    - cmr_NOT_CACHED_INSTALL_DIR=${cmr_WORK_DIR}/install_not_cached
+
+    - cmr_DOWNLOAD_DIR=${cmr_WORK_DIR}/download
+    - cmr_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked
     - cmr_BUILD_DIR=${cmr_WORK_DIR}/build
-    - cmr_INSTALL_DIR=${cmr_BUILD_DIR}/install
-    - cmr_DOWNLOAD_DIR=${cmr_BUILD_DIR}/download
+    - cmr_INSTALL_DIR=${cmr_WORK_DIR}/install
 
-    - cmr_HOST_BUILD_DIR=${cmr_BUILD_DIR}/host_tools
+    - cmr_HOST_TOOLS_PROJECT_DIR=${cmr_REPO_DIR}/host_tools
+    - cmr_HOST_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked_host_tools
+    - cmr_HOST_BUILD_DIR=${cmr_WORK_DIR}/build_host_tools
+    - cmr_HOST_INSTALL_DIR=${cmr_INSTALL_DIR}/host_tools
     - cmr_HOST_TOOLS_STAMP_FILE_NAME="host_tools_stamp"
 
-    - cmr_CMAKE_RELEASE_MIN_VER=3.12
+    - cmr_BUILD_TESTING=ON
     - cmr_JOBS_CNT=4
 
-git:
-  submodules: false
+    # Each build must have its own cache.
+    - cmr_BUILD_ID=${TRAVIS_BUILD_ID}
 
 
-# === Linux ===
+before_cache:
+  - rm -f -r -d ${cmr_HOST_INSTALL_DIR}/include
+  - rm -f -r -d ${cmr_HOST_INSTALL_DIR}/lib/*
 
-build_linux: &build_linux
-  stage: Test
+cache:
+#  timeout: 180  # in seconds, default is 180 seconds
+  directories:
+  - ${cmr_REPO_DIR}
+  - ${cmr_INSTALL_DIR}
+  # TODO:
+  # libfeaokardia
+  # main exe
+  # test exe-s
+  # test data
+
+# Disable cache
+#cache: false
+
+
+cmake_env:
+  env: &cmake_env
+    - cmr_CMAKE_MAJOR_VER=3
+    - cmr_CMAKE_MINOR_VER=17
+    - cmr_CMAKE_PATCH_VER=0
+
+    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_MAJOR_VER}.${cmr_CMAKE_MINOR_VER}.${cmr_CMAKE_PATCH_VER}-${cmr_CMAKE_HOST}
+    - cmr_CMAKE_AR_FILE_NAME=${cmr_CMAKE_RELEASE}.${cmr_CMAKE_AR_EXT}
+    - cmr_CMAKE_BASE_URL=https://cmake.org/files/v${cmr_CMAKE_MAJOR_VER}.${cmr_CMAKE_MINOR_VER}
+
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
+    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
+    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
+
+
+debug_shared_env:
+  env: &debug_shared_env
+    - cmr_CMAKE_BUILD_TYPE=Debug
+    - cmr_BUILD_SHARED_LIBS=ON
+    - cmr_ANDROID_STL=c++_shared
+
+debug_static_env:
+  env: &debug_static_env
+    - cmr_CMAKE_BUILD_TYPE=Debug
+    - cmr_BUILD_SHARED_LIBS=OFF
+    - cmr_ANDROID_STL=c++_static
+
+relase_shared_env:
+  env: &relase_shared_env
+    - cmr_CMAKE_BUILD_TYPE=Release
+    - cmr_BUILD_SHARED_LIBS=ON
+    - cmr_ANDROID_STL=c++_shared
+
+relase_static_env:
+  env: relase_static_env
+    - cmr_CMAKE_BUILD_TYPE=Release
+    - cmr_BUILD_SHARED_LIBS=OFF
+    - cmr_ANDROID_STL=c++_static
+
+
+linux_env:
+  env: &linux_env
+    - cmr_TARGET_OS=Linux
+    - cmr_JOBS="-j${cmr_JOBS_CNT}"
+#    - cmr_CMAKE_MIN_VER=3.8
+    - cmr_CMAKE_HOST=Linux-x86_64
+    - cmr_CMAKE_AR_EXT=tar.gz
+
+linux_gcc_env:
+  env: &linux_gcc_env
+    - CC=gcc-9
+    - CXX=g++-9
+
+linux_clang_env:
+  env: &linux_clang_env
+    - CC=clang-9
+    - CXX=clang++-9
+
+
+windows_env:
+  env: &windows_env
+    - cmr_TARGET_OS=Windows
+#    - cmr_CMAKE_MIN_VER=3.11
+    - cmr_CMAKE_HOST=win64-x64
+    - cmr_CMAKE_AR_EXT=zip
+
+    - cmr_CMAKE_BUILD_TYPE=Release
+    - cmr_ATTACH_WX_CONSOLE=ON
+    - PATH=${cmr_INSTALL_DIR}/bin:${PATH}
+
+windows_msvc_env:
+  env: &windows_msvc_env
+    - cmr_CMAKE_GENERATOR="Visual Studio 15 2017"
+    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
+    - cmr_CMAKE_CONFIGURATION_TYPES=${cmr_CMAKE_BUILD_TYPE}
+
+windows_msvc_x64_env:
+  env: &windows_msvc_x64_env
+    - cmr_CMAKE_GENERATOR_PLATFORM="x64"
+
+windows_msvc_x32_env:
+  env: &windows_msvc_x32_env
+    - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
+
+windows_msvc_winxp_env:
+  env: &windows_msvc_winxp_env
+    - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
+
+
+macos_env:
+  env: &macos_env
+    - cmr_TARGET_OS=macOS
+#    - cmr_CMAKE_MIN_VER=3.12
+    - cmr_CMAKE_HOST=Darwin-x86_64
+    - cmr_CMAKE_AR_EXT=tar.gz
+
+macos_xcode_env:
+  env: &macos_xcode_env
+    - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
+
+macos_make_env:
+  env: &macos_make_env
+    - cmr_JOBS="-j ${cmr_JOBS_CNT}"
+
+
+android_env:
+  env: &android_env
+    - cmr_TARGET_OS=Android
+    - cmr_JOBS="-j${cmr_JOBS_CNT}"
+#    - cmr_CMAKE_MIN_VER=3.8
+    - cmr_CMAKE_HOST=Linux-x86_64
+    - cmr_CMAKE_AR_EXT=tar.gz
+
+    - ANDROID_HOME=${cmr_INSTALL_DIR}/android-sdk
+    - cmr_ANDROID_CMD_TOOLS_VERSION=6200805
+    - cmr_ANDROID_CMD_TOOLS_FILE_NAME=commandlinetools-linux-${cmr_ANDROID_CMD_TOOLS_VERSION}_latest.zip
+
+    - cmr_ANDROID_NDK_VERSION=r21b
+    - cmr_ANDROID_NDK_NAME=android-ndk-${cmr_ANDROID_NDK_VERSION}
+    - cmr_ANDROID_NDK_PLATFORM=${cmr_ANDROID_NDK_NAME}-linux-x86_64
+    - cmr_ANDROID_NDK=${cmr_INSTALL_DIR}/${cmr_ANDROID_NDK_NAME}
+
+    - cmr_ANDROID_CPP_FEATURES="rtti exceptions"
+    - cmr_ANDROID_TOOLCHAIN=clang
+
+    - cmr_CMAKE_TOOLCHAIN_FILE=${cmr_ANDROID_NDK}/build/cmake/android.toolchain.cmake
+    - cmr_CMAKE_GENERATOR="Ninja"
+    - cmr_CMAKE_BUILD_TYPE=Release
+
+    - PATH=${ANDROID_HOME}/cmdline-tools/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:${PATH}
+
+
+android_armeabi_v7a_env:
+  env: &android_armeabi_v7a_env
+    - cmr_ANDROID_ABI=armeabi-v7a
+    - cmr_ANDROID_NATIVE_API_LEVEL=16
+    - cmr_ANDROID_EMULATOR_API_LEVEL=24
+
+android_arm64_v8a_env:
+  env: &android_arm64_v8a_env
+    - cmr_ANDROID_ABI=arm64-v8a
+    - cmr_ANDROID_NATIVE_API_LEVEL=21
+    - cmr_ANDROID_EMULATOR_API_LEVEL=24
+
+android_x86_env:
+  env: &android_x86_env
+    - cmr_ANDROID_ABI=x86
+    - cmr_ANDROID_NATIVE_API_LEVEL=16
+    - cmr_ANDROID_EMULATOR_API_LEVEL=23
+
+android_x86_64_env:
+  env: &android_x86_64_env
+    - cmr_ANDROID_ABI=x86_64
+    - cmr_ANDROID_NATIVE_API_LEVEL=21
+    - cmr_ANDROID_EMULATOR_API_LEVEL=24
+
+
+ios_env:
+  env: &ios_env
+    - cmr_TARGET_OS=iOS
+    - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
+#    - cmr_CMAKE_MIN_VER=3.15
+    - cmr_CMAKE_HOST=Darwin-x86_64
+    - cmr_CMAKE_AR_EXT=tar.gz
+
+
+before_install_script: &before_install_script
+  before_install:
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
+        ver
+      fi
+
+    - |-
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_host_tools" ||
+          ( ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" &&
+            ( ${cmr_TARGET_OS} == "Linux" ||
+              ${cmr_TARGET_OS} == "Windows" ||
+              ${cmr_TARGET_OS} == "macOS" ) ) ]]; then
+
+        # ==== Clean cache dirs ====
+        # Do not use cache for build, only to send data to the test phase.
+        rm --force --dir --recursive ${cmr_REPO_DIR}
+        rm --force --dir --recursive ${cmr_WORK_DIR}
+
+        # ==== Add ssh key ====
+        # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
+        openssl aes-256-cbc -K $encrypted_71baf22766bc_key \
+          -iv $encrypted_71baf22766bc_iv \
+          -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+        chmod 600 ci/TravisCiKey
+        #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+        eval "$(ssh-agent -s)"
+        ssh-add ci/TravisCiKey
+
+        # ==== Clone git repo ====
+        git submodule update --init --recursive
+
+        # ==== Make work dirs ====
+        mkdir -p ${cmr_DOWNLOAD_DIR}
+        mkdir -p ${cmr_INSTALL_DIR}
+
+        # ==== Install CMake ====
+        wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} ${cmr_CMAKE_BASE_URL}/${cmr_CMAKE_AR_FILE_NAME}
+        tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME} --directory ${cmr_INSTALL_DIR}
+      fi
+
+    - |-
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_host_tools" ]]; then
+        mkdir -p ${cmr_UNPACKED_DIR}
+        mkdir -p ${cmr_BUILD_DIR}
+        mkdir -p ${cmr_HOST_UNPACKED_DIR}
+        mkdir -p ${cmr_HOST_BUILD_DIR}
+      fi
+
+    - |-
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" ]]; then
+        # ==== Make work dirs ====
+        mkdir -p ${cmr_DOWNLOAD_DIR}
+        mkdir -p ${cmr_UNPACKED_DIR}
+        mkdir -p ${cmr_BUILD_DIR}
+        mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
+
+        # TODO: copy GCC-9 and Clang-9 so-files to lib-dir.
+        if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
+          if [[ TODO_compiller=<gcc-9> ]]; then
+            # TODO: copy GCC-9 so-files to lib-dir.
+          fi
+          if [[ TODO_compiller=<clang-9> ]]; then
+            # TODO: copy Clang-9 so-files to lib-dir.
+          fi
+        fi
+
+        # ==== Install MinGW-w64 GCC compiller ====
+        # TODO: copy MinGW dll-s to lib-dir.
+        if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MIN_GW_ARCH_NAME} ${cmr_MIN_GW_URL}
+          7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MIN_GW_ARCH_NAME}
+        fi
+
+        # ==== Install Android NDK ====
+        if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
+          unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
+        fi
+      fi
+
+    - |-
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test_project" ]]; then
+        # ==== Make work dirs ====
+        mkdir -p ${cmr_DOWNLOAD_DIR}
+        mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
+
+        # ==== Install Android SDK with emulator ====
+        if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+          mkdir -p ${ANDROID_HOME}/cmdline-tools
+          # https://stackoverflow.com/a/60598900
+          # 'platforms' dir must be, at least empty.
+          mkdir -p ${ANDROID_HOME}/platforms
+
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_CMD_TOOLS_FILE_NAME}
+          unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_CMD_TOOLS_FILE_NAME} -d ${ANDROID_HOME}/cmdline-tools
+
+          # https://stackoverflow.com/a/60598900
+          yes | sdkmanager --licenses
+          sdkmanager "emulator"
+          sdkmanager "platform-tools"
+          sdkmanager "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
+        fi
+      fi
+
+
+build_host_tools_script: &build_host_tools_script
+  git:
+    submodules: false
+  script:
+    - ${cmr_CMAKE_CMD} --version
+    - cd ${cmr_HOST_BUILD_DIR}
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=OFF \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_HOST_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_HOST_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DBUILD_SHARED_LIBS:BOOL=OFF \
+          -DFgMainProject_DIR:PATH=${cmr_REPO_DIR} \
+            -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs \
+            -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME} \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=OFF \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_HOST_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_HOST_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DBUILD_SHARED_LIBS:BOOL=OFF \
+          -DFgMainProject_DIR:PATH=${cmr_REPO_DIR} \
+            -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs \
+            -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME} \
+          -DCMAKE_GENERATOR:STRING="Xcode" \
+            -DCMAKE_CONFIGURATION_TYPES:STRING=Release \
+
+#          -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config Release
+      fi
+
+
+build_script: &build_script
+  script:
+    # === Build project ===
+    - ${cmr_CMAKE_CMD} --version
+
+    - cd ${cmr_BUILD_DIR}
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MSVC" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
+            -DCMAKE_GENERATOR_PLATFORM:STRING="${cmr_CMAKE_GENERATOR_PLATFORM}" \
+            -DCMAKE_GENERATOR_TOOLSET:STRING="${cmr_CMAKE_GENERATOR_TOOLSET}" \
+            -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE} \
+          -DATTACH_WX_CONSOLE=${cmr_ATTACH_WX_CONSOLE} \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
+        # TODO: CMake configure.
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Xcode" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DCMAKE_GENERATOR:STRING="Xcode" \
+            -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE} \
+
+#          -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Make" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DCMAKE_GENERATOR:STRING="Unix Makefiles" \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DANDROID_NDK:PATH=${cmr_ANDROID_NDK} \
+            -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_CMAKE_TOOLCHAIN_FILE} \
+            -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
+            -DANDROID_ABI:STRING=${cmr_ANDROID_ABI} \
+            -DANDROID_NATIVE_API_LEVEL:STRING=${cmr_ANDROID_NATIVE_API_LEVEL} \
+            -DANDROID_TOOLCHAIN:STRING=${cmr_ANDROID_TOOLCHAIN} \
+            -DANDROID_STL:STRING=${cmr_ANDROID_STL} \
+            -DANDROID_CPP_FEATURES:STRING="${cmr_ANDROID_CPP_FEATURES}" \
+          -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR} \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DCMAKE_GENERATOR:STRING="Xcode" \
+            -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE} \
+          -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_REPO_DIR}/libs/LibCMaker/cmake/ios.toolchain.cmake \
+            -DPLATFORM:STRING="SIMULATOR64" \
+            -DENABLE_VISIBILITY:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR} \
+
+#          -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
+
+        ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+
+test_script: &test_script
+  script:
+    # ==== Run Android emulator ====
+    #
+    # http://mywiki.wooledge.org/BashSheet
+    # [command] & [command]
+    # Only the command before the & is executed asynchronously
+    # and you must not put a ';' after the '&', the '&' replaces the ';'.
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+        echo | avdmanager create avd -f -n fg_test -c 1024M -k "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
+        emulator -avd fg_test -memory 1024 -no-window -gpu auto -no-accel -no-snapshot -no-audio -camera-back none -camera-front none &
+        ${cmr_REPO_DIR}/libs/LibCMaker/ci/android-wait-for-emulator.sh
+        adb shell input keyevent 82 &
+      fi
+
+#    - if [[ ${cmr_ANDROID_ABI} == "arm64-v8a" ]]; then travis_terminate 0 ; fi
+
+    # ==== Run iOS emulator ====
+    - |-
+      if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+        # TODO: run iOS emulator.
+      fi
+
+    # ==== Run tests ====
+    - cd ${cmr_BUILD_DIR}
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MSVC" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Xcode" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Make" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure
+      fi
+
+    - |-
+      if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+        ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
+      fi
+
+
+desctop_before_install_script: &desctop_before_install_script
+  <<: *before_install_script
+  git:
+    submodules: false
+
+host_tools_before_install_script: &host_tools_before_install_script
+  <<: *before_install_script
+  git:
+    submodules: false
+
+mobile_before_install_script: &mobile_before_install_script
+  <<: *before_install_script
+  git:
+    clone: false
+
+test_before_install_script: &test_before_install_script
+  <<: *before_install_script
+  git:
+    clone: false
+
+
+linux_img: &linux_img
   os: linux
   dist: bionic
+
+windows_img: &windows_img
+  os: windows
+
+macos_img: &macos_img
+  os: osx
+  osx_image: xcode10.2
+
+android_img: &android_img
+  os: linux
+  dist: bionic
+
+ios_img: &ios_img
+  os: osx
+  osx_image: xcode10.2
+
+
+common_addons: &common_addons
+  ssh_known_hosts:
+    - github.com
+
+linux_packages:
   addons:
-    ssh_known_hosts:
-      - github.com
     apt:
-      packages: &packages_linux
+      packages: &linux_packages
 # wxWidgets deps
 #        - libgtk-3-dev  # Only with GTK3. Do not include it for GTK2.
         - libgtk2.0-dev
@@ -75,833 +667,94 @@ build_linux: &build_linux
 #        - libsecret-1-dev
 #        - libnotify-dev
 
-  env: &build_linux_env
-    - cmr_TARGET_OS=linux
-    - cmr_JOBS="-j${cmr_JOBS_CNT}"
-
-#    - cmr_CMAKE_RELEASE_VER=3.8
-    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
-    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-Linux-x86_64
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
-    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
-    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
-
-  before_install:
-    - mkdir ${cmr_BUILD_DIR}
-    - mkdir ${cmr_INSTALL_DIR}
-    - mkdir ${cmr_DOWNLOAD_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
-    - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
-
-    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
-      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-    - chmod 600 ci/TravisCiKey
-    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - eval "$(ssh-agent -s)"
-    - ssh-add ci/TravisCiKey
-
-    - git submodule update --init --recursive
-
-  script:
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-    - ${CC} --version
-    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-
-    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    - ${cmr_CTEST_CMD} --output-on-failure
-
-
-build_linux_gcc: &build_linux_gcc
-  <<: *build_linux
-  compiler: gcc-9
+linux_gcc_packages:
   addons:
     apt:
-      sources:
+      sources: &linux_gcc_sources
 #        - ubuntu-toolchain-r-test
         - sourceline: "ppa:ubuntu-toolchain-r/test"
-      packages:
-        - *packages_linux
+      packages: &linux_gcc_packages
         - gcc-9
         - g++-9
-  env: &build_linux_gcc_env
-    - *build_linux_env
-    - CC=gcc-9
-    - CXX=g++-9
 
-
-build_linux_clang: &build_linux_clang
-  <<: *build_linux
-  compiler: clang-9
+linux_clang_packages:
   addons:
     apt:
-      sources:
+      sources: &linux_clang_sources
 #        - ubuntu-toolchain-r-test
         - sourceline: "ppa:ubuntu-toolchain-r/test"
 #        - llvm-toolchain-bionic-9
         - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
           key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-      packages:
-        - *packages_linux
+      packages: &linux_clang_packages
         - gcc-9
         - g++-9
         - clang-9  # g++-9 is needed as clang uses its libraries by default.
-  env: &build_linux_clang_env
-    - *build_linux_env
-    - CC=clang-9
-    - CXX=clang++-9
 
 
-# === Windows ===
-
-build_windows: &build_windows
-  stage: Test
-  os: windows
+android_packages:
   addons:
-    ssh_known_hosts:
-      - github.com
-
-  env: &build_windows_env
-    - cmr_TARGET_OS=windows
-
-#    - cmr_CMAKE_RELEASE_VER=3.11
-    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
-    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-win64-x64
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
-    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
-    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
-
-    - cmr_CMAKE_BUILD_TYPE=Release
-
-    - PATH=${cmr_INSTALL_DIR}/bin:${PATH}
-
-    - cmr_ATTACH_WX_CONSOLE=ON
-
-  before_install:
-    - mkdir ${cmr_BUILD_DIR}
-    - mkdir ${cmr_INSTALL_DIR}
-    - mkdir ${cmr_DOWNLOAD_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.zip
-    - 7z.exe x -aoa -o${cmr_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.zip
-
-    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
-      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-    - chmod 600 ci/TravisCiKey
-    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - eval "$(ssh-agent -s)"
-    - ssh-add ci/TravisCiKey
-
-    - git submodule update --init --recursive
-
-  script:
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-    - ${CC} --version
-    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}"
-          -DCMAKE_GENERATOR_PLATFORM:STRING="${cmr_CMAKE_GENERATOR_PLATFORM}"
-          -DCMAKE_GENERATOR_TOOLSET:STRING="${cmr_CMAKE_GENERATOR_TOOLSET}"
-          -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
-        -DATTACH_WX_CONSOLE=${cmr_ATTACH_WX_CONSOLE}
-
-    - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE}
-
-    - ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-
-
-build_windows_msvc: &build_windows_msvc
-  <<: *build_windows
-  env: &build_windows_msvc_env
-    - *build_windows_env
-    - cmr_CMAKE_GENERATOR="Visual Studio 15 2017"
-
-
-build_windows_msvc_x64: &build_windows_msvc_x64
-  <<: *build_windows_msvc
-  env: &build_windows_msvc_x64_env
-    - *build_windows_msvc_env
-    - cmr_CMAKE_GENERATOR_PLATFORM="x64"
-    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
-
-
-build_windows_msvc_x32: &build_windows_msvc_x32
-  <<: *build_windows_msvc
-  env: &build_windows_msvc_x32_env
-    - *build_windows_msvc_env
-    - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
-    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
-
-
-build_windows_msvc_winxp: &build_windows_msvc_winxp
-  <<: *build_windows_msvc
-  env: &build_windows_msvc_winxp_env
-    - *build_windows_msvc_env
-    - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
-    - cmr_CMAKE_GENERATOR_TOOLSET="v141_xp,host=x64"
-
-
-# === Android ===
-
-build_android: &build_android
-  stage: Test
-  os: linux
-  dist: bionic
-  addons:
-    ssh_known_hosts:
-      - github.com
     apt:
-      packages:
+      packages: &android_packages
         - ninja-build
 
-  env: &build_android_env
-    - cmr_TARGET_OS=android
-    - cmr_JOBS="-j${cmr_JOBS_CNT}"
-
-#    - cmr_CMAKE_RELEASE_VER=3.8
-    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
-    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-Linux-x86_64
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
-    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
-    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
-
-    - cmr_CMAKE_GENERATOR="Ninja"
-    - cmr_CMAKE_BUILD_TYPE=Release
-
-    - cmr_ANDROID_NDK_VERSION=r21b
-    - cmr_ANDROID_NDK_NAME=android-ndk-${cmr_ANDROID_NDK_VERSION}
-    - cmr_ANDROID_NDK_PLATFORM=${cmr_ANDROID_NDK_NAME}-linux-x86_64
-    - cmr_ANDROID_NDK=${cmr_INSTALL_DIR}/${cmr_ANDROID_NDK_NAME}
-
-    - cmr_CMAKE_TOOLCHAIN_FILE=${cmr_ANDROID_NDK}/build/cmake/android.toolchain.cmake
-
-    - cmr_ANDROID_CPP_FEATURES="rtti exceptions"
-    - cmr_ANDROID_TOOLCHAIN=clang
-
-    - ANDROID_HOME=${cmr_INSTALL_DIR}/android-sdk
-    - cmr_ANDROID_CMD_TOOLS_VERSION=6200805
-    - cmr_ANDROID_CMD_TOOLS_FILE_NAME=commandlinetools-linux-${cmr_ANDROID_CMD_TOOLS_VERSION}_latest.zip
-
-    - PATH=${ANDROID_HOME}/cmdline-tools/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:${PATH}
-
-  before_install:
-    - mkdir ${cmr_BUILD_DIR}
-    - mkdir ${cmr_HOST_BUILD_DIR}
-    - mkdir ${cmr_INSTALL_DIR}
-    - mkdir ${cmr_DOWNLOAD_DIR}
-
-    - mkdir -p ${ANDROID_HOME}/cmdline-tools
-    # https://stackoverflow.com/a/60598900
-    - mkdir -p ${ANDROID_HOME}/platforms  # 'platforms' dir must be, at least empty.
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
-    - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
-    - unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_INSTALL_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_CMD_TOOLS_FILE_NAME}
-    - unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_CMD_TOOLS_FILE_NAME} -d ${ANDROID_HOME}/cmdline-tools
-
-    # https://stackoverflow.com/a/60598900
-    - yes | sdkmanager --licenses
-    - sdkmanager "emulator"
-    - sdkmanager "platform-tools"
-    - sdkmanager "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
-
-    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
-      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-    - chmod 600 ci/TravisCiKey
-    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - eval "$(ssh-agent -s)"
-    - ssh-add ci/TravisCiKey
-
-    - git submodule update --init --recursive
-
-  script:
-    # === Build host tools ===
-    - cd ${cmr_HOST_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-    - ${CC} --version
-    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=OFF
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked_host_tools
-          -DCMAKE_BUILD_TYPE:STRING=Release
-          -DBUILD_SHARED_LIBS:BOOL=OFF
-        -DFgMainProject_DIR:PATH=${cmr_REPO_DIR}
-          -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs
-          -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME}
-
-    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    # === Build Android libs ===
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-#    - ${CC} --version
-#    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -DANDROID_NDK:PATH=${cmr_ANDROID_NDK}
-          -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_CMAKE_TOOLCHAIN_FILE}
-          -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}"
-          -DANDROID_ABI:STRING=${cmr_ANDROID_ABI}
-          -DANDROID_NATIVE_API_LEVEL:STRING=${cmr_ANDROID_NATIVE_API_LEVEL}
-          -DANDROID_TOOLCHAIN:STRING=${cmr_ANDROID_TOOLCHAIN}
-          -DANDROID_STL:STRING=${cmr_ANDROID_STL}
-          -DANDROID_CPP_FEATURES:STRING="${cmr_ANDROID_CPP_FEATURES}"
-        -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    # Start the emulator.
-    # NOTE: 'arm64-v8a' emulator (any API level) does not start on Linux
-    #       with success, boot animation is not ending.
-    # NOTE: 'armeabi-v7a' API 16 emulator on Linux executes programs regularly
-    #       with "Illegal instruction". API 24 on Linux works fine.
-    # NOTE: 'x86' API 24 emulator does not start on Linux with success.
-    #       API 23 on Linux works fine.
-    - echo | avdmanager create avd -f -n fg_test -c 1024M -k "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
-    - emulator -avd fg_test -memory 1024 -no-window -gpu auto -no-accel -no-snapshot -no-audio -camera-back none -camera-front none &
-    - ${cmr_REPO_DIR}/libs/LibCMaker/ci/android-wait-for-emulator.sh
-    - adb shell input keyevent 82 &
-
-    # Run the tests.
-    - ${cmr_CTEST_CMD} --output-on-failure
 
 
-# === macOS ===
 
-build_macos: &build_macos
-  stage: Test
-  os: osx
-  osx_image: xcode10.2
-  compiler: clang
+## TODO: for Linux
+#  compiler: gcc-9
+#  compiler: clang-9
+
+## TODO: for macOS and iOS
+#  compiler: clang
+
+
+linux_gcc_debug_shared: &linux_gcc_debug_shared
+  name: "Linux, gcc, debug, shared"
+  <<: *linux_img
+  compiler: gcc-9
   addons:
-    ssh_known_hosts:
-      - github.com
-
-  env: &build_macos_env
-    - cmr_TARGET_OS=macos
-
-#    - cmr_CMAKE_RELEASE_VER=3.12
-    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
-    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-Darwin-x86_64
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
-    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
-    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
-
-  before_install:
-    - mkdir ${cmr_BUILD_DIR}
-    - mkdir ${cmr_INSTALL_DIR}
-    - mkdir ${cmr_DOWNLOAD_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
-    - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
-
-    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
-      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-    - chmod 600 ci/TravisCiKey
-    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - eval "$(ssh-agent -s)"
-    - ssh-add ci/TravisCiKey
-
-    - git submodule update --init --recursive
+    <<: *common_addons
+    apt:
+      sources:
+        - *linux_gcc_sources
+      packages:
+        - *linux_packages
+        - *linux_gcc_packages
+  env:
+    - *linux_env
+    - *linux_gcc_env
+    - *cmake_env
+    - *debug_shared_env
 
 
-build_macos_xcode: &build_macos_xcode
-  <<: *build_macos
-  env: &build_macos_xcode_env
-    - *build_macos_env
-    - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
+stages:
+  - Build_host_tools
+  - Build_project
+  - Test_project
 
-  script:
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-    - ${CC} --version
-    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -DCMAKE_GENERATOR:STRING="Xcode"
-          -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
-        -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-        # The job exceeded the maximum log length, and has been terminated.
-        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-    - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
-
-    - ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-
-
-build_macos_make: &build_macos_make
-  <<: *build_macos
-  env: &build_macos_make_env
-    - *build_macos_env
-    - cmr_JOBS="-j ${cmr_JOBS_CNT}"
-
-  script:
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -DCMAKE_GENERATOR:STRING="Unix Makefiles"
-
-    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    - ${cmr_CTEST_CMD} --output-on-failure
-
-
-# === iOS ===
-
-build_ios: &build_ios_xcode
-  stage: Test
-  os: osx
-  osx_image: xcode10.2
-  compiler: clang
-  addons:
-    ssh_known_hosts:
-      - github.com
-
-  env: &build_ios_xcode_env
-    - cmr_TARGET_OS=ios
-    - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
-
-    - cmr_CMAKE_RELEASE_VER=3.15
-#    - cmr_CMAKE_RELEASE_VER=${cmr_CMAKE_RELEASE_MIN_VER}
-    - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_RELEASE_VER}.0-Darwin-x86_64
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
-    - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
-    - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
-
-  before_install:
-    - mkdir ${cmr_BUILD_DIR}
-    - mkdir ${cmr_HOST_BUILD_DIR}
-    - mkdir ${cmr_INSTALL_DIR}
-    - mkdir ${cmr_DOWNLOAD_DIR}
-
-    - wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://cmake.org/files/v${cmr_CMAKE_RELEASE_VER}/${cmr_CMAKE_RELEASE}.tar.gz
-    - tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_RELEASE}.tar.gz --directory ${cmr_INSTALL_DIR}
-
-    # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-    - openssl aes-256-cbc -K $encrypted_71baf22766bc_key -iv $encrypted_71baf22766bc_iv
-      -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-    - chmod 600 ci/TravisCiKey
-    #- echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - eval "$(ssh-agent -s)"
-    - ssh-add ci/TravisCiKey
-
-    - git submodule update --init --recursive
-
-  script:
-    # === Build host tools ===
-    - cd ${cmr_HOST_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-    - ${CC} --version
-    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=OFF
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked_host_tools
-          -DCMAKE_BUILD_TYPE:STRING=Release
-          -DBUILD_SHARED_LIBS:BOOL=OFF
-        -DFgMainProject_DIR:PATH=${cmr_REPO_DIR}
-          -DLibCMaker_LIB_DIR:PATH=${cmr_REPO_DIR}/libs
-          -DHOST_TOOLS_STAMP_FILE_NAME:STRING=${cmr_HOST_TOOLS_STAMP_FILE_NAME}
-        -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-        # The job exceeded the maximum log length, and has been terminated.
-        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-    - ${cmr_CMAKE_CMD} --build . -- ${cmr_JOBS}
-
-    # === Build iOS libs ===
-    - cd ${cmr_BUILD_DIR}
-
-    - ${cmr_CMAKE_CMD} --version
-#    - ${CC} --version
-#    - ${CXX} --version
-
-    - ${cmr_CMAKE_CMD} ${cmr_REPO_DIR}
-        -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT}
-        -Dcmr_PRINT_DEBUG:BOOL=ON
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-        -DCMAKE_COLOR_MAKEFILE:BOOL=ON
-        -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING}
-        -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR}
-        -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR}
-        -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/unpacked
-          -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE}
-          -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -DCMAKE_GENERATOR:STRING="Xcode"
-          -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE}
-        -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_REPO_DIR}/libs/LibCMaker/cmake/ios.toolchain.cmake
-          -DPLATFORM:STRING="SIMULATOR64"
-          -DENABLE_VISIBILITY:BOOL=${cmr_BUILD_SHARED_LIBS}
-        -Dcmr_HOST_BUILD_DIR=${cmr_HOST_BUILD_DIR}
-        -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-        # The job exceeded the maximum log length, and has been terminated.
-        #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
-
-    - ${cmr_CMAKE_CMD} --build . --config ${cmr_CMAKE_BUILD_TYPE} -- ${cmr_JOBS}
-
-#    - ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-
-
-# === Build matrix ===
 
 jobs:
   include:
+    - stage: Build_project
+      <<: *linux_gcc_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
 
-# Linux, gcc
-    - <<: *build_linux_gcc
-      name: "Linux, gcc, debug, shared"
-      env:
-        - *build_linux_gcc_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=ON
+    - stage: Test_project
+      <<: *linux_gcc_debug_shared
+      <<: *test_script
 
-    - <<: *build_linux_gcc
-      name: "Linux, gcc, debug, static"
-      env:
-        - *build_linux_gcc_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=OFF
+#    - stage: Build_host_tools
+#      <<: *TODO
+#      <<: *host_tools_before_install_script
+#      <<: *build_host_tools_script
 
-    - <<: *build_linux_gcc
-      name: "Linux, gcc, release, shared"
-      env:
-        - *build_linux_gcc_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=ON
+#    - stage: Build_project
+#      <<: *TODO
+#      <<: *mobile_before_install_script
+#      <<: *build_script
 
-    - <<: *build_linux_gcc
-      name: "Linux, gcc, release, static"
-      env:
-        - *build_linux_gcc_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-# Linux, clang
-    - <<: *build_linux_clang
-      name: "Linux, clang, debug, shared"
-      env:
-        - *build_linux_clang_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_linux_clang
-      name: "Linux, clang, debug, static"
-      env:
-        - *build_linux_clang_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_linux_clang
-      name: "Linux, clang, release, shared"
-      env:
-        - *build_linux_clang_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_linux_clang
-      name: "Linux, clang, release, static"
-      env:
-        - *build_linux_clang_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-# Windows, msvc
-    - <<: *build_windows_msvc_x64
-      name: "Windows, msvc, x64, shared"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_x64_env
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_windows_msvc_x64
-      name: "Windows, msvc, x64, static"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_x64_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_windows_msvc_x32
-      name: "Windows, msvc, x32, shared"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_x32_env
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_windows_msvc_x32
-      name: "Windows, msvc, x32, static"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_x32_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_windows_msvc_winxp
-      name: "Windows, msvc, winxp, shared"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_winxp_env
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_windows_msvc_winxp
-      name: "Windows, msvc, winxp, static"
-      if: branch = do_not_build_with_travis_ci
-      env:
-        - *build_windows_msvc_winxp_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-# Android, shared
-    - <<: *build_android
-      name: "Android, shared, armeabi-v7a"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=ON
-        - cmr_ANDROID_STL=c++_shared
-        - cmr_ANDROID_ABI=armeabi-v7a
-        - cmr_ANDROID_NATIVE_API_LEVEL=16
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-    - <<: *build_android
-      name: "Android, shared, arm64-v8a"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=ON
-        - cmr_ANDROID_STL=c++_shared
-        - cmr_ANDROID_ABI=arm64-v8a
-        - cmr_ANDROID_NATIVE_API_LEVEL=21
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-    - <<: *build_android
-      name: "Android, shared, x86"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=ON
-        - cmr_ANDROID_STL=c++_shared
-        - cmr_ANDROID_ABI=x86
-        - cmr_ANDROID_NATIVE_API_LEVEL=16
-        - cmr_ANDROID_EMULATOR_API_LEVEL=23
-
-    - <<: *build_android
-      name: "Android, shared, x86_64"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=ON
-        - cmr_ANDROID_STL=c++_shared
-        - cmr_ANDROID_ABI=x86_64
-        - cmr_ANDROID_NATIVE_API_LEVEL=21
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-# Android, static
-    - <<: *build_android
-      name: "Android, static, armeabi-v7a"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-        - cmr_ANDROID_STL=c++_static
-        - cmr_ANDROID_ABI=armeabi-v7a
-        - cmr_ANDROID_NATIVE_API_LEVEL=16
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-    - <<: *build_android
-      name: "Android, static, arm64-v8a"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-        - cmr_ANDROID_STL=c++_static
-        - cmr_ANDROID_ABI=arm64-v8a
-        - cmr_ANDROID_NATIVE_API_LEVEL=21
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-    - <<: *build_android
-      name: "Android, static, x86"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-        - cmr_ANDROID_STL=c++_static
-        - cmr_ANDROID_ABI=x86
-        - cmr_ANDROID_NATIVE_API_LEVEL=16
-        - cmr_ANDROID_EMULATOR_API_LEVEL=23
-
-    - <<: *build_android
-      name: "Android, static, x86_64"
-      env:
-        - *build_android_env
-        - cmr_BUILD_SHARED_LIBS=OFF
-        - cmr_ANDROID_STL=c++_static
-        - cmr_ANDROID_ABI=x86_64
-        - cmr_ANDROID_NATIVE_API_LEVEL=21
-        - cmr_ANDROID_EMULATOR_API_LEVEL=24
-
-# macOS, clang, Xcode
-    - <<: *build_macos_xcode
-      name: "macOS, clang, Xcode, debug, shared"
-      env:
-        - *build_macos_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_macos_xcode
-      name: "macOS, clang, Xcode, debug, static"
-      env:
-        - *build_macos_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_macos_xcode
-      name: "macOS, clang, Xcode, release, shared"
-      env:
-        - *build_macos_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_macos_xcode
-      name: "macOS, clang, Xcode, release, static"
-      env:
-        - *build_macos_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-# macOS, clang, Make
-    - <<: *build_macos_make
-      name: "macOS, clang, Make, debug, shared"
-      env:
-        - *build_macos_make_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_macos_make
-      name: "macOS, clang, Make, debug, static"
-      env:
-        - *build_macos_make_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_macos_make
-      name: "macOS, clang, Make, release, shared"
-      env:
-        - *build_macos_make_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_macos_make
-      name: "macOS, clang, Make, release, static"
-      env:
-        - *build_macos_make_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-# ios, clang, Xcode
-    - <<: *build_ios_xcode
-      name: "ios, clang, Xcode, debug, shared"
-      env:
-        - *build_ios_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_ios_xcode
-      name: "ios, clang, Xcode, debug, static"
-      env:
-        - *build_ios_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Debug
-        - cmr_BUILD_SHARED_LIBS=OFF
-
-    - <<: *build_ios_xcode
-      name: "ios, clang, Xcode, release, shared"
-      env:
-        - *build_ios_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=ON
-
-    - <<: *build_ios_xcode
-      name: "ios, clang, Xcode, release, static"
-      env:
-        - *build_ios_xcode_env
-        - cmr_CMAKE_BUILD_TYPE=Release
-        - cmr_BUILD_SHARED_LIBS=OFF
 
 
 # Trigger the building of the dependent libs.

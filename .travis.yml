@@ -98,14 +98,14 @@ debug_static_env:
     - cmr_BUILD_SHARED_LIBS=OFF
     - cmr_ANDROID_STL=c++_static
 
-relase_shared_env:
-  env: &relase_shared_env
+release_shared_env:
+  env: &release_shared_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=ON
     - cmr_ANDROID_STL=c++_shared
 
-relase_static_env:
-  env: &relase_static_env
+release_static_env:
+  env: &release_static_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=OFF
     - cmr_ANDROID_STL=c++_static
@@ -720,6 +720,18 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
     - *debug_shared_env
 
 
+android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
+  name: "Android, armeabi-v7a, release, shared"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *android_env
+    - *cmake_env
+    - *release_shared_env
+
+
 stages:
   - Build_host_tools
   - Build_project
@@ -728,23 +740,30 @@ stages:
 
 jobs:
   include:
+# Linux
     - stage: Build_project
       <<: *linux_gcc_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-#    - stage: Build_host_tools
-#      <<: *TODO
-#      <<: *host_tools_before_install_script
-#      <<: *build_host_tools_script
-
-#    - stage: Build_project
-#      <<: *TODO
-#      <<: *mobile_before_install_script
-#      <<: *build_script
-
     - stage: Test_project
       <<: *linux_gcc_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Android
+    - stage: Build_host_tools
+      <<: *android_release_shared_armeabi_v7a
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+
+    - stage: Build_project
+      <<: *android_release_shared_armeabi_v7a
+      <<: *mobile_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *android_release_shared_armeabi_v7a
       <<: *test_before_install_script
       <<: *test_script
 

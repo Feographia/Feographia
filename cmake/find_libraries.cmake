@@ -27,7 +27,6 @@
 
 set(libs_DIR "${PROJECT_SOURCE_DIR}/libs")
 set(build_libs_DIR "${PROJECT_BINARY_DIR}/build_libs")
-set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install")
 
 if(NOT cmr_DOWNLOAD_DIR)
   set(cmr_DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/.downloads")

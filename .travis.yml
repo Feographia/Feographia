@@ -31,8 +31,13 @@ env:
   global:
     - cmr_APP_NAME=Feographia
 
-    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
+#    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
+    # TRAVIS_REPO_SLUG: The slug (in form: owner_name/repo_name)
+    # of the repository currently being built.
+    - cmr_MAIN_REPO_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
+
     - cmr_WORK_DIR=${HOME}/build/work
+    - cmr_REPO_DIR=${cmr_WORK_DIR}/${cmr_APP_NAME}
 
     - cmr_NOT_CACHED_INSTALL_DIR=${cmr_WORK_DIR}/install_not_cached
 
@@ -252,8 +257,9 @@ before_install_script: &before_install_script
               ${cmr_TARGET_OS} == "macOS" ) ) ]]; then
 
         # ==== Clean cache dirs ====
-        # Do not use cache for build, only to send data to the test phase.
+        # Do not use cache for build, only to send data between stages.
         rm --force --dir --recursive ${cmr_WORK_DIR}
+        mkdir -p ${cmr_WORK_DIR}
 
         # ==== Add ssh key ====
         # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
@@ -266,6 +272,8 @@ before_install_script: &before_install_script
         ssh-add ci/TravisCiKey
 
         # ==== Clone git repo ====
+        cp -r ${cmr_MAIN_REPO_DIR} ${cmr_WORK_DIR}
+        cd ${cmr_REPO_DIR}
         git submodule update --init --recursive
 
         # ==== Make work dirs ====
@@ -287,6 +295,8 @@ before_install_script: &before_install_script
 
     - |-
       if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" ]]; then
+        cd ${cmr_REPO_DIR}
+
         # ==== Make work dirs ====
         mkdir -p ${cmr_DOWNLOAD_DIR}
         mkdir -p ${cmr_UNPACKED_DIR}
@@ -319,6 +329,8 @@ before_install_script: &before_install_script
 
     - |-
       if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test_project" ]]; then
+        cd ${cmr_REPO_DIR}
+
         # ==== Make work dirs ====
         mkdir -p ${cmr_DOWNLOAD_DIR}
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}

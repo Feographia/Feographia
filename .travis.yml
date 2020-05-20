@@ -76,9 +76,9 @@ cache:
 #cache: false
 
 
-cmake_env:
-  # cmake_env must be after <os>_env.
-  env: &cmake_env
+cmake_1st_env:
+  # cmake_1st_env must be after <os>_env.
+  env: &cmake_1st_env
     - cmr_CMAKE_MAJOR_VER=3
     - cmr_CMAKE_MINOR_VER=17
     - cmr_CMAKE_PATCH_VER=2
@@ -87,6 +87,9 @@ cmake_env:
     - cmr_CMAKE_AR_FILE_NAME=${cmr_CMAKE_RELEASE}.${cmr_CMAKE_AR_EXT}
     - cmr_CMAKE_BASE_URL=https://cmake.org/files/v${cmr_CMAKE_MAJOR_VER}.${cmr_CMAKE_MINOR_VER}
 
+cmake_2nd_env:
+  # cmake_2nd_env must be after <os>_cmake_env.
+  env: &cmake_2nd_env
     - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
     - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
 
@@ -123,6 +126,9 @@ linux_env:
 #    - cmr_CMAKE_MIN_VER=3.8
     - cmr_CMAKE_HOST=Linux-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+
+linux_cmake_env:
+  env: &linux_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
 linux_gcc_env:
@@ -142,9 +148,12 @@ windows_env:
 #    - cmr_CMAKE_MIN_VER=3.11
     - cmr_CMAKE_HOST=win64-x64
     - cmr_CMAKE_AR_EXT=zip
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
     - cmr_ATTACH_WX_CONSOLE=ON
+
+windows_cmake_env:
+  env: &windows_cmake_env
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
 windows_msvc_env:
   env: &windows_msvc_env
@@ -183,6 +192,9 @@ macos_env:
 #    - cmr_CMAKE_MIN_VER=3.12
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+
+macos_cmake_env:
+  env: &macos_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 macos_xcode_env:
@@ -201,7 +213,6 @@ android_env:
 #    - cmr_CMAKE_MIN_VER=3.8
     - cmr_CMAKE_HOST=Linux-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
     - ANDROID_HOME=${cmr_NOT_CACHED_INSTALL_DIR}/android-sdk
     - cmr_ANDROID_CMD_TOOLS_VERSION=6200805
@@ -219,6 +230,10 @@ android_env:
     - cmr_CMAKE_GENERATOR="Ninja"
 
     - PATH=${ANDROID_HOME}/cmdline-tools/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:${PATH}
+
+android_cmake_env:
+  env: &android_cmake_env
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
 android_armeabi_v7a_env:
   env: &android_armeabi_v7a_env
@@ -252,6 +267,9 @@ ios_env:
 #    - cmr_CMAKE_MIN_VER=3.15
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+
+ios_cmake_env:
+  env: &ios_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
@@ -760,8 +778,10 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
         - *linux_gcc_packages
   env:
     - *linux_env
+    - *cmake_1st_env
+    - *linux_cmake_env
+    - *cmake_2nd_env
     - *linux_gcc_env
-    - *cmake_env
     - *debug_shared_env
 
 
@@ -781,8 +801,10 @@ linux_clang_debug_shared: &linux_clang_debug_shared
         - *linux_clang_packages
   env:
     - *linux_env
+    - *cmake_1st_env
+    - *linux_cmake_env
+    - *cmake_2nd_env
     - *linux_clang_env
-    - *cmake_env
     - *debug_shared_env
 
 
@@ -793,9 +815,11 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
     <<: *common_addons
   env:
     - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
     - *windows_msvc_env
     - *windows_msvc_x64_env
-    - *cmake_env
     - *release_shared_env
 
 windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
@@ -805,8 +829,10 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
     <<: *common_addons
   env:
     - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
     - *windows_mingw_env
-    - *cmake_env
     - *release_shared_env
 
 
@@ -818,9 +844,10 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
     <<: *common_addons
   env:
     - *macos_env
-    - *macos_xcode_env
-    - *cmake_env
+    - *cmake_1st_env
     - *macos_cmake_env
+    - *cmake_2nd_env
+    - *macos_xcode_env
     - *release_shared_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
@@ -831,9 +858,10 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
     <<: *common_addons
   env:
     - *macos_env
-    - *macos_make_env
-    - *cmake_env
+    - *cmake_1st_env
     - *macos_cmake_env
+    - *cmake_2nd_env
+    - *macos_make_env
     - *release_shared_env
 
 
@@ -845,8 +873,10 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
     <<: *android_addons
   env:
     - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
     - *android_armeabi_v7a_env
-    - *cmake_env
     - *release_shared_env
 
 
@@ -858,8 +888,9 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
     <<: *common_addons
   env:
     - *ios_env
-    - *cmake_env
+    - *cmake_1st_env
     - *ios_cmake_env
+    - *cmake_2nd_env
     - *release_shared_env
 
 

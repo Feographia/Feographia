@@ -87,7 +87,6 @@ cmake_env:
     - cmr_CMAKE_AR_FILE_NAME=${cmr_CMAKE_RELEASE}.${cmr_CMAKE_AR_EXT}
     - cmr_CMAKE_BASE_URL=https://cmake.org/files/v${cmr_CMAKE_MAJOR_VER}.${cmr_CMAKE_MINOR_VER}
 
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
     - cmr_CMAKE_CMD=${cmr_CMAKE_DIR}/bin/cmake
     - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
 
@@ -124,6 +123,7 @@ linux_env:
 #    - cmr_CMAKE_MIN_VER=3.8
     - cmr_CMAKE_HOST=Linux-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
 linux_gcc_env:
   env: &linux_gcc_env
@@ -142,6 +142,7 @@ windows_env:
 #    - cmr_CMAKE_MIN_VER=3.11
     - cmr_CMAKE_HOST=win64-x64
     - cmr_CMAKE_AR_EXT=zip
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
     - cmr_ATTACH_WX_CONSOLE=ON
 
@@ -182,6 +183,7 @@ macos_env:
 #    - cmr_CMAKE_MIN_VER=3.12
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 macos_xcode_env:
   env: &macos_xcode_env
@@ -191,10 +193,6 @@ macos_make_env:
   env: &macos_make_env
     - cmr_JOBS="-j ${cmr_JOBS_CNT}"
 
-macos_cmake_env:
-  env: &macos_cmake_env
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
-
 
 android_env:
   env: &android_env
@@ -203,6 +201,7 @@ android_env:
 #    - cmr_CMAKE_MIN_VER=3.8
     - cmr_CMAKE_HOST=Linux-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}
 
     - ANDROID_HOME=${cmr_NOT_CACHED_INSTALL_DIR}/android-sdk
     - cmr_ANDROID_CMD_TOOLS_VERSION=6200805
@@ -218,10 +217,8 @@ android_env:
 
     - cmr_CMAKE_TOOLCHAIN_FILE=${cmr_ANDROID_NDK}/build/cmake/android.toolchain.cmake
     - cmr_CMAKE_GENERATOR="Ninja"
-    - cmr_CMAKE_BUILD_TYPE=Release
 
     - PATH=${ANDROID_HOME}/cmdline-tools/tools/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/emulator:${PATH}
-
 
 android_armeabi_v7a_env:
   env: &android_armeabi_v7a_env
@@ -255,9 +252,6 @@ ios_env:
 #    - cmr_CMAKE_MIN_VER=3.15
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
-
-ios_cmake_env:
-  env: &ios_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
@@ -740,9 +734,9 @@ linux_clang_addons: &linux_clang_addons
       - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
         key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
     packages: &linux_clang_packages
-      - gcc-9
+      - gcc-9  # g++-9 is needed as clang uses its libraries by default.
       - g++-9
-      - clang-9  # g++-9 is needed as clang uses its libraries by default.
+      - clang-9
 
 android_addons: &android_addons
   apt:
@@ -750,16 +744,8 @@ android_addons: &android_addons
       - ninja-build
 
 
-## TODO: for Linux
-#  compiler: gcc-9
-#  compiler: clang-9
-
-## TODO: for macOS and iOS
-#  compiler: clang
-
-
 linux_gcc_debug_shared: &linux_gcc_debug_shared
-  name: "Linux, gcc, x64, debug, shared"
+  name: "Linux, GCC, x64, Debug, shared"
   <<: *linux_img
   compiler: gcc-9
   addons:
@@ -779,8 +765,29 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
     - *debug_shared_env
 
 
+linux_clang_debug_shared: &linux_clang_debug_shared
+  name: "Linux, CLang, x64, Debug, shared"
+  <<: *linux_img
+  compiler: clang-9
+  addons:
+    <<: *common_addons
+    <<: *linux_addons
+    <<: *linux_clang_addons
+    apt:
+      sources:
+        - *linux_clang_sources
+      packages:
+        - *linux_packages
+        - *linux_clang_packages
+  env:
+    - *linux_env
+    - *linux_clang_env
+    - *cmake_env
+    - *debug_shared_env
+
+
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
-  name: "Windows, msvc, x64, release, shared"
+  name: "Windows, MSVC, x64, Release, shared"
   <<: *windows_img
   addons:
     <<: *common_addons
@@ -792,7 +799,7 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
     - *release_shared_env
 
 windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
-  name: "Windows, mingw, x64, release, shared"
+  name: "Windows, MinGW, x64, Release, shared"
   <<: *windows_img
   addons:
     <<: *common_addons
@@ -804,7 +811,7 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
 
 
 macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
-  name: "macOS, clang, Xcode, release, shared"
+  name: "macOS, Clang, Xcode, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -817,7 +824,7 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
     - *release_shared_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
-  name: "macOS, clang, Unix Makefiles, release, shared"
+  name: "macOS, Clang, Unix Makefiles, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -831,7 +838,7 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
 
 
 android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
-  name: "Android, armeabi-v7a, release, shared"
+  name: "Android, armeabi-v7a, Release, shared"
   <<: *android_img
   addons:
     <<: *common_addons
@@ -844,7 +851,7 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
 
 
 ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
-  name: "iOS, clang, Xcode, release, shared"
+  name: "iOS, Clang, Xcode, Release, shared"
   <<: *ios_img
   compiler: clang
   addons:
@@ -872,6 +879,17 @@ jobs:
 
     - stage: Test_project
       <<: *linux_gcc_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Linux, Clang
+    - stage: Build_project
+      <<: *linux_clang_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *linux_clang_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 

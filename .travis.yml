@@ -256,11 +256,6 @@ ios_env:
 before_install_script: &before_install_script
   before_install:
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
-        ver
-      fi
-
-    - |-
       if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_host_tools" ||
           ( ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" &&
             ( ${cmr_TARGET_OS} == "Linux" ||

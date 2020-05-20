@@ -182,7 +182,6 @@ macos_env:
 #    - cmr_CMAKE_MIN_VER=3.12
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
-    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 macos_xcode_env:
   env: &macos_xcode_env
@@ -191,6 +190,10 @@ macos_xcode_env:
 macos_make_env:
   env: &macos_make_env
     - cmr_JOBS="-j ${cmr_JOBS_CNT}"
+
+macos_cmake_env:
+  env: &macos_cmake_env
+    - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
 android_env:
@@ -252,6 +255,9 @@ ios_env:
 #    - cmr_CMAKE_MIN_VER=3.15
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+
+ios_cmake_env:
+  env: &ios_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
@@ -807,6 +813,7 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
     - *macos_env
     - *macos_xcode_env
     - *cmake_env
+    - *macos_cmake_env
     - *release_shared_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
@@ -819,6 +826,7 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
     - *macos_env
     - *macos_make_env
     - *cmake_env
+    - *macos_cmake_env
     - *release_shared_env
 
 
@@ -844,6 +852,7 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
   env:
     - *ios_env
     - *cmake_env
+    - *ios_cmake_env
     - *release_shared_env
 
 

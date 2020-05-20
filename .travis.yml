@@ -751,7 +751,7 @@ android_addons: &android_addons
 
 
 linux_gcc_debug_shared: &linux_gcc_debug_shared
-  name: "Linux, gcc, debug, shared"
+  name: "Linux, gcc, x64, debug, shared"
   <<: *linux_img
   compiler: gcc-9
   addons:
@@ -774,6 +774,8 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
   name: "Windows, msvc, x64, release, shared"
   <<: *windows_img
+  addons:
+    <<: *common_addons
   env:
     - *windows_env
     - *windows_msvc_env
@@ -784,9 +786,36 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
 windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
   name: "Windows, mingw, x64, release, shared"
   <<: *windows_img
+  addons:
+    <<: *common_addons
   env:
     - *windows_env
     - *windows_mingw_env
+    - *cmake_env
+    - *release_shared_env
+
+
+macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
+  name: "macOS, clang, Xcode, release, shared"
+  <<: *macos_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *macos_env
+    - *macos_xcode_env
+    - *cmake_env
+    - *release_shared_env
+
+macos_clang_make_release_shared: &macos_clang_make_release_shared
+  name: "macOS, clang, Unix Makefiles, release, shared"
+  <<: *macos_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *macos_env
+    - *macos_make_env
     - *cmake_env
     - *release_shared_env
 
@@ -800,6 +829,18 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
   env:
     - *android_env
     - *android_armeabi_v7a_env
+    - *cmake_env
+    - *release_shared_env
+
+
+ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
+  name: "iOS, clang, Xcode, release, shared"
+  <<: *ios_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *ios_env
     - *cmake_env
     - *release_shared_env
 
@@ -845,6 +886,31 @@ jobs:
       <<: *test_before_install_script
       <<: *test_script
 
+
+# macOS, Xcode
+    - stage: Build_project
+      <<: *macos_clang_xcode_release_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *macos_clang_xcode_release_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+
+# macOS, Unix Makefiles
+    - stage: Build_project
+      <<: *macos_clang_make_release_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *macos_clang_make_release_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+
 # Android
     - stage: Build_host_tools
       <<: *android_release_shared_armeabi_v7a
@@ -858,6 +924,23 @@ jobs:
 
     - stage: Test_project
       <<: *android_release_shared_armeabi_v7a
+      <<: *test_before_install_script
+      <<: *test_script
+
+
+# iOS
+    - stage: Build_host_tools
+      <<: *ios_clang_xcode_release_shared
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+
+    - stage: Build_project
+      <<: *ios_clang_xcode_release_shared
+      <<: *mobile_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *ios_clang_xcode_release_shared
       <<: *test_before_install_script
       <<: *test_script
 

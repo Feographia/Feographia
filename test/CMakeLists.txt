@@ -253,11 +253,13 @@ if(BUILD_TESTING)
   )
 
   # litehtml renderer tests
-  add_fg_test_executable("LiteHtmlContainer_test"
-    ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
-    ${fgkardia_TARGET}
-    fg_TEST_LIST
-  )
+  if(NOT ANDROID)  # FIXME: Fix this test for these platforms.
+    add_fg_test_executable("LiteHtmlContainer_test"
+      ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
+      ${fgkardia_TARGET}
+      fg_TEST_LIST
+    )
+  endif()
   add_fg_test_executable("LiteHtmlRenderer_test"
     ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
     ${fgkardia_TARGET}

@@ -180,7 +180,7 @@ windows_mingw_env:
     - cmr_MINGW=ON
     - cmr_MINGW_ARCH_NAME=winlibs-x86_64-posix-seh-gcc-9.3.0-llvm-10.0.0-mingw-w64-7.0.0-r4.7z
     - cmr_MINGW_URL=https://github.com/brechtsanders/winlibs_mingw/releases/download/9.3.0-10.0.0-7.0.0-r4/${cmr_MINGW_ARCH_NAME}
-    - cmr_MinGW_w64_ROOT_PATH=${cmr_INSTALL_DIR}
+    - cmr_MinGW_w64_ROOT_PATH=${cmr_NOT_CACHED_INSTALL_DIR}
     - MINGW_HOME=${cmr_MinGW_w64_ROOT_PATH}/mingw64
     - cmr_CMAKE_GENERATOR="MinGW Makefiles"
     - PATH=${cmr_BUILD_DIR}/Feographia:${cmr_INSTALL_DIR}/bin:${cmr_INSTALL_DIR}/bin64:${cmr_INSTALL_DIR}/lib:${cmr_CMAKE_DIR}/bin:${MINGW_HOME}/bin:${PATH}

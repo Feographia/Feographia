@@ -295,8 +295,9 @@ before_install_script: &before_install_script
           -iv $encrypted_71baf22766bc_iv \
           -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
         chmod 600 ci/TravisCiKey
+        #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
         if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
-          echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+          ssh -oStrictHostKeyChecking=no github.com uptime
         fi
         eval "$(ssh-agent -s)"
         ssh-add ci/TravisCiKey

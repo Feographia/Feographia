@@ -286,7 +286,7 @@ before_install_script: &before_install_script
 
         # ==== Clean cache dirs ====
         # Do not use cache for build, only to send data between stages.
-        rm --force --dir --recursive ${cmr_WORK_DIR}
+        rm -f -d -R ${cmr_WORK_DIR}
         mkdir -p ${cmr_WORK_DIR}
 
         # ==== Add ssh key ====

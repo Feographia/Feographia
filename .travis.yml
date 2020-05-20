@@ -199,10 +199,12 @@ macos_cmake_env:
 
 macos_xcode_env:
   env: &macos_xcode_env
+    - cmr_XCODE=ON
     - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
 
 macos_make_env:
   env: &macos_make_env
+    - cmr_UNIX_MAKE_FILES=ON
     - cmr_JOBS="-j ${cmr_JOBS_CNT}"
 
 
@@ -519,7 +521,7 @@ build_script: &build_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Xcode" ]]; then
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]]; then
         ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
           -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
           -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -540,7 +542,7 @@ build_script: &build_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Make" ]]; then
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]]; then
         ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
           -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
           -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -652,12 +654,12 @@ test_script: &test_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Xcode" ]]; then
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]]; then
         ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${TODO} == "Make" ]]; then
+      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]]; then
         ${cmr_CTEST_CMD} --output-on-failure
       fi
 
@@ -667,9 +669,10 @@ test_script: &test_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
-        ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-      fi
+      # TODO: run tests for iOS.
+      #if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+      #  ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
+      #fi
 
 
 desctop_before_install_script: &desctop_before_install_script

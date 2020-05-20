@@ -77,6 +77,7 @@ cache:
 
 
 cmake_env:
+  # cmake_env must be after <os>_env.
   env: &cmake_env
     - cmr_CMAKE_MAJOR_VER=3
     - cmr_CMAKE_MINOR_VER=17
@@ -142,15 +143,15 @@ windows_env:
     - cmr_CMAKE_HOST=win64-x64
     - cmr_CMAKE_AR_EXT=zip
 
-    - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_ATTACH_WX_CONSOLE=ON
-    - PATH=${cmr_INSTALL_DIR}/bin:${PATH}
 
 windows_msvc_env:
   env: &windows_msvc_env
+    - cmr_MSVC=ON
     - cmr_CMAKE_GENERATOR="Visual Studio 15 2017"
     - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
     - cmr_CMAKE_CONFIGURATION_TYPES=${cmr_CMAKE_BUILD_TYPE}
+    - PATH=${cmr_BUILD_DIR}/Feographia/${cmr_CMAKE_BUILD_TYPE}:${cmr_INSTALL_DIR}/bin:${cmr_INSTALL_DIR}/bin64:${cmr_INSTALL_DIR}/lib:${PATH}
 
 windows_msvc_x64_env:
   env: &windows_msvc_x64_env
@@ -163,6 +164,16 @@ windows_msvc_x32_env:
 windows_msvc_winxp_env:
   env: &windows_msvc_winxp_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
+
+windows_mingw_env:
+  env: &windows_mingw_env
+    - cmr_MINGW=ON
+    - cmr_MINGW_ARCH_NAME=winlibs-x86_64-posix-seh-gcc-9.3.0-llvm-10.0.0-mingw-w64-7.0.0-r4.7z
+    - cmr_MINGW_URL=https://github.com/brechtsanders/winlibs_mingw/releases/download/9.3.0-10.0.0-7.0.0-r4/${cmr_MINGW_ARCH_NAME}
+    - cmr_MinGW_w64_ROOT_PATH=${cmr_INSTALL_DIR}
+    - MINGW_HOME=${cmr_MinGW_w64_ROOT_PATH}/mingw64
+    - cmr_CMAKE_GENERATOR="MinGW Makefiles"
+    - PATH=${cmr_BUILD_DIR}/Feographia:${cmr_INSTALL_DIR}/bin:${cmr_INSTALL_DIR}/bin64:${cmr_INSTALL_DIR}/lib:${cmr_CMAKE_DIR}/bin:${MINGW_HOME}/bin:${PATH}
 
 
 macos_env:
@@ -303,21 +314,11 @@ before_install_script: &before_install_script
         mkdir -p ${cmr_BUILD_DIR}
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
-        # TODO: copy GCC-9 and Clang-9 so-files to lib-dir.
-        #if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
-        #  if [[ TODO_compiller="gcc-9" ]]; then
-        #    # TODO: copy GCC-9 so-files to lib-dir.
-        #  fi
-        #  if [[ TODO_compiller="clang-9" ]]; then
-        #    # TODO: copy Clang-9 so-files to lib-dir.
-        #  fi
-        #fi
-
         # ==== Install MinGW-w64 GCC compiller ====
-        # TODO: copy MinGW dll-s to lib-dir.
-        if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
-          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MIN_GW_ARCH_NAME} ${cmr_MIN_GW_URL}
-          7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MIN_GW_ARCH_NAME}
+        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if Test_project stage.
+        if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ) ]]; then
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
+          7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
         fi
 
         # ==== Install Android SDK and NDK ====
@@ -351,6 +352,13 @@ before_install_script: &before_install_script
         # ==== Make work dirs ====
         mkdir -p ${cmr_DOWNLOAD_DIR}
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
+
+        # ==== Install MinGW-w64 GCC compiller ====
+        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if Test_project stage.
+        if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
+          7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
+        fi
 
         # ==== Install Android SDK with emulator ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
@@ -448,7 +456,7 @@ build_script: &build_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MSVC" ]]; then
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]]; then
         ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
           -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
           -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -470,8 +478,20 @@ build_script: &build_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
-        # TODO: CMake configure.
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
+        ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
+          -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
+          -Dcmr_PRINT_DEBUG:BOOL=ON \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+          -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
+          -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
+          -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
+            -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
+            -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
+          -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
+          -DATTACH_WX_CONSOLE=${cmr_ATTACH_WX_CONSOLE} \
 
         ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
       fi
@@ -600,12 +620,12 @@ test_script: &test_script
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MSVC" ]]; then
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]]; then
         ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${TODO} == "MinGW" ]]; then
+      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
         ${cmr_CTEST_CMD} --output-on-failure
       fi
 
@@ -749,6 +769,26 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
     - *debug_shared_env
 
 
+windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
+  name: "Windows, msvc, x64, release, shared"
+  <<: *windows_img
+  env:
+    - *windows_env
+    - *windows_msvc_env
+    - *windows_msvc_x64_env
+    - *cmake_env
+    - *release_shared_env
+
+windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
+  name: "Windows, mingw, x64, release, shared"
+  <<: *windows_img
+  env:
+    - *windows_env
+    - *windows_mingw_env
+    - *cmake_env
+    - *release_shared_env
+
+
 android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
   name: "Android, armeabi-v7a, release, shared"
   <<: *android_img
@@ -757,6 +797,7 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
     <<: *android_addons
   env:
     - *android_env
+    - *android_armeabi_v7a_env
     - *cmake_env
     - *release_shared_env
 
@@ -769,7 +810,7 @@ stages:
 
 jobs:
   include:
-# Linux
+# Linux, GCC
     - stage: Build_project
       <<: *linux_gcc_debug_shared
       <<: *desctop_before_install_script
@@ -777,6 +818,28 @@ jobs:
 
     - stage: Test_project
       <<: *linux_gcc_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Windows, MSVC
+    - stage: Build_project
+      <<: *windows_msvc_x64_release_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *windows_msvc_x64_release_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Windows, MinGW
+    - stage: Build_project
+      <<: *windows_mingw_x64_release_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+
+    - stage: Test_project
+      <<: *windows_mingw_x64_release_shared
       <<: *test_before_install_script
       <<: *test_script
 

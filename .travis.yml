@@ -316,7 +316,7 @@ before_install_script: &before_install_script
 
         # ==== Install MinGW-w64 GCC compiller ====
         # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if Test_project stage.
-        if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ) ]]; then
+        if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
         fi

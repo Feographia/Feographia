@@ -310,7 +310,7 @@ before_install_script: &before_install_script
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
         # ==== Install MinGW-w64 GCC compiller ====
-        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if Test_project stage.
+        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in Test_project stage.
         if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
@@ -319,6 +319,7 @@ before_install_script: &before_install_script
         # ==== Install Android SDK and NDK ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
           # ==== Android NDK ====
+          # TODO: copy libc++_shared.so to lib dir and do not install NDK in Test_project stage.
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
           unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
 
@@ -355,8 +356,14 @@ before_install_script: &before_install_script
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
         fi
 
-        # ==== Install Android SDK with emulator ====
+        # ==== Install Android SDK with emulator and NDK ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+          # ==== Android NDK ====
+          # TODO: copy libc++_shared.so to lib dir and do not install NDK in Test_project stage.
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
+          unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
+
+          # ==== Android SDK ====
           mkdir -p ${ANDROID_HOME}/cmdline-tools
           # https://stackoverflow.com/a/60598900
           # 'platforms' dir must be, at least empty.

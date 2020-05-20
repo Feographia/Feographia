@@ -80,7 +80,7 @@ cmake_env:
   env: &cmake_env
     - cmr_CMAKE_MAJOR_VER=3
     - cmr_CMAKE_MINOR_VER=17
-    - cmr_CMAKE_PATCH_VER=0
+    - cmr_CMAKE_PATCH_VER=2
 
     - cmr_CMAKE_RELEASE=cmake-${cmr_CMAKE_MAJOR_VER}.${cmr_CMAKE_MINOR_VER}.${cmr_CMAKE_PATCH_VER}-${cmr_CMAKE_HOST}
     - cmr_CMAKE_AR_FILE_NAME=${cmr_CMAKE_RELEASE}.${cmr_CMAKE_AR_EXT}
@@ -320,10 +320,27 @@ before_install_script: &before_install_script
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MIN_GW_ARCH_NAME}
         fi
 
-        # ==== Install Android NDK ====
+        # ==== Install Android SDK and NDK ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+          # ==== Android NDK ====
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
           unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
+
+          # ==== Android SDK ====
+          # Android SDK is only needed to find the path to the 'adb'
+          # in 'test/CMakeLists.txt' 'find_program(adb_exec adb)'
+
+          mkdir -p ${ANDROID_HOME}/cmdline-tools
+          # https://stackoverflow.com/a/60598900
+          # 'platforms' dir must be, at least empty.
+          mkdir -p ${ANDROID_HOME}/platforms
+
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_CMD_TOOLS_FILE_NAME}
+          unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_CMD_TOOLS_FILE_NAME} -d ${ANDROID_HOME}/cmdline-tools
+
+          # https://stackoverflow.com/a/60598900
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools"
         fi
       fi
 

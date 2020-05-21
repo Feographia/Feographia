@@ -2,8 +2,8 @@
 
 set -ev
 
-if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
-    ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" &&
+if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Host_Tools" ) ||
+    ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Project" &&
       ( ${cmr_TARGET_OS} == "Linux" ||
         ${cmr_TARGET_OS} == "Windows" ||
         ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
@@ -48,7 +48,7 @@ if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
   fi
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Host_Tools" ]] ; then
   # ==== Make work dirs ====
   mkdir -p ${cmr_UNPACKED_DIR}
   mkdir -p ${cmr_BUILD_DIR}
@@ -56,7 +56,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ]] ; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Project" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====
@@ -66,7 +66,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
   mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
   # ==== Install MinGW-w64 GCC compiller ====
-  # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in "Test Pproject" stage.
+  # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in "Test_Pproject" stage.
   if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
     7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
@@ -75,7 +75,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
   # ==== Install Android SDK and NDK ====
   if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
     # ==== Android NDK ====
-    # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
+    # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test_Pproject" stage.
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
     unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
 
@@ -97,7 +97,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
   fi
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test Pproject" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test_Pproject" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====
@@ -105,7 +105,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test Pproject" ]] ; then
   mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
   # ==== Install MinGW-w64 GCC compiller ====
-  # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if "Test Pproject" stage.
+  # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if "Test_Pproject" stage.
   if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
     7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
@@ -114,7 +114,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test Pproject" ]] ; then
   # ==== Install Android SDK with emulator and NDK ====
   if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
     # ==== Android NDK ====
-    # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
+    # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test_Pproject" stage.
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
     unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
 

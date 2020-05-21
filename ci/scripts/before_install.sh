@@ -2,7 +2,11 @@
 
 set -ev
 
-if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) || ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" && ( ${cmr_TARGET_OS} == "Linux" || ${cmr_TARGET_OS} == "Windows" || ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
+if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
+    ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" &&
+      ( ${cmr_TARGET_OS} == "Linux" ||
+        ${cmr_TARGET_OS} == "Windows" ||
+        ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
 
   # ==== Clean not persistent cache dirs ====
   # Do not use cache for build, only to send data between stages.
@@ -11,8 +15,8 @@ if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) || ( ${TRAVIS_BUILD_S
 
   # ==== Add ssh key ====
   # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-  openssl aes-256-cbc -K $encrypted_71baf22766bc_key \
-    -iv $encrypted_71baf22766bc_iv \
+  openssl aes-256-cbc -K ${encrypted_71baf22766bc_key} \
+    -iv ${encrypted_71baf22766bc_iv} \
     -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
   chmod 600 ci/TravisCiKey
   #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
@@ -44,7 +48,7 @@ if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) || ( ${TRAVIS_BUILD_S
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ]] ; then
   # ==== Make work dirs ====
   mkdir -p ${cmr_UNPACKED_DIR}
   mkdir -p ${cmr_BUILD_DIR}
@@ -52,7 +56,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====
@@ -93,7 +97,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Pproject" ]] ; then
+if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test Pproject" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====

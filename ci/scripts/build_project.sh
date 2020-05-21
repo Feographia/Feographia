@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ev
+
 ${cmr_CMAKE_CMD} --version
 
 cd ${cmr_BUILD_DIR}

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ev
+
 # ==== Run Android emulator ====
 #
 # http://mywiki.wooledge.org/BashSheet

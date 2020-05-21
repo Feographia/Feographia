@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ev
+
 if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ||
     ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" &&
       ( ${cmr_TARGET_OS} == "Linux" ||

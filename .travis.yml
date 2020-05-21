@@ -275,8 +275,8 @@ ios_cmake_env:
 before_install_script: &before_install_script
   before_install:
     - |-
-      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_host_tools" ||
-          ( ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" &&
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ||
+          ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" &&
             ( ${cmr_TARGET_OS} == "Linux" ||
               ${cmr_TARGET_OS} == "Windows" ||
               ${cmr_TARGET_OS} == "macOS" ) ) ]]; then
@@ -318,7 +318,7 @@ before_install_script: &before_install_script
       fi
 
     - |-
-      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_host_tools" ]]; then
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]]; then
         mkdir -p ${cmr_UNPACKED_DIR}
         mkdir -p ${cmr_BUILD_DIR}
         mkdir -p ${cmr_HOST_UNPACKED_DIR}
@@ -326,7 +326,7 @@ before_install_script: &before_install_script
       fi
 
     - |-
-      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build_project" ]]; then
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]]; then
         cd ${cmr_REPO_DIR}
 
         # ==== Make work dirs ====
@@ -336,7 +336,7 @@ before_install_script: &before_install_script
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
         # ==== Install MinGW-w64 GCC compiller ====
-        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in Test_project stage.
+        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in "Test Pproject" stage.
         if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
@@ -345,7 +345,7 @@ before_install_script: &before_install_script
         # ==== Install Android SDK and NDK ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
           # ==== Android NDK ====
-          # TODO: copy libc++_shared.so to lib dir and do not install NDK in Test_project stage.
+          # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
           unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
 
@@ -368,7 +368,7 @@ before_install_script: &before_install_script
       fi
 
     - |-
-      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test_project" ]]; then
+      if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Pproject" ]]; then
         cd ${cmr_REPO_DIR}
 
         # ==== Make work dirs ====
@@ -376,7 +376,7 @@ before_install_script: &before_install_script
         mkdir -p ${cmr_NOT_CACHED_INSTALL_DIR}
 
         # ==== Install MinGW-w64 GCC compiller ====
-        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if Test_project stage.
+        # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if "Test Pproject" stage.
         if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
           7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
@@ -385,7 +385,7 @@ before_install_script: &before_install_script
         # ==== Install Android SDK with emulator and NDK ====
         if [[ ${cmr_TARGET_OS} == "Android" ]]; then
           # ==== Android NDK ====
-          # TODO: copy libc++_shared.so to lib dir and do not install NDK in Test_project stage.
+          # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
           wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
           unzip -q ${cmr_DOWNLOAD_DIR}/${cmr_ANDROID_NDK_PLATFORM}.zip -d ${cmr_NOT_CACHED_INSTALL_DIR}
 
@@ -768,7 +768,7 @@ android_addons: &android_addons
 
 
 linux_gcc_debug_shared: &linux_gcc_debug_shared
-  name: "Linux, GCC, x64, Debug, shared"
+  name: "Linux, x64, GCC, Debug, shared"
   <<: *linux_img
   compiler: gcc-9
   addons:
@@ -791,7 +791,7 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
 
 
 linux_clang_debug_shared: &linux_clang_debug_shared
-  name: "Linux, CLang, x64, Debug, shared"
+  name: "Linux, x64, CLang, Debug, shared"
   <<: *linux_img
   compiler: clang-9
   addons:
@@ -814,7 +814,7 @@ linux_clang_debug_shared: &linux_clang_debug_shared
 
 
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
-  name: "Windows, MSVC, x64, Release, shared"
+  name: "Windows, x64, MSVC, Release, shared"
   <<: *windows_img
   addons:
     <<: *common_addons
@@ -828,7 +828,7 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
     - *windows_msvc_x64_env
 
 windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
-  name: "Windows, MinGW, x64, Release, shared"
+  name: "Windows, x64, GCC, MinGW, Release, shared"
   <<: *windows_img
   addons:
     <<: *common_addons
@@ -842,7 +842,7 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
 
 
 macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
-  name: "macOS, Clang, Xcode, Release, shared"
+  name: "macOS, x86, Clang, Xcode, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -856,7 +856,7 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
     - *macos_xcode_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
-  name: "macOS, Clang, Unix Makefiles, Release, shared"
+  name: "macOS, x86, Clang, Unix Makefiles, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -871,7 +871,7 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
 
 
 android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
-  name: "Android, armeabi-v7a, Release, shared"
+  name: "Android, armeabi-v7a, Clang, Release, shared"
   <<: *android_img
   addons:
     <<: *common_addons
@@ -886,7 +886,7 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
 
 
 ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
-  name: "iOS, Clang, Xcode, Release, shared"
+  name: "iOS, x86, Clang, Xcode, Release, shared"
   <<: *ios_img
   compiler: clang
   addons:
@@ -900,111 +900,111 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
 
 
 stages:
-  - Build_host_tools
-  - Build_project
-  - Test_project
+  - "Build Host Tools"
+  - "Build Project"
+  - "Test Pproject"
 
 
 jobs:
   include:
 # Linux, GCC
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *linux_gcc_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *linux_gcc_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Linux, Clang
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *linux_clang_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *linux_clang_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Windows, MSVC
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *windows_msvc_x64_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *windows_msvc_x64_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Windows, MinGW
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *windows_mingw_x64_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *windows_mingw_x64_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # macOS, Xcode
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *macos_clang_xcode_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *macos_clang_xcode_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # macOS, Unix Makefiles
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *macos_clang_make_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *macos_clang_make_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # Android
-    - stage: Build_host_tools
+    - stage: "Build Host Tools"
       <<: *android_release_shared_armeabi_v7a
       <<: *host_tools_before_install_script
       <<: *build_host_tools_script
 
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *android_release_shared_armeabi_v7a
       <<: *mobile_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *android_release_shared_armeabi_v7a
       <<: *test_before_install_script
       <<: *test_script
 
 
 # iOS
-    - stage: Build_host_tools
+    - stage: "Build Host Tools"
       <<: *ios_clang_xcode_release_shared
       <<: *host_tools_before_install_script
       <<: *build_host_tools_script
 
-    - stage: Build_project
+    - stage: "Build Project"
       <<: *ios_clang_xcode_release_shared
       <<: *mobile_before_install_script
       <<: *build_script
 
-    - stage: Test_project
+    - stage: "Test Pproject"
       <<: *ios_clang_xcode_release_shared
       <<: *test_before_install_script
       <<: *test_script

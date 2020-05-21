@@ -2,11 +2,7 @@
 
 set -ev
 
-if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) ||
-    ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" &&
-      ( ${cmr_TARGET_OS} == "Linux" ||
-        ${cmr_TARGET_OS} == "Windows" ||
-        ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
+if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) || ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" && ( ${cmr_TARGET_OS} == "Linux" || ${cmr_TARGET_OS} == "Windows" || ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
 
   # ==== Clean not persistent cache dirs ====
   # Do not use cache for build, only to send data between stages.

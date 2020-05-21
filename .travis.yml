@@ -55,9 +55,6 @@ env:
     - cmr_BUILD_TESTING=ON
     - cmr_JOBS_CNT=4
 
-    # Each build must have its own cache.
-    - cmr_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}
-
 
 before_cache:
   - rm -f -r -d ${cmr_BUILD_DIR}/build_libs
@@ -785,12 +782,12 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
         - *linux_packages
         - *linux_gcc_packages
   env:
+    - *debug_shared_env
     - *linux_env
     - *cmake_1st_env
     - *linux_cmake_env
     - *cmake_2nd_env
     - *linux_gcc_env
-    - *debug_shared_env
 
 
 linux_clang_debug_shared: &linux_clang_debug_shared
@@ -808,12 +805,12 @@ linux_clang_debug_shared: &linux_clang_debug_shared
         - *linux_packages
         - *linux_clang_packages
   env:
+    - *debug_shared_env
     - *linux_env
     - *cmake_1st_env
     - *linux_cmake_env
     - *cmake_2nd_env
     - *linux_clang_env
-    - *debug_shared_env
 
 
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
@@ -822,13 +819,13 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
   addons:
     <<: *common_addons
   env:
+    - *release_shared_env
     - *windows_env
     - *cmake_1st_env
     - *windows_cmake_env
     - *cmake_2nd_env
     - *windows_msvc_env
     - *windows_msvc_x64_env
-    - *release_shared_env
 
 windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
   name: "Windows, MinGW, x64, Release, shared"
@@ -836,12 +833,12 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
   addons:
     <<: *common_addons
   env:
+    - *release_shared_env
     - *windows_env
     - *cmake_1st_env
     - *windows_cmake_env
     - *cmake_2nd_env
     - *windows_mingw_env
-    - *release_shared_env
 
 
 macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
@@ -851,12 +848,12 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
   addons:
     <<: *common_addons
   env:
+    - *release_shared_env
     - *macos_env
     - *cmake_1st_env
     - *macos_cmake_env
     - *cmake_2nd_env
     - *macos_xcode_env
-    - *release_shared_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
   name: "macOS, Clang, Unix Makefiles, Release, shared"
@@ -865,12 +862,12 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
   addons:
     <<: *common_addons
   env:
+    - *release_shared_env
     - *macos_env
     - *cmake_1st_env
     - *macos_cmake_env
     - *cmake_2nd_env
     - *macos_make_env
-    - *release_shared_env
 
 
 android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
@@ -880,12 +877,12 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
     <<: *common_addons
     <<: *android_addons
   env:
+    - *release_shared_env
     - *android_env
     - *cmake_1st_env
     - *android_cmake_env
     - *cmake_2nd_env
     - *android_armeabi_v7a_env
-    - *release_shared_env
 
 
 ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
@@ -895,11 +892,11 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
   addons:
     <<: *common_addons
   env:
+    - *release_shared_env
     - *ios_env
     - *cmake_1st_env
     - *ios_cmake_env
     - *cmake_2nd_env
-    - *release_shared_env
 
 
 stages:

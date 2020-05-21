@@ -2,6 +2,8 @@
 
 set -ev
 
+echo ${TRAVIS_BUILD_STAGE_NAME}
+
 if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Host_Tools" ) ||
     ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build_Project" &&
       ( ${cmr_TARGET_OS} == "Linux" ||

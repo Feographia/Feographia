@@ -36,15 +36,17 @@ env:
     # of the repository currently being built.
     - cmr_MAIN_REPO_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
 
+    - cmr_PERSISTENT_CACHE=${HOME}/build/persistent_cache
+
     - cmr_WORK_DIR=${HOME}/build/work
     - cmr_REPO_DIR=${cmr_WORK_DIR}/${cmr_APP_NAME}
-
-    - cmr_NOT_CACHED_INSTALL_DIR=${cmr_WORK_DIR}/install_not_cached
 
     - cmr_DOWNLOAD_DIR=${cmr_WORK_DIR}/download
     - cmr_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked
     - cmr_BUILD_DIR=${cmr_WORK_DIR}/build
-    - cmr_INSTALL_DIR=${cmr_WORK_DIR}/install
+
+    - cmr_NOT_CACHED_INSTALL_DIR=${cmr_WORK_DIR}/install_not_cached
+    - cmr_INSTALL_DIR=${cmr_PERSISTENT_CACHE}/install
 
     - cmr_HOST_TOOLS_PROJECT_DIR=${cmr_REPO_DIR}/host_tools
     - cmr_HOST_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked_host_tools
@@ -67,7 +69,8 @@ cache:
   directories:
   - ${cmr_REPO_DIR}
   - ${cmr_BUILD_DIR}
-  - ${cmr_INSTALL_DIR}
+#  - ${cmr_INSTALL_DIR}
+  - ${cmr_PERSISTENT_CACHE}
 
 # Disable cache
 #cache: false

@@ -22,7 +22,6 @@
 # ****************************************************************************
 
 # === Common ===
-
 sudo: false
 
 language: cpp
@@ -58,6 +57,7 @@ env:
     - cmr_JOBS_CNT=4
 
 
+# === Cache ===
 before_cache:
   - rm -f -r -d ${cmr_BUILD_DIR}/build_libs
   - rm -f -r -d ${cmr_HOST_INSTALL_DIR}/include
@@ -76,6 +76,7 @@ cache:
 #cache: false
 
 
+# === CMake env ===
 cmake_1st_env:
   # cmake_1st_env must be after <os>_env.
   env: &cmake_1st_env
@@ -94,6 +95,7 @@ cmake_2nd_env:
     - cmr_CTEST_CMD=${cmr_CMAKE_DIR}/bin/ctest
 
 
+# === Build types env ===
 debug_shared_env:
   env: &debug_shared_env
     - cmr_CMAKE_BUILD_TYPE=Debug
@@ -119,6 +121,7 @@ release_static_env:
     - cmr_ANDROID_STL=c++_static
 
 
+# === Linux env ===
 linux_env:
   env: &linux_env
     - cmr_TARGET_OS=Linux
@@ -142,6 +145,7 @@ linux_clang_env:
     - CXX=clang++-9
 
 
+# === Windows env ===
 windows_env:
   env: &windows_env
     - cmr_TARGET_OS=Windows
@@ -186,6 +190,7 @@ windows_mingw_env:
     - PATH=${cmr_BUILD_DIR}/Feographia:${cmr_INSTALL_DIR}/bin:${cmr_INSTALL_DIR}/bin64:${cmr_INSTALL_DIR}/lib:${cmr_CMAKE_DIR}/bin:${MINGW_HOME}/bin:${PATH}
 
 
+# === macOS env ===
 macos_env:
   env: &macos_env
     - cmr_TARGET_OS=macOS
@@ -201,13 +206,16 @@ macos_xcode_env:
   env: &macos_xcode_env
     - cmr_XCODE=ON
     - cmr_JOBS="-jobs ${cmr_JOBS_CNT}"
+    - cmr_CMAKE_GENERATOR="Xcode"
 
 macos_make_env:
   env: &macos_make_env
     - cmr_UNIX_MAKE_FILES=ON
     - cmr_JOBS="-j ${cmr_JOBS_CNT}"
+    - cmr_CMAKE_GENERATOR="Unix Makefiles"
 
 
+# === Android env ===
 android_env:
   env: &android_env
     - cmr_TARGET_OS=Android
@@ -262,6 +270,7 @@ android_x86_64_env:
     - cmr_ANDROID_EMULATOR_API_LEVEL=24
 
 
+# === iOS env ===
 ios_env:
   env: &ios_env
     - cmr_TARGET_OS=iOS
@@ -269,12 +278,14 @@ ios_env:
 #    - cmr_CMAKE_MIN_VER=3.15
     - cmr_CMAKE_HOST=Darwin-x86_64
     - cmr_CMAKE_AR_EXT=tar.gz
+    - cmr_CMAKE_GENERATOR="Xcode"
 
 ios_cmake_env:
   env: &ios_cmake_env
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
+# === Before install script ===
 before_install_script: &before_install_script
   before_install:
     - |-
@@ -284,7 +295,7 @@ before_install_script: &before_install_script
               ${cmr_TARGET_OS} == "Windows" ||
               ${cmr_TARGET_OS} == "macOS" ) ) ]]; then
 
-        # ==== Clean cache dirs ====
+        # ==== Clean not persistent cache dirs ====
         # Do not use cache for build, only to send data between stages.
         rm -f -d -R ${cmr_WORK_DIR}
         mkdir -p ${cmr_WORK_DIR}
@@ -322,6 +333,7 @@ before_install_script: &before_install_script
 
     - |-
       if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]]; then
+        # ==== Make work dirs ====
         mkdir -p ${cmr_UNPACKED_DIR}
         mkdir -p ${cmr_BUILD_DIR}
         mkdir -p ${cmr_HOST_UNPACKED_DIR}
@@ -410,6 +422,28 @@ before_install_script: &before_install_script
       fi
 
 
+desctop_before_install_script: &desctop_before_install_script
+  <<: *before_install_script
+  git:
+    submodules: false
+
+host_tools_before_install_script: &host_tools_before_install_script
+  <<: *before_install_script
+  git:
+    submodules: false
+
+mobile_before_install_script: &mobile_before_install_script
+  <<: *before_install_script
+  git:
+    clone: false
+
+test_before_install_script: &test_before_install_script
+  <<: *before_install_script
+  git:
+    clone: false
+
+
+# === Build host tools script ===
 build_host_tools_script: &build_host_tools_script
   git:
     submodules: false
@@ -462,9 +496,9 @@ build_host_tools_script: &build_host_tools_script
       fi
 
 
+# === Build project script ===
 build_script: &build_script
   script:
-    # === Build project ===
     - ${cmr_CMAKE_CMD} --version
 
     - cd ${cmr_BUILD_DIR}
@@ -540,7 +574,7 @@ build_script: &build_script
           -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
             -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
             -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
-          -DCMAKE_GENERATOR:STRING="Xcode" \
+          -DCMAKE_GENERATOR:STRING=${cmr_CMAKE_GENERATOR} \
             -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE} \
           -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
 
@@ -560,7 +594,7 @@ build_script: &build_script
           -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
             -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
             -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
-          -DCMAKE_GENERATOR:STRING="Unix Makefiles" \
+          -DCMAKE_GENERATOR:STRING=${cmr_CMAKE_GENERATOR} \
 
         ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
       fi
@@ -604,7 +638,7 @@ build_script: &build_script
           -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
             -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
             -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
-          -DCMAKE_GENERATOR:STRING="Xcode" \
+          -DCMAKE_GENERATOR:STRING=${cmr_CMAKE_GENERATOR} \
             -DCMAKE_CONFIGURATION_TYPES:STRING=${cmr_CMAKE_BUILD_TYPE} \
           -DCMAKE_TOOLCHAIN_FILE:PATH=${cmr_REPO_DIR}/libs/LibCMaker/cmake/ios.toolchain.cmake \
             -DPLATFORM:STRING="SIMULATOR64" \
@@ -616,6 +650,7 @@ build_script: &build_script
       fi
 
 
+# === Test script ===
 test_script: &test_script
   script:
     # ==== Run Android emulator ====
@@ -644,63 +679,27 @@ test_script: &test_script
     - cd ${cmr_BUILD_DIR}
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
+      if [[  ( ${cmr_TARGET_OS} == "Linux" )
+          || ( ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" )
+          || ( ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" )
+          || ( ${cmr_TARGET_OS} == "Android" )
+          ]]; then
         ${cmr_CTEST_CMD} --output-on-failure
       fi
 
     - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]]; then
+      if [[  ( ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" )
+          || ( ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" )
+          # TODO: run tests for iOS.
+          #|| ( ${cmr_TARGET_OS} == "iOS" )
+          ]]; then
         ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
       fi
 
-    - |-
-      if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
-        ${cmr_CTEST_CMD} --output-on-failure
-      fi
-
-    - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]]; then
-        ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-      fi
-
-    - |-
-      if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]]; then
-        ${cmr_CTEST_CMD} --output-on-failure
-      fi
-
-    - |-
-      if [[ ${cmr_TARGET_OS} == "Android" ]]; then
-        ${cmr_CTEST_CMD} --output-on-failure
-      fi
-
-    - |-
-      # TODO: run tests for iOS.
-      #if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
-      #  ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
-      #fi
 
 
-desctop_before_install_script: &desctop_before_install_script
-  <<: *before_install_script
-  git:
-    submodules: false
 
-host_tools_before_install_script: &host_tools_before_install_script
-  <<: *before_install_script
-  git:
-    submodules: false
-
-mobile_before_install_script: &mobile_before_install_script
-  <<: *before_install_script
-  git:
-    clone: false
-
-test_before_install_script: &test_before_install_script
-  <<: *before_install_script
-  git:
-    clone: false
-
-
+# === Images ===
 linux_img: &linux_img
   os: linux
   dist: bionic
@@ -721,6 +720,7 @@ ios_img: &ios_img
   osx_image: xcode10.2
 
 
+# === Addons ===
 common_addons: &common_addons
   ssh_known_hosts:
     - github.com
@@ -770,6 +770,7 @@ android_addons: &android_addons
       - ninja-build
 
 
+# === Linux ===
 linux_gcc_debug_shared: &linux_gcc_debug_shared
   name: "Linux, x64, GCC, Debug, shared"
   <<: *linux_img
@@ -816,6 +817,9 @@ linux_clang_debug_shared: &linux_clang_debug_shared
     - *linux_clang_env
 
 
+# === Job templates ===
+
+# === Windows ===
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
   name: "Windows, x64, MSVC, Release, shared"
   <<: *windows_img
@@ -844,6 +848,7 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
     - *windows_mingw_env
 
 
+# === macOS ===
 macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
   name: "macOS, x86, Clang, Xcode, Release, shared"
   <<: *macos_img
@@ -873,6 +878,7 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
     - *macos_make_env
 
 
+# === Android ===
 android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
   name: "Android, armeabi-v7a, Clang, Release, shared"
   <<: *android_img
@@ -888,6 +894,7 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
     - *android_armeabi_v7a_env
 
 
+# === iOS ===
 ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
   name: "iOS, x86, Clang, Xcode, Release, shared"
   <<: *ios_img
@@ -902,12 +909,14 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
     - *cmake_2nd_env
 
 
+# === Stages ===
 stages:
   - "Build Host Tools"
   - "Build Project"
   - "Test Pproject"
 
 
+# === Jobs ===
 jobs:
   include:
 # Linux, GCC
@@ -1013,6 +1022,7 @@ jobs:
       <<: *test_script
 
 
+# Trigger downstreams
 # Trigger the building of the dependent libs.
     - stage: Trigger downstreams
       name: "Trigger downstreams"

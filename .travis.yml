@@ -316,14 +316,14 @@ test_before_install_script: &test_before_install_script
     clone: false
 
 
-# === Build_Host_Tools script ===
+# === Build Host Tools script ===
 build_host_tools_script: &build_host_tools_script
   git:
     submodules: false
   script: ./ci/scripts/build_host_tools.sh
 
 
-# === Build_Project script ===
+# === Build Project script ===
 build_script: &build_script
   script: ./ci/scripts/build_project.sh
 
@@ -549,112 +549,112 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
 
 # === Stages ===
 stages:
-  - "Build_Host_Tools"
-  - "Build_Project"
-  - "Test_Pproject"
+  - "Build Host Tools"
+  - "Build Project"
+  - "Test Project"
 
 
 # === Jobs ===
 jobs:
   include:
 # Linux, GCC
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *linux_gcc_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *linux_gcc_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Linux, Clang
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *linux_clang_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *linux_clang_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Windows, MSVC
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *windows_msvc_x64_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *windows_msvc_x64_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 # Windows, MinGW
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *windows_mingw_x64_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *windows_mingw_x64_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # macOS, Xcode
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *macos_clang_xcode_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *macos_clang_xcode_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # macOS, Unix Makefiles
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *macos_clang_make_release_shared
       <<: *desctop_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *macos_clang_make_release_shared
       <<: *test_before_install_script
       <<: *test_script
 
 
 # Android
-    - stage: "Build_Host_Tools"
+    - stage: "Build Host Tools"
       <<: *android_release_shared_armeabi_v7a
       <<: *host_tools_before_install_script
       <<: *build_host_tools_script
 
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *android_release_shared_armeabi_v7a
       <<: *mobile_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *android_release_shared_armeabi_v7a
       <<: *test_before_install_script
       <<: *test_script
 
 
 # iOS
-    - stage: "Build_Host_Tools"
+    - stage: "Build Host Tools"
       <<: *ios_clang_xcode_release_shared
       <<: *host_tools_before_install_script
       <<: *build_host_tools_script
 
-    - stage: "Build_Project"
+    - stage: "Build Project"
       <<: *ios_clang_xcode_release_shared
       <<: *mobile_before_install_script
       <<: *build_script
 
-    - stage: "Test_Pproject"
+    - stage: "Test Project"
       <<: *ios_clang_xcode_release_shared
       <<: *test_before_install_script
       <<: *test_script
@@ -662,7 +662,7 @@ jobs:
 
 # Trigger downstreams
 # Trigger the building of the dependent libs.
-    - stage: "Trigger_downstreams"
+    - stage: "Trigger downstreams"
       name: "Trigger downstreams"
       if: branch = skipped  # TODO: remove it after fix Windows build with secure vars and add secure var TRAVIS_ACCESS_TOKEN.
 

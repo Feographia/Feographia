@@ -320,14 +320,18 @@ before_install_script: &before_install_script
 
         # ==== Make work dirs ====
         mkdir -p ${cmr_DOWNLOAD_DIR}
-        mkdir -p ${cmr_INSTALL_DIR}
+        if [[ ! -d ${cmr_INSTALL_DIR} ]]; then
+          mkdir -p ${cmr_INSTALL_DIR}
+        fi
 
         # ==== Install CMake ====
-        wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} ${cmr_CMAKE_BASE_URL}/${cmr_CMAKE_AR_FILE_NAME}
-        if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
-          7z.exe x -aoa -o${cmr_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME}
-        else
-          tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME} --directory ${cmr_INSTALL_DIR}
+        if [[ ! -f ${cmr_CMAKE_CMD} ]]; then
+          wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} ${cmr_CMAKE_BASE_URL}/${cmr_CMAKE_AR_FILE_NAME}
+          if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
+            7z.exe x -aoa -o${cmr_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME}
+          else
+            tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME} --directory ${cmr_INSTALL_DIR}
+          fi
         fi
       fi
 
@@ -695,8 +699,6 @@ test_script: &test_script
           ]]; then
         ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
       fi
-
-
 
 
 # === Images ===

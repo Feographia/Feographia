@@ -2,11 +2,11 @@
 
 set -ev
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" || \
-    ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" && \
-      ( ${cmr_TARGET_OS} == "Linux" || \
-        ${cmr_TARGET_OS} == "Windows" || \
-        ${cmr_TARGET_OS} == "macOS" ) ) ]]; then
+if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ) ||
+    ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" &&
+      ( ${cmr_TARGET_OS} == "Linux" ||
+        ${cmr_TARGET_OS} == "Windows" ||
+        ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
 
   # ==== Clean not persistent cache dirs ====
   # Do not use cache for build, only to send data between stages.
@@ -20,7 +20,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" || \
     -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
   chmod 600 ci/TravisCiKey
   #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
+  if [[ ${cmr_TARGET_OS} == "Windows" ]] ; then
     ssh -oStrictHostKeyChecking=no github.com uptime
   fi
   eval "$(ssh-agent -s)"
@@ -33,14 +33,14 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" || \
 
   # ==== Make work dirs ====
   mkdir -p ${cmr_DOWNLOAD_DIR}
-  if [[ ! -d ${cmr_INSTALL_DIR} ]]; then
+  if [[ ! -d ${cmr_INSTALL_DIR} ]] ; then
     mkdir -p ${cmr_INSTALL_DIR}
   fi
 
   # ==== Install CMake ====
-  if [[ ! -f ${cmr_CMAKE_CMD} ]]; then
+  if [[ ! -f ${cmr_CMAKE_CMD} ]] ; then
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} ${cmr_CMAKE_BASE_URL}/${cmr_CMAKE_AR_FILE_NAME}
-    if [[ ${cmr_TARGET_OS} == "Windows" ]]; then
+    if [[ ${cmr_TARGET_OS} == "Windows" ]] ; then
       7z.exe x -aoa -o${cmr_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME}
     else
       tar -xf ${cmr_DOWNLOAD_DIR}/${cmr_CMAKE_AR_FILE_NAME} --directory ${cmr_INSTALL_DIR}
@@ -48,7 +48,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" || \
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]]; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
   # ==== Make work dirs ====
   mkdir -p ${cmr_UNPACKED_DIR}
   mkdir -p ${cmr_BUILD_DIR}
@@ -56,7 +56,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]]; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]]; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====
@@ -67,13 +67,13 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]]; then
 
   # ==== Install MinGW-w64 GCC compiller ====
   # TODO: copy MinGW dll-s to lib-dir and do not install MinGW in "Test Pproject" stage.
-  if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
+  if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
     7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
   fi
 
   # ==== Install Android SDK and NDK ====
-  if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+  if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
     # ==== Android NDK ====
     # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip
@@ -97,7 +97,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]]; then
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Pproject" ]]; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Pproject" ]] ; then
   cd ${cmr_REPO_DIR}
 
   # ==== Make work dirs ====
@@ -106,13 +106,13 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Pproject" ]]; then
 
   # ==== Install MinGW-w64 GCC compiller ====
   # TODO: copy MinGW dll-s to lib-dir and do not install MinGW if "Test Pproject" stage.
-  if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
+  if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME} ${cmr_MINGW_URL}
     7z.exe x -aoa -o${cmr_NOT_CACHED_INSTALL_DIR} ${cmr_DOWNLOAD_DIR}\${cmr_MINGW_ARCH_NAME}
   fi
 
   # ==== Install Android SDK with emulator and NDK ====
-  if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+  if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
     # ==== Android NDK ====
     # TODO: copy libc++_shared.so to lib dir and do not install NDK in "Test Pproject" stage.
     wget -nv -c -N -P ${cmr_DOWNLOAD_DIR} https://dl.google.com/android/repository/${cmr_ANDROID_NDK_PLATFORM}.zip

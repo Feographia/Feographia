@@ -5,7 +5,7 @@ set -ev
 ${cmr_CMAKE_CMD} --version
 cd ${cmr_HOST_BUILD_DIR}
 
-if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -24,7 +24,7 @@ if [[ ${cmr_TARGET_OS} == "Android" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi
 
-if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \

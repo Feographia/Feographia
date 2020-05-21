@@ -6,7 +6,7 @@ ${cmr_CMAKE_CMD} --version
 
 cd ${cmr_BUILD_DIR}
 
-if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
+if [[ ${cmr_TARGET_OS} == "Linux" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -22,7 +22,7 @@ if [[ ${cmr_TARGET_OS} == "Linux" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi
 
-if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]]; then
+if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -43,7 +43,7 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
 fi
 
-if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
+if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -61,7 +61,7 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi
 
-if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]]; then
+if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -80,7 +80,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
 fi
 
-if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]]; then
+if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -97,7 +97,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi
 
-if [[ ${cmr_TARGET_OS} == "Android" ]]; then
+if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -122,7 +122,7 @@ if [[ ${cmr_TARGET_OS} == "Android" ]]; then
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi
 
-if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
   ${cmr_CMAKE_CMD} ${cmr_REPO_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \

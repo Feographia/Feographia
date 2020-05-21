@@ -92,7 +92,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
     -Dcmr_UNPACKED_DIR:PATH=${cmr_DOWNLOAD_DIR}/${cmr_UNPACKED_DIR} \
       -DCMAKE_BUILD_TYPE:STRING=${cmr_CMAKE_BUILD_TYPE} \
       -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
-    -DCMAKE_GENERATOR:STRING=${cmr_CMAKE_GENERATOR} \
+    -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
 
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
 fi

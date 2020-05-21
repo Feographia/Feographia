@@ -22,6 +22,7 @@
 # ****************************************************************************
 
 # === Common ===
+
 sudo: false
 
 language: cpp
@@ -58,6 +59,7 @@ env:
 
 
 # === Cache ===
+
 before_cache:
   - rm -f -r -d ${cmr_BUILD_DIR}/build_libs
   - rm -f -r -d ${cmr_HOST_INSTALL_DIR}/include
@@ -75,6 +77,8 @@ cache:
 # Disable cache
 #cache: false
 
+
+# === Env variables ===
 
 # === CMake env ===
 cmake_1st_env:
@@ -285,6 +289,8 @@ ios_cmake_env:
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
+# === Scripts ===
+
 # === Before install script ===
 before_install_script: &before_install_script
   before_install: ./ci/scripts/before_install.sh
@@ -326,6 +332,8 @@ build_script: &build_script
 test_script: &test_script
   script: ./ci/scripts/test_project.sh
 
+
+# === Configs ===
 
 # === Images ===
 linux_img: &linux_img
@@ -398,6 +406,8 @@ android_addons: &android_addons
       - ninja-build
 
 
+# === Job templates ===
+
 # === Linux ===
 linux_gcc_debug_shared: &linux_gcc_debug_shared
   name: "Linux, x64, GCC, Debug, shared"
@@ -444,8 +454,6 @@ linux_clang_debug_shared: &linux_clang_debug_shared
     - *cmake_2nd_env
     - *linux_clang_env
 
-
-# === Job templates ===
 
 # === Windows ===
 windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
@@ -536,6 +544,8 @@ ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
     - *ios_cmake_env
     - *cmake_2nd_env
 
+
+# === Build matrix ===
 
 # === Stages ===
 stages:
@@ -670,6 +680,8 @@ jobs:
         # NOTE: LibCMaker lib triggers.
         - ./trigger.sh LibCMaker LibCMaker_FontConfig       master $TRAVIS_ACCESS_TOKEN
 
+
+# === Notifications ===
 
 notifications:
   email:

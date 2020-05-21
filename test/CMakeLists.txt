@@ -253,7 +253,7 @@ if(BUILD_TESTING)
   )
 
   # litehtml renderer tests
-  if(NOT ANDROID)  # FIXME: Fix this test for these platforms.
+  if(NOT ANDROID AND NOT WIN32)  # FIXME: Fix this test for these platforms.
     add_fg_test_executable("LiteHtmlContainer_test"
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
       ${fgkardia_TARGET}

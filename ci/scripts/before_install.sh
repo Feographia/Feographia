@@ -33,7 +33,8 @@ if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
   # https://gist.github.com/iedemam/9830045
   # https://stackoverflow.com/a/24600210
   # Replace the SSH URL with the public URL.
-  sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  # macOS specific sed version required the -e option after the -i option.
+  sed -i -e 's/git@github.com:/https:\/\/github.com\//' .gitmodules
 
   git submodule update --init --recursive
 

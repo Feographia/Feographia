@@ -27,7 +27,7 @@ if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
 #  ssh-add ci/TravisCiKey
 
   # ==== Clone git repo ====
-  cp -r ${cmr_MAIN_REPO_DIR} ${cmr_WORK_DIR}
+  cp -r ${cmr_REPO_MAIN_DIR} ${cmr_WORK_DIR}
   cd ${cmr_REPO_DIR}
 
   # https://gist.github.com/iedemam/9830045

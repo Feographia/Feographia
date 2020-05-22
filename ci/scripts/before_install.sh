@@ -13,22 +13,28 @@ if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
   rm -f -d -R ${cmr_WORK_DIR}
   mkdir -p ${cmr_WORK_DIR}
 
-  # ==== Add ssh key ====
-  # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
-  openssl aes-256-cbc -K ${encrypted_71baf22766bc_key} \
-    -iv ${encrypted_71baf22766bc_iv} \
-    -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
-  chmod 600 ci/TravisCiKey
-  #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  if [[ ${cmr_TARGET_OS} == "Windows" ]] ; then
-    ssh -oStrictHostKeyChecking=no github.com uptime
-  fi
-  eval "$(ssh-agent -s)"
-  ssh-add ci/TravisCiKey
+#  # ==== Add ssh key ====
+#  # https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md
+#  openssl aes-256-cbc -K ${encrypted_71baf22766bc_key} \
+#    -iv ${encrypted_71baf22766bc_iv} \
+#    -in ci/TravisCiKey.enc -out ci/TravisCiKey -d
+#  chmod 600 ci/TravisCiKey
+#  #echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+#  if [[ ${cmr_TARGET_OS} == "Windows" ]] ; then
+#    ssh -oStrictHostKeyChecking=no github.com uptime
+#  fi
+#  eval "$(ssh-agent -s)"
+#  ssh-add ci/TravisCiKey
 
   # ==== Clone git repo ====
   cp -r ${cmr_MAIN_REPO_DIR} ${cmr_WORK_DIR}
   cd ${cmr_REPO_DIR}
+
+  # https://gist.github.com/iedemam/9830045
+  # https://stackoverflow.com/a/24600210
+  # Replace the SSH URL with the public URL.
+  sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+
   git submodule update --init --recursive
 
   # ==== Make work dirs ====

@@ -9,6 +9,12 @@ set -ev
 # Only the command before the & is executed asynchronously
 # and you must not put a ';' after the '&', the '&' replaces the ';'.
 if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
+  # NOTE: 'arm64-v8a' emulator (any API level) does not start on Linux
+  #       with success, boot animation is not ending.
+  # NOTE: 'armeabi-v7a' API 16 emulator on Linux executes programs regularly
+  #       with "Illegal instruction". API 24 on Linux works fine.
+  # NOTE: 'x86' API 24 emulator does not start on Linux with success.
+  #       API 23 on Linux works fine.
   echo | avdmanager create avd -f -n fg_test -c 1024M -k "system-images;android-${cmr_ANDROID_EMULATOR_API_LEVEL};default;${cmr_ANDROID_ABI}"
   emulator -avd fg_test -memory 1024 -no-window -gpu auto -no-accel -no-snapshot -no-audio -camera-back none -camera-front none &
   ${cmr_REPO_DIR}/libs/LibCMaker/ci/android-wait-for-emulator.sh

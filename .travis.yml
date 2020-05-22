@@ -31,12 +31,17 @@ env:
   global:
     - cmr_APP_NAME=Feographia
 
+    - cmr_ATTACH_WX_CONSOLE=ON  # For Windows only
+    - cmr_BUILD_TESTING=ON
+    - cmr_JOBS_CNT=4
+
 #    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
     # TRAVIS_REPO_SLUG: The slug (in form: owner_name/repo_name)
     # of the repository currently being built.
     - cmr_REPO_MAIN_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
 
     - cmr_PERSISTENT_CACHE=${HOME}/build/persistent_cache
+    - cmr_INSTALL_DIR=${cmr_PERSISTENT_CACHE}/install
 
     - cmr_WORK_DIR=${HOME}/build/work
     - cmr_REPO_DIR=${cmr_WORK_DIR}/${cmr_APP_NAME}
@@ -44,18 +49,13 @@ env:
     - cmr_DOWNLOAD_DIR=${cmr_WORK_DIR}/download
     - cmr_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked
     - cmr_BUILD_DIR=${cmr_WORK_DIR}/build
-
     - cmr_NOT_CACHED_INSTALL_DIR=${cmr_WORK_DIR}/install_not_cached
-    - cmr_INSTALL_DIR=${cmr_PERSISTENT_CACHE}/install
 
     - cmr_HOST_TOOLS_PROJECT_DIR=${cmr_REPO_DIR}/host_tools
     - cmr_HOST_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked_host_tools
     - cmr_HOST_BUILD_DIR=${cmr_WORK_DIR}/build_host_tools
     - cmr_HOST_INSTALL_DIR=${cmr_INSTALL_DIR}/host_tools
     - cmr_HOST_TOOLS_STAMP_FILE_NAME="host_tools_stamp"
-
-    - cmr_BUILD_TESTING=ON
-    - cmr_JOBS_CNT=4
 
 
 # === Cache ===
@@ -104,25 +104,25 @@ debug_shared_env:
   env: &debug_shared_env
     - cmr_CMAKE_BUILD_TYPE=Debug
     - cmr_BUILD_SHARED_LIBS=ON
-    - cmr_ANDROID_STL=c++_shared
+    - cmr_ANDROID_STL=c++_shared  # For Android only
 
 debug_static_env:
   env: &debug_static_env
     - cmr_CMAKE_BUILD_TYPE=Debug
     - cmr_BUILD_SHARED_LIBS=OFF
-    - cmr_ANDROID_STL=c++_static
+    - cmr_ANDROID_STL=c++_static  # For Android only
 
 release_shared_env:
   env: &release_shared_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=ON
-    - cmr_ANDROID_STL=c++_shared
+    - cmr_ANDROID_STL=c++_shared  # For Android only
 
 release_static_env:
   env: &release_static_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=OFF
-    - cmr_ANDROID_STL=c++_static
+    - cmr_ANDROID_STL=c++_static  # For Android only
 
 
 # === Linux env ===
@@ -156,8 +156,6 @@ windows_env:
 #    - cmr_CMAKE_MIN_VER=3.11
     - cmr_CMAKE_HOST=win64-x64
     - cmr_CMAKE_AR_EXT=zip
-
-    - cmr_ATTACH_WX_CONSOLE=ON
 
 windows_cmake_env:
   env: &windows_cmake_env
@@ -253,18 +251,24 @@ android_armeabi_v7a_env:
   env: &android_armeabi_v7a_env
     - cmr_ANDROID_ABI=armeabi-v7a
     - cmr_ANDROID_NATIVE_API_LEVEL=16
+    # NOTE: 'armeabi-v7a' API 16 emulator on Linux executes programs regularly
+    #       with "Illegal instruction". API 24 on Linux works fine.
     - cmr_ANDROID_EMULATOR_API_LEVEL=24
 
 android_arm64_v8a_env:
   env: &android_arm64_v8a_env
     - cmr_ANDROID_ABI=arm64-v8a
     - cmr_ANDROID_NATIVE_API_LEVEL=21
+    # NOTE: 'arm64-v8a' emulator (any API level) does not start on Linux
+    #       with success, boot animation is not ending.
     - cmr_ANDROID_EMULATOR_API_LEVEL=24
 
 android_x86_env:
   env: &android_x86_env
     - cmr_ANDROID_ABI=x86
     - cmr_ANDROID_NATIVE_API_LEVEL=16
+    # NOTE: 'x86' API 24 emulator does not start on Linux with success.
+    #       API 23 on Linux works fine.
     - cmr_ANDROID_EMULATOR_API_LEVEL=23
 
 android_x86_64_env:

@@ -77,6 +77,9 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
       -DCMAKE_CONFIGURATION_TYPES:STRING="${cmr_CMAKE_BUILD_TYPE}" \
     -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
 
+    # The job exceeded the maximum log length, and has been terminated.
+    #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
+
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
 fi
 
@@ -141,6 +144,9 @@ if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
       -DENABLE_VISIBILITY:BOOL=${cmr_BUILD_SHARED_LIBS} \
     -Dcmr_HOST_BUILD_DIR:PATH=${cmr_HOST_BUILD_DIR} \
     -Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet" \
+
+    # The job exceeded the maximum log length, and has been terminated.
+    #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
 fi

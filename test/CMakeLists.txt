@@ -38,7 +38,7 @@ if(BUILD_TESTING)
   endif()
 
   set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-  if(MSVC)
+  if(MSVC OR XCODE)
     set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
   endif()
   set(font_BIN_DIR "${test_BIN_DIR}/fonts")

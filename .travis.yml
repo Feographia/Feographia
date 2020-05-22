@@ -34,7 +34,7 @@ env:
 #    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
     # TRAVIS_REPO_SLUG: The slug (in form: owner_name/repo_name)
     # of the repository currently being built.
-    - cmr_MAIN_REPO_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
+    - cmr_REPO_MAIN_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
 
     - cmr_PERSISTENT_CACHE=${HOME}/build/persistent_cache
 
@@ -295,12 +295,12 @@ ios_cmake_env:
 desctop_before_install_script: &desctop_before_install_script
   git:
     submodules: false
-  before_install: ${cmr_MAIN_REPO_DIR}/ci/scripts/before_install.sh
+  before_install: ${cmr_REPO_MAIN_DIR}/ci/scripts/before_install.sh
 
 host_tools_before_install_script: &host_tools_before_install_script
   git:
     submodules: false
-  before_install: ${cmr_MAIN_REPO_DIR}/ci/scripts/before_install.sh
+  before_install: ${cmr_REPO_MAIN_DIR}/ci/scripts/before_install.sh
 
 mobile_before_install_script: &mobile_before_install_script
   git:

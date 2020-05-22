@@ -293,7 +293,7 @@ ios_cmake_env:
 
 # === Before install script ===
 before_install_script: &before_install_script
-  before_install: ./ci/scripts/before_install.sh
+  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
 
 desctop_before_install_script: &desctop_before_install_script
   <<: *before_install_script
@@ -320,17 +320,17 @@ test_before_install_script: &test_before_install_script
 build_host_tools_script: &build_host_tools_script
   git:
     submodules: false
-  script: ./ci/scripts/build_host_tools.sh
+  script: ${cmr_REPO_DIR}/ci/scripts/build_host_tools.sh
 
 
 # === Build Project script ===
 build_script: &build_script
-  script: ./ci/scripts/build_project.sh
+  script: ${cmr_REPO_DIR}/ci/scripts/build_project.sh
 
 
 # === Test script ===
 test_script: &test_script
-  script: ./ci/scripts/test_project.sh
+  script: ${cmr_REPO_DIR}/ci/scripts/test_project.sh
 
 
 # === Configs ===

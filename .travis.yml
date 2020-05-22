@@ -292,28 +292,25 @@ ios_cmake_env:
 # === Scripts ===
 
 # === Before install script ===
-before_install_script: &before_install_script
-  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
-
 desctop_before_install_script: &desctop_before_install_script
-  <<: *before_install_script
   git:
     submodules: false
+  before_install: ${cmr_MAIN_REPO_DIR}/ci/scripts/before_install.sh
 
 host_tools_before_install_script: &host_tools_before_install_script
-  <<: *before_install_script
   git:
     submodules: false
+  before_install: ${cmr_MAIN_REPO_DIR}/ci/scripts/before_install.sh
 
 mobile_before_install_script: &mobile_before_install_script
-  <<: *before_install_script
   git:
     clone: false
+  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
 
 test_before_install_script: &test_before_install_script
-  <<: *before_install_script
   git:
     clone: false
+  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
 
 
 # === Build Host Tools script ===

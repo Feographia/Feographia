@@ -487,7 +487,7 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
 
 # === macOS ===
 macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
-  name: "macOS, x86, Clang, Xcode, Release, shared"
+  name: "macOS, x64, Clang, Xcode, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -501,7 +501,7 @@ macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
     - *macos_xcode_env
 
 macos_clang_make_release_shared: &macos_clang_make_release_shared
-  name: "macOS, x86, Clang, Unix Makefiles, Release, shared"
+  name: "macOS, x64, Clang, Unix Makefiles, Release, shared"
   <<: *macos_img
   compiler: clang
   addons:
@@ -533,7 +533,7 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
 
 # === iOS ===
 ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
-  name: "iOS, x86, Clang, Xcode, Release, shared"
+  name: "iOS, x64, Clang, Xcode, Release, shared"
   <<: *ios_img
   compiler: clang
   addons:

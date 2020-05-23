@@ -165,21 +165,23 @@ windows_msvc_env:
   env: &windows_msvc_env
     - cmr_MSVC=ON
     - cmr_CMAKE_GENERATOR="Visual Studio 15 2017"
-    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
     - cmr_CMAKE_CONFIGURATION_TYPES=${cmr_CMAKE_BUILD_TYPE}
     - PATH=${cmr_BUILD_DIR}/Feographia/${cmr_CMAKE_BUILD_TYPE}:${cmr_INSTALL_DIR}/bin:${cmr_INSTALL_DIR}/bin64:${cmr_INSTALL_DIR}/lib:${PATH}
 
 windows_msvc_x64_env:
   env: &windows_msvc_x64_env
     - cmr_CMAKE_GENERATOR_PLATFORM="x64"
+    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
 
-windows_msvc_x32_env:
-  env: &windows_msvc_x32_env
+windows_msvc_win32_env:
+  env: &windows_msvc_win32_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
+    - cmr_CMAKE_GENERATOR_TOOLSET="v141,host=x64"
 
 windows_msvc_winxp_env:
   env: &windows_msvc_winxp_env
     - cmr_CMAKE_GENERATOR_PLATFORM="Win32"
+    - cmr_CMAKE_GENERATOR_TOOLSET="v141_xp,host=x64"
 
 windows_mingw_env:
   env: &windows_mingw_env
@@ -410,6 +412,8 @@ android_addons: &android_addons
 # === Job templates ===
 
 # === Linux ===
+
+# Linux, GCC
 linux_gcc_debug_shared: &linux_gcc_debug_shared
   name: "Linux, x64, GCC, Debug, shared"
   <<: *linux_img
@@ -432,7 +436,30 @@ linux_gcc_debug_shared: &linux_gcc_debug_shared
     - *cmake_2nd_env
     - *linux_gcc_env
 
+linux_gcc_release_static: &linux_gcc_release_static
+  name: "Linux, x64, GCC, Release, static"
+  <<: *linux_img
+  compiler: gcc-9
+  addons:
+    <<: *common_addons
+    <<: *linux_addons
+    <<: *linux_gcc_addons
+    apt:
+      sources:
+        - *linux_gcc_sources
+      packages:
+        - *linux_packages
+        - *linux_gcc_packages
+  env:
+    - *release_static_env
+    - *linux_env
+    - *cmake_1st_env
+    - *linux_cmake_env
+    - *cmake_2nd_env
+    - *linux_gcc_env
 
+
+# Linux, Clang
 linux_clang_debug_shared: &linux_clang_debug_shared
   name: "Linux, x64, CLang, Debug, shared"
   <<: *linux_img
@@ -455,15 +482,39 @@ linux_clang_debug_shared: &linux_clang_debug_shared
     - *cmake_2nd_env
     - *linux_clang_env
 
+linux_clang_release_static: &linux_clang_release_static
+  name: "Linux, x64, CLang, Release, static"
+  <<: *linux_img
+  compiler: clang-9
+  addons:
+    <<: *common_addons
+    <<: *linux_addons
+    <<: *linux_clang_addons
+    apt:
+      sources:
+        - *linux_clang_sources
+      packages:
+        - *linux_packages
+        - *linux_clang_packages
+  env:
+    - *release_static_env
+    - *linux_env
+    - *cmake_1st_env
+    - *linux_cmake_env
+    - *cmake_2nd_env
+    - *linux_clang_env
+
 
 # === Windows ===
-windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
-  name: "Windows, x64, MSVC, Release, shared"
+
+# Windows, MSVC, x64
+windows_msvc_x64_debug_shared: &windows_msvc_x64_debug_shared
+  name: "Windows, x64, MSVC, Debug, shared"
   <<: *windows_img
   addons:
     <<: *common_addons
   env:
-    - *release_shared_env
+    - *debug_shared_env
     - *windows_env
     - *cmake_1st_env
     - *windows_cmake_env
@@ -471,13 +522,102 @@ windows_msvc_x64_release_shared: &windows_msvc_x64_release_shared
     - *windows_msvc_env
     - *windows_msvc_x64_env
 
-windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
-  name: "Windows, x64, GCC, MinGW, Release, shared"
+windows_msvc_x64_release_static: &windows_msvc_x64_release_static
+  name: "Windows, x64, MSVC, Release, static"
   <<: *windows_img
   addons:
     <<: *common_addons
   env:
-    - *release_shared_env
+    - *release_static_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_msvc_env
+    - *windows_msvc_x64_env
+
+
+# Windows, MSVC, Win32
+windows_msvc_win32_debug_shared: &windows_msvc_win32_debug_shared
+  name: "Windows, Win32, MSVC, Debug, shared"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *debug_shared_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_msvc_env
+    - *windows_msvc_win32_env
+
+windows_msvc_win32_release_static: &windows_msvc_win32_release_static
+  name: "Windows, Win32, MSVC, Release, static"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *release_static_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_msvc_env
+    - *windows_msvc_win32_env
+
+
+# Windows, MSVC, WinXP
+windows_msvc_winxp_debug_shared: &windows_msvc_winxp_debug_shared
+  name: "Windows, WinXP, MSVC, Debug, shared"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *debug_shared_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_msvc_env
+    - *windows_msvc_winxp_env
+
+windows_msvc_winxp_release_static: &windows_msvc_winxp_release_static
+  name: "Windows, WinXP, MSVC, Release, static"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *release_static_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_msvc_env
+    - *windows_msvc_winxp_env
+
+
+# Windows, MinGW-w64, x64
+windows_mingw_x64_debug_shared: &windows_mingw_x64_debug_shared
+  name: "Windows, x64, GCC, MinGW-w64, Debug, shared"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *debug_shared_env
+    - *windows_env
+    - *cmake_1st_env
+    - *windows_cmake_env
+    - *cmake_2nd_env
+    - *windows_mingw_env
+
+windows_mingw_x64_release_static: &windows_mingw_x64_release_static
+  name: "Windows, x64, GCC, MinGW-w64, Release, static"
+  <<: *windows_img
+  addons:
+    <<: *common_addons
+  env:
+    - *release_static_env
     - *windows_env
     - *cmake_1st_env
     - *windows_cmake_env
@@ -486,28 +626,60 @@ windows_mingw_x64_release_shared: &windows_mingw_x64_release_shared
 
 
 # === macOS ===
-macos_clang_xcode_release_shared: &macos_clang_xcode_release_shared
-  name: "macOS, x64, Clang, Xcode, Release, shared"
+
+# macOS, Xcode
+macos_clang_xcode_debug_shared: &macos_clang_xcode_debug_shared
+  name: "macOS, x64, Clang, Xcode, Debug, shared"
   <<: *macos_img
   compiler: clang
   addons:
     <<: *common_addons
   env:
-    - *release_shared_env
+    - *debug_shared_env
     - *macos_env
     - *cmake_1st_env
     - *macos_cmake_env
     - *cmake_2nd_env
     - *macos_xcode_env
 
-macos_clang_make_release_shared: &macos_clang_make_release_shared
-  name: "macOS, x64, Clang, Unix Makefiles, Release, shared"
+macos_clang_xcode_release_static: &macos_clang_xcode_release_static
+  name: "macOS, x64, Clang, Xcode, Release, static"
   <<: *macos_img
   compiler: clang
   addons:
     <<: *common_addons
   env:
-    - *release_shared_env
+    - *release_static_env
+    - *macos_env
+    - *cmake_1st_env
+    - *macos_cmake_env
+    - *cmake_2nd_env
+    - *macos_xcode_env
+
+
+# macOS, Unix Makefiles
+macos_clang_make_debug_shared: &macos_clang_make_debug_shared
+  name: "macOS, x64, Clang, Unix Makefiles, Debug, shared"
+  <<: *macos_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *debug_shared_env
+    - *macos_env
+    - *cmake_1st_env
+    - *macos_cmake_env
+    - *cmake_2nd_env
+    - *macos_make_env
+
+macos_clang_make_release_static: &macos_clang_make_release_static
+  name: "macOS, x64, Clang, Unix Makefiles, Release, static"
+  <<: *macos_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *release_static_env
     - *macos_env
     - *cmake_1st_env
     - *macos_cmake_env
@@ -516,14 +688,30 @@ macos_clang_make_release_shared: &macos_clang_make_release_shared
 
 
 # === Android ===
-android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
-  name: "Android, armeabi-v7a, Clang, Release, shared"
+
+# Android, armeabi-v7a
+android_armeabi_v7a_debug_shared: &android_armeabi_v7a_debug_shared
+  name: "Android, armeabi-v7a, Clang, Debug, shared"
   <<: *android_img
   addons:
     <<: *common_addons
     <<: *android_addons
   env:
-    - *release_shared_env
+    - *debug_shared_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_armeabi_v7a_env
+
+android_armeabi_v7a_release_static: &android_armeabi_v7a_release_static
+  name: "Android, armeabi-v7a, Clang, Release, static"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *release_static_env
     - *android_env
     - *cmake_1st_env
     - *android_cmake_env
@@ -531,15 +719,119 @@ android_release_shared_armeabi_v7a: &android_release_shared_armeabi_v7a
     - *android_armeabi_v7a_env
 
 
+# Android, arm64-v8a
+android_arm64_v8a_debug_shared: &android_arm64_v8a_debug_shared
+  name: "Android, arm64-v8a, Clang, Debug, shared"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *debug_shared_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_arm64_v8a_env
+
+android_arm64_v8a_release_static: &android_arm64_v8a_release_static
+  name: "Android, arm64-v8a, Clang, Release, static"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *release_static_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_arm64_v8a_env
+
+
+# Android, x86
+android_x86_debug_shared: &android_x86_debug_shared
+  name: "Android, x86, Clang, Debug, shared"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *debug_shared_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_x86_env
+
+android_x86_release_static: &android_x86_release_static
+  name: "Android, x86, Clang, Release, static"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *release_static_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_x86_env
+
+
+# Android, x86_64
+android_x86_64_debug_shared: &android_x86_64_debug_shared
+  name: "Android, x86_64, Clang, Debug, shared"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *debug_shared_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_x86_64_env
+
+android_x86_64_release_static: &android_x86_64_release_static
+  name: "Android, x86_64, Clang, Release, static"
+  <<: *android_img
+  addons:
+    <<: *common_addons
+    <<: *android_addons
+  env:
+    - *release_static_env
+    - *android_env
+    - *cmake_1st_env
+    - *android_cmake_env
+    - *cmake_2nd_env
+    - *android_x86_64_env
+
+
 # === iOS ===
-ios_clang_xcode_release_shared: &ios_clang_xcode_release_shared
-  name: "iOS, x64, Clang, Xcode, Release, shared"
+
+ios_clang_xcode_debug_shared: &ios_clang_xcode_debug_shared
+  name: "iOS, x64, Clang, Xcode, Debug, shared"
   <<: *ios_img
   compiler: clang
   addons:
     <<: *common_addons
   env:
-    - *release_shared_env
+    - *debug_shared_env
+    - *ios_env
+    - *cmake_1st_env
+    - *ios_cmake_env
+    - *cmake_2nd_env
+
+ios_clang_xcode_release_static: &ios_clang_xcode_release_static
+  name: "iOS, x64, Clang, Xcode, Release, static"
+  <<: *ios_img
+  compiler: clang
+  addons:
+    <<: *common_addons
+  env:
+    - *release_static_env
     - *ios_env
     - *cmake_1st_env
     - *ios_cmake_env
@@ -556,16 +848,28 @@ stages:
 
 
 # === Jobs ===
+
 jobs:
   include:
+
+# === Linux ===
+
 # Linux, GCC
     - stage: "Build Project"
       <<: *linux_gcc_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
       <<: *linux_gcc_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Project"
+      <<: *linux_gcc_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *linux_gcc_release_static
       <<: *test_before_install_script
       <<: *test_script
 
@@ -574,94 +878,281 @@ jobs:
       <<: *linux_clang_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
       <<: *linux_clang_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
-# Windows, MSVC
     - stage: "Build Project"
-      <<: *windows_msvc_x64_release_shared
+      <<: *linux_clang_release_static
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *windows_msvc_x64_release_shared
+      <<: *linux_clang_release_static
       <<: *test_before_install_script
       <<: *test_script
 
-# Windows, MinGW
+# Windows, MSVC, x64
     - stage: "Build Project"
-      <<: *windows_mingw_x64_release_shared
+      <<: *windows_msvc_x64_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *windows_mingw_x64_release_shared
+      <<: *windows_msvc_x64_debug_shared
       <<: *test_before_install_script
       <<: *test_script
 
+    - stage: "Build Project"
+      <<: *windows_msvc_x64_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_msvc_x64_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Windows, MSVC, Win32
+    - stage: "Build Project"
+      <<: *windows_msvc_win32_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_msvc_win32_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Project"
+      <<: *windows_msvc_win32_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_msvc_win32_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Windows, MSVC, WinXP
+    - stage: "Build Project"
+      <<: *windows_msvc_winxp_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_msvc_winxp_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Project"
+      <<: *windows_msvc_winxp_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_msvc_winxp_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Windows, MinGW-w64, x64
+    - stage: "Build Project"
+      <<: *windows_mingw_x64_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_mingw_x64_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Project"
+      <<: *windows_mingw_x64_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *windows_mingw_x64_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+
+# === macOS ===
 
 # macOS, Xcode
     - stage: "Build Project"
-      <<: *macos_clang_xcode_release_shared
+      <<: *macos_clang_xcode_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *macos_clang_xcode_release_shared
+      <<: *macos_clang_xcode_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Project"
+      <<: *macos_clang_xcode_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *macos_clang_xcode_release_static
       <<: *test_before_install_script
       <<: *test_script
 
 
 # macOS, Unix Makefiles
     - stage: "Build Project"
-      <<: *macos_clang_make_release_shared
+      <<: *macos_clang_make_debug_shared
       <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *macos_clang_make_release_shared
+      <<: *macos_clang_make_debug_shared
       <<: *test_before_install_script
       <<: *test_script
-
-
-# Android
-    - stage: "Build Host Tools"
-      <<: *android_release_shared_armeabi_v7a
-      <<: *host_tools_before_install_script
-      <<: *build_host_tools_script
 
     - stage: "Build Project"
-      <<: *android_release_shared_armeabi_v7a
-      <<: *mobile_before_install_script
+      <<: *macos_clang_make_release_static
+      <<: *desctop_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *android_release_shared_armeabi_v7a
+      <<: *macos_clang_make_release_static
       <<: *test_before_install_script
       <<: *test_script
 
 
-# iOS
+# === Android ===
+
+# Android, armeabi-v7a
     - stage: "Build Host Tools"
-      <<: *ios_clang_xcode_release_shared
+      <<: *android_armeabi_v7a_debug_shared
       <<: *host_tools_before_install_script
       <<: *build_host_tools_script
-
     - stage: "Build Project"
-      <<: *ios_clang_xcode_release_shared
+      <<: *android_armeabi_v7a_debug_shared
       <<: *mobile_before_install_script
       <<: *build_script
-
     - stage: "Test Project"
-      <<: *ios_clang_xcode_release_shared
+      <<: *android_armeabi_v7a_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Host Tools"
+      <<: *android_armeabi_v7a_release_static
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_armeabi_v7a_release_static
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_armeabi_v7a_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Android, arm64-v8a
+    - stage: "Build Host Tools"
+      <<: *android_arm64_v8a_debug_shared
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_arm64_v8a_debug_shared
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_arm64_v8a_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Host Tools"
+      <<: *android_arm64_v8a_release_static
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_arm64_v8a_release_static
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_arm64_v8a_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Android, x86
+    - stage: "Build Host Tools"
+      <<: *android_x86_debug_shared
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_x86_debug_shared
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_x86_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Host Tools"
+      <<: *android_x86_release_static
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_x86_release_static
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_x86_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+# Android, x86_64
+    - stage: "Build Host Tools"
+      <<: *android_x86_64_debug_shared
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_x86_64_debug_shared
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_x86_64_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Host Tools"
+      <<: *android_x86_64_release_static
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *android_x86_64_release_static
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *android_x86_64_release_static
       <<: *test_before_install_script
       <<: *test_script
 
 
-# Trigger downstreams
+# === iOS ===
+
+    - stage: "Build Host Tools"
+      <<: *ios_clang_xcode_debug_shared
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *ios_clang_xcode_debug_shared
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *ios_clang_xcode_debug_shared
+      <<: *test_before_install_script
+      <<: *test_script
+
+    - stage: "Build Host Tools"
+      <<: *ios_clang_xcode_release_static
+      <<: *host_tools_before_install_script
+      <<: *build_host_tools_script
+    - stage: "Build Project"
+      <<: *ios_clang_xcode_release_static
+      <<: *mobile_before_install_script
+      <<: *build_script
+    - stage: "Test Project"
+      <<: *ios_clang_xcode_release_static
+      <<: *test_before_install_script
+      <<: *test_script
+
+
+# === Trigger downstreams ===
+
 # Trigger the building of the dependent libs.
     - stage: "Trigger downstreams"
       name: "Trigger downstreams"

@@ -2,10 +2,14 @@
 
 set -ev
 
+echo "==== Debug: Begin build_host_tools.sh"
+
 ${cmr_CMAKE_CMD} --version
 cd ${cmr_HOST_BUILD_DIR}
 
 if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
+  echo "==== Debug: Build Host Tools for Android"
+
   ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -25,6 +29,8 @@ if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
 fi
 
 if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
+  echo "==== Debug: Build Host Tools for iOS"
+
   ${cmr_CMAKE_CMD} ${cmr_HOST_TOOLS_PROJECT_DIR} \
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
@@ -46,3 +52,5 @@ if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
 
   ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config Release
 fi
+
+echo "==== Debug: End build_host_tools.sh"

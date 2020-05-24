@@ -2,6 +2,8 @@
 
 set -ev
 
+echo "==== Debug: Begin test_project.sh"
+
 # ==== Run Android emulator ====
 #
 # http://mywiki.wooledge.org/BashSheet
@@ -9,6 +11,8 @@ set -ev
 # Only the command before the & is executed asynchronously
 # and you must not put a ';' after the '&', the '&' replaces the ';'.
 if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
+  echo "==== Debug: Start Android emulator"
+
   # NOTE: 'arm64-v8a' emulator (any API level) does not start on Linux
   #       with success, boot animation is not ending.
   # NOTE: 'armeabi-v7a' API 16 emulator on Linux executes programs regularly
@@ -37,6 +41,8 @@ if [[  ( ${cmr_TARGET_OS} == "Linux" )
     || ( ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" )
     || ( ${cmr_TARGET_OS} == "Android" )
     ]] ; then
+  echo "==== Debug: Run tests for Unix-like generators"
+
   ${cmr_CTEST_CMD} --output-on-failure
 fi
 
@@ -45,5 +51,9 @@ fi
 if [[  ( ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" )
     || ( ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" )
     ]] ; then
+  echo "==== Debug: Run tests for MSVC or Xcode"
+
   ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
 fi
+
+echo "==== Debug: End test_project.sh"

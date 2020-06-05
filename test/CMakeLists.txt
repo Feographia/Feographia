@@ -270,6 +270,12 @@ if(BUILD_TESTING)
   if(wxWidgets_PLATFORM)
     foreach(fg_test IN LISTS fg_TEST_LIST)
       add_test(NAME ${fg_test} COMMAND ${fg_test})
+      set_tests_properties(${fg_test} PROPERTIES
+        PASS_REGULAR_EXPRESSION "PASSED"
+      )
+      set_tests_properties(${fg_test} PROPERTIES
+        FAIL_REGULAR_EXPRESSION "FAILED"
+      )
     endforeach()
   endif()
 

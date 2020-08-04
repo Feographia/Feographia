@@ -21,11 +21,36 @@
 #     along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+
+# For the test running, 1st build all:
+#   cmake .. -DBUILD_TESTING=ON
+#   cmake --build .
+# Then run the test with this command:
+#   cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
+# Or with this command:
+#   ctest --verbose
+# Env var CTEST_OUTPUT_ON_FAILURE or key --verbose are for show test outputs,
+# see
+# https://stackoverflow.com/a/37123943
+# https://stackoverflow.com/a/38386596
+
+# For Visual Studio:
+# https://stackoverflow.com/a/31124523
+# https://stackoverflow.com/a/37123943
+# cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target RUN_TESTS
+
+
 # Testing with Google Test.
 if(BUILD_TESTING)
   set(fgkardia_TARGET "feographia_kardia")
+  set(test_TARGET "FgUnitTests")
 
   find_package(GTest REQUIRED)
+
+
+  #-----------------------------------------------------------------------
+  # Test data
+  #-----------------------------------------------------------------------
 
   set(test_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
   set(font_SRC_DIR "${PROJECT_SOURCE_DIR}/fonts")
@@ -116,168 +141,147 @@ if(BUILD_TESTING)
       "${data_BIN_DIR}"
   )
 
-  function(add_fg_test_executable
-      test_TARGET test_SRC_FILES test_LIBS out_TEST_LIST)
-    add_executable(${test_TARGET} "")
-    target_sources(${test_TARGET}
-      PRIVATE
-        ${test_SRC_FILES}
-    )
-    set_target_properties(${test_TARGET} PROPERTIES
-      CXX_STANDARD 17
-    )
-    if(NOT MINGW AND NOT ANDROID AND NOT IOS
-        AND NOT (APPLE AND CMAKE_GENERATOR MATCHES "Unix Makefiles"))
-      set_target_properties(${test_TARGET} PROPERTIES
-        # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
-        LINK_WHAT_YOU_USE ON
-      )
-    endif()
 
-    # Test libraries
-    target_link_libraries(${test_TARGET} PRIVATE
-      ${test_LIBS}
-    )
+  #-----------------------------------------------------------------------
+  # Test executable
+  #-----------------------------------------------------------------------
 
-    # HtmlGrapheas
-    #target_link_libraries(${test_TARGET} PRIVATE hgraph)
+  add_executable(${test_TARGET} ${IOS_MACOSX_BUNDLE} "")
 
-    # litehtml, gumbo (embedded into litehtml)
-    target_link_libraries(${test_TARGET} PRIVATE litehtml::litehtml)
-
-    # Cairo
-    target_link_libraries(${test_TARGET} PRIVATE Cairo::Cairo)
-
-    # Pixman
-    target_link_libraries(${test_TARGET} PRIVATE Pixman::Pixman)
-
-    # FontConfig
-    target_link_libraries(${test_TARGET} PRIVATE Fontconfig::Fontconfig)
-
-    # FreeType
-    target_link_libraries(${test_TARGET} PRIVATE Freetype::Freetype)
-
-    # HarfBuzz
-    target_include_directories(${test_TARGET} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
-    target_link_libraries(${test_TARGET} PRIVATE
-      ${HARFBUZZ_LIBRARY} Freetype::Freetype
-    )
-
-    if(USE_BOOST)
-      target_compile_definitions(${test_TARGET} PRIVATE USE_BOOST)
-
-      # Boost
-      target_link_libraries(${test_TARGET} PRIVATE
-        Boost::disable_autolinking Boost::filesystem Boost::system
-      )
-    endif()
-
-    # SQLiteModernCPP
-    target_include_directories(
-      ${test_TARGET} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
-    )
-
-    # SQLite3
-    target_link_libraries(${test_TARGET} PRIVATE sqlite3)
-
-    # ICU
-    if(NOT BUILD_SHARED_LIBS)
-      target_compile_definitions(${test_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
-    endif()
-    target_link_libraries(${test_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
-
-    # Expat
-    target_include_directories(${test_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})
-    target_link_libraries(${test_TARGET} PRIVATE ${EXPAT_LIBRARY})
-
-    # STLCache
-    target_include_directories(${test_TARGET} PRIVATE ${STLCACHE_INCLUDE_DIR})
-
-    # spdlog
-    target_link_libraries(${test_TARGET} PRIVATE spdlog::spdlog)
-
-    # fmt
-    target_link_libraries(${test_TARGET} PRIVATE fmt::fmt)
-
-    # libpng
-    target_link_libraries(${test_TARGET} PRIVATE PNG::PNG)
-
-    # zlib
-    target_link_libraries(${test_TARGET} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
-
-    # Threads, pthread
-    if(CMAKE_USE_PTHREADS_INIT)
-      target_link_libraries(${test_TARGET} PRIVATE Threads::Threads)
-    endif()
-
-    # Google Test
-    target_link_libraries(${test_TARGET} PRIVATE
-      GTest::GTest GTest::Main
-    )
-
-    # android_support
-    if(ANDROID AND ANDROID_NATIVE_API_LEVEL LESS 21)
-      target_link_libraries(${test_TARGET} PRIVATE android_support)
-    endif()
-
-    add_dependencies(${test_TARGET}
-      #clean_test_temp_dir
-      prepare_test_fonts
-      prepare_test_font_conf
-      prepare_test_data
-    )
-
-    list(APPEND ${out_TEST_LIST} ${test_TARGET})
-    set(${out_TEST_LIST} ${${out_TEST_LIST}} PARENT_SCOPE)
-  endfunction()
-
-  set(fg_TEST_LIST)
-
-  # Util tests
-  add_fg_test_executable("StringUtil_test"
-    ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
-    ${fgkardia_TARGET}
-    fg_TEST_LIST
+  target_sources(${test_TARGET}
+    PRIVATE
+      ${test_SRC_DIR}/Fg/UnitTests/main.cpp
+      ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
+      #${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
   )
-
-  # FontLibrary tests
-  add_fg_test_executable("FontLibrary_test"
-    ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
-    ${fgkardia_TARGET}
-    fg_TEST_LIST
-  )
-  add_fg_test_executable("Font_test"
-    ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
-    ${fgkardia_TARGET}
-    fg_TEST_LIST
-  )
-
-  # litehtml renderer tests
   # FIXME: Fix this test for these platforms.
   if(NOT ANDROID AND NOT WIN32 AND NOT (APPLE AND NOT IOS AND XCODE))
-    add_fg_test_executable("LiteHtmlContainer_test"
-      ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
-      ${fgkardia_TARGET}
-      fg_TEST_LIST
+    target_sources(${test_TARGET}
+      PRIVATE
+        ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
     )
   endif()
-  add_fg_test_executable("LiteHtmlRenderer_test"
-    ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
+
+  set_target_properties(${test_TARGET} PROPERTIES
+    CXX_STANDARD 17
+  )
+  if(NOT MINGW AND NOT ANDROID AND NOT IOS
+      AND NOT (APPLE AND CMAKE_GENERATOR MATCHES "Unix Makefiles"))
+    set_target_properties(${test_TARGET} PROPERTIES
+      # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
+      LINK_WHAT_YOU_USE ON
+    )
+  endif()
+
+  # feographia_kardia
+  target_link_libraries(${test_TARGET} PRIVATE
     ${fgkardia_TARGET}
-    fg_TEST_LIST
   )
 
-  if(wxWidgets_PLATFORM)
-    foreach(fg_test IN LISTS fg_TEST_LIST)
-      add_test(NAME ${fg_test} COMMAND ${fg_test})
-      set_tests_properties(${fg_test} PROPERTIES
-        PASS_REGULAR_EXPRESSION "PASSED"
-      )
-      set_tests_properties(${fg_test} PROPERTIES
-        FAIL_REGULAR_EXPRESSION "FAILED"
-      )
-    endforeach()
+  # HtmlGrapheas
+  #target_link_libraries(${test_TARGET} PRIVATE hgraph)
+
+  # litehtml, gumbo (embedded into litehtml)
+  target_link_libraries(${test_TARGET} PRIVATE litehtml::litehtml)
+
+  # Cairo
+  target_link_libraries(${test_TARGET} PRIVATE Cairo::Cairo)
+
+  # Pixman
+  target_link_libraries(${test_TARGET} PRIVATE Pixman::Pixman)
+
+  # FontConfig
+  target_link_libraries(${test_TARGET} PRIVATE Fontconfig::Fontconfig)
+
+  # FreeType
+  target_link_libraries(${test_TARGET} PRIVATE Freetype::Freetype)
+
+  # HarfBuzz
+  target_include_directories(${test_TARGET} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
+  target_link_libraries(${test_TARGET} PRIVATE
+    ${HARFBUZZ_LIBRARY} Freetype::Freetype
+  )
+
+  if(USE_BOOST)
+    target_compile_definitions(${test_TARGET} PRIVATE USE_BOOST)
+
+    # Boost
+    target_link_libraries(${test_TARGET} PRIVATE
+      Boost::disable_autolinking Boost::filesystem Boost::system
+    )
   endif()
+
+  # SQLiteModernCPP
+  target_include_directories(
+    ${test_TARGET} PRIVATE ${SQLITEMODERNCPP_INCLUDE_DIR}
+  )
+
+  # SQLite3
+  target_link_libraries(${test_TARGET} PRIVATE sqlite3)
+
+  # ICU
+  if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(${test_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
+  endif()
+  target_link_libraries(${test_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
+
+  # Expat
+  target_include_directories(${test_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})
+  target_link_libraries(${test_TARGET} PRIVATE ${EXPAT_LIBRARY})
+
+  # STLCache
+  target_include_directories(${test_TARGET} PRIVATE ${STLCACHE_INCLUDE_DIR})
+
+  # spdlog
+  target_link_libraries(${test_TARGET} PRIVATE spdlog::spdlog)
+
+  # fmt
+  target_link_libraries(${test_TARGET} PRIVATE fmt::fmt)
+
+  # libpng
+  target_link_libraries(${test_TARGET} PRIVATE PNG::PNG)
+
+  # zlib
+  target_link_libraries(${test_TARGET} PRIVATE ZLIB::ZLIB)  # icluded in PNG::PNG
+
+  # Threads, pthread
+  if(CMAKE_USE_PTHREADS_INIT)
+    target_link_libraries(${test_TARGET} PRIVATE Threads::Threads)
+  endif()
+
+  # Google Test
+  target_link_libraries(${test_TARGET} PRIVATE
+    GTest::GTest GTest::Main
+  )
+
+  # android_support
+  if(ANDROID AND ANDROID_NATIVE_API_LEVEL LESS 21)
+    target_link_libraries(${test_TARGET} PRIVATE android_support)
+  endif()
+
+  add_dependencies(${test_TARGET}
+    #clean_test_temp_dir
+    prepare_test_fonts
+    prepare_test_font_conf
+    prepare_test_data
+  )
+
+
+  #-----------------------------------------------------------------------
+  # Run tests for Linux, Windows, macOS
+  #-----------------------------------------------------------------------
+
+  if(wxWidgets_PLATFORM)
+    add_test(NAME ${test_TARGET} COMMAND ${test_TARGET})
+  endif()
+
+
+  #-----------------------------------------------------------------------
+  # Run tests for Android
+  #-----------------------------------------------------------------------
 
   if(ANDROID)
     find_program(adb_exec adb)
@@ -297,12 +301,24 @@ if(BUILD_TESTING)
     add_test(NAME push_data
       COMMAND ${adb_exec} push "${data_BIN_DIR}" "${TEST_WORK_DIR}/data"
     )
+
     add_test(NAME push_icu_data
       COMMAND ${adb_exec} push
         "${cmr_INSTALL_DIR}/share/icu"
         "${TEST_WORK_DIR}/share/icu"
     )
+
     if(BUILD_SHARED_LIBS)
+      add_test(NAME check_tar
+        COMMAND ${adb_exec} shell tar --help
+      )
+      set_tests_properties(check_tar PROPERTIES
+        PASS_REGULAR_EXPRESSION "usage: tar"
+      )
+      set_tests_properties(check_tar PROPERTIES
+        FAIL_REGULAR_EXPRESSION "tar: not found"
+      )
+
       # Fix for the adb error on the arm devices if use the adb push
       # for the directory with the soft symlinks:
       # adb: error: failed to copy '<soft symlink>' to '/data/local/tmp/<soft symlink>': remote symlink failed: Permission denied
@@ -344,73 +360,41 @@ if(BUILD_TESTING)
       )
     endif()
 
-    # 1st -- push all executable files.
-    foreach(fg_test IN LISTS fg_TEST_LIST)
-      add_test(NAME push_${fg_test}
-        COMMAND ${adb_exec} push ${fg_test} "${TEST_WORK_DIR}/${fg_test}"
-      )
-      add_test(NAME chmod_${fg_test}
-        COMMAND ${adb_exec} shell chmod 775 "${TEST_WORK_DIR}/${fg_test}"
-      )
-    endforeach()
-
-    # 2nd -- run tests.
-    foreach(fg_test IN LISTS fg_TEST_LIST)
-      add_test(NAME ${fg_test} COMMAND ${adb_exec} shell
-        "cd ${TEST_WORK_DIR} && "
-        "LD_LIBRARY_PATH=${TEST_WORK_DIR}/lib ${TEST_WORK_DIR}/${fg_test}"
-        # :${LD_LIBRARY_PATH} || :/vendor/lib64:/system/lib64
-      )
-      set_tests_properties(${fg_test} PROPERTIES
-        PASS_REGULAR_EXPRESSION "PASSED"
-      )
-      set_tests_properties(${fg_test} PROPERTIES
-        FAIL_REGULAR_EXPRESSION "FAILED"
-      )
-    endforeach()
+    add_test(NAME push_${test_TARGET}
+      COMMAND ${adb_exec} push ${test_TARGET} "${TEST_WORK_DIR}/${test_TARGET}"
+    )
+    add_test(NAME chmod_${test_TARGET}
+      COMMAND ${adb_exec} shell chmod 775 "${TEST_WORK_DIR}/${test_TARGET}"
+    )
+    add_test(NAME ${test_TARGET} COMMAND ${adb_exec} shell
+      "cd ${TEST_WORK_DIR} && "
+      "LD_LIBRARY_PATH=${TEST_WORK_DIR}/lib ${TEST_WORK_DIR}/${test_TARGET}"
+      # :${LD_LIBRARY_PATH} || :/vendor/lib64:/system/lib64
+    )
 
 #    add_test(NAME pull_test_result_11
 #      COMMAND ${adb_exec} pull
-#        "${TEST_WORK_DIR}/${fg_test}/FontTest_1.ppm"
+#        "${TEST_WORK_DIR}/FontTest_1.ppm"
 #        "${CMAKE_CURRENT_BINARY_DIR}/FontTest_1.ppm"
 #    )
 #    add_test(NAME pull_test_result_12
 #      COMMAND ${adb_exec} pull
-#        "${TEST_WORK_DIR}/${fg_test}/FontTest_2.ppm"
+#        "${TEST_WORK_DIR}/FontTest_2.ppm"
 #        "${CMAKE_CURRENT_BINARY_DIR}/FontTest_2.ppm"
 #    )
 #    add_test(NAME pull_test_result_21
 #      COMMAND ${adb_exec} pull
-#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlContainer_1.ppm"
+#        "${TEST_WORK_DIR}/LiteHtmlContainer_1.ppm"
 #        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlContainer_1.ppm"
 #    )
 #    add_test(NAME pull_test_result_22
 #      COMMAND ${adb_exec} pull
-#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlContainer_2.ppm"
+#        "${TEST_WORK_DIR}/LiteHtmlContainer_2.ppm"
 #        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlContainer_2.ppm"
 #    )
 #    add_test(NAME pull_test_result_31
 #      COMMAND ${adb_exec} pull
-#        "${TEST_WORK_DIR}/${fg_test}/LiteHtmlDocument_1.ppm"
+#        "${TEST_WORK_DIR}/LiteHtmlDocument_1.ppm"
 #        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlDocument_1.ppm"
 #    )
   endif()
-endif()
-
-
-# For running test, 1st build all:
-#   cmake .. -DBUILD_TESTING=ON
-#   cmake --build .
-# Then run test with this command:
-#   cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
-# Or with this command:
-#   ctest --verbose
-# Env var CTEST_OUTPUT_ON_FAILURE or key --verbose are for show test outputs,
-# see
-# https://stackoverflow.com/a/37123943
-# https://stackoverflow.com/a/38386596
-
-# For Visual Studio:
-# https://stackoverflow.com/a/31124523
-# https://stackoverflow.com/a/37123943
-# cmake -E env CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target RUN_TESTS

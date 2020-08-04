@@ -25,7 +25,7 @@
 set(CMAKE_CXX_STANDARD 17)
 
 if(NOT BUILD_SHARED_LIBS)
-  set(cmr_USE_STATIC_RUNTIME ON)
+  option(cmr_USE_STATIC_RUNTIME "cmr_USE_STATIC_RUNTIME" ON)
 endif()
 
 # Set compile flags.

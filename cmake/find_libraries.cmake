@@ -152,6 +152,10 @@ if(ANDROID OR APPLE)
   # TODO: Apple:
   # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
   set(USE_BOOST ON)  # TODO: rename to USE_BOOST_FILESYSTEM
+  set(BOOST_lib_COMPONENTS
+    filesystem system
+    CACHE STRING "BOOST_lib_COMPONENTS"
+  )
   include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
 endif()
 #include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)

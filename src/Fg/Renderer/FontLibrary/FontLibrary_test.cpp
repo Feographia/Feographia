@@ -31,25 +31,9 @@
 #include "Fg/Util/Filesystem.h"
 #include "Fg/Util/StringUtil.h"
 
-inline fg::filesystem::path testDir;
-inline fg::filesystem::path fontDir;
-//inline fg::filesystem::path dataDir;
-
-int main(int argc, char** argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-
-  // https://stackoverflow.com/a/55579815
-  // See also:
-  // https://stackoverflow.com/a/42772814
-  // https://habr.com/ru/post/343622/
-  testDir =
-      fg::filesystem::absolute(fg::filesystem::path(argv[0]).parent_path());
-  fontDir = testDir / "fonts";
-  //  dataDir = testDir / "data";
-
-  return RUN_ALL_TESTS();
-}
+extern fg::filesystem::path testDir;
+extern fg::filesystem::path fontDir;
+//extern fg::filesystem::path dataDir;
 
 TEST(FontLibraryTest, getFontFilePath)
 {

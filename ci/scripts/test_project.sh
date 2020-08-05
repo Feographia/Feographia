@@ -46,12 +46,11 @@ if [[  ( ${cmr_TARGET_OS} == "Linux" )
   ${cmr_CTEST_CMD} --output-on-failure
 fi
 
-    # TODO: run tests for iOS.
-    #|| ( ${cmr_TARGET_OS} == "iOS" )
 if [[  ( ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" )
     || ( ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" )
+    || ( ${cmr_TARGET_OS} == "iOS" )
     ]] ; then
-  echo "==== Debug: Run tests for MSVC or Xcode"
+  echo "==== Debug: Run tests for MSVC or Xcode generators"
 
   ${cmr_CTEST_CMD} --output-on-failure --build-config ${cmr_CMAKE_BUILD_TYPE}
 fi

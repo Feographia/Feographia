@@ -44,6 +44,7 @@ option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+include(target_settings)
 include(compile_flags)
 include(find_libraries)
 # TODO: Use litehtml for viewing of dictionaries and other HTML texts.

@@ -110,6 +110,7 @@ if(BUILD_TESTING)
   add_custom_target(prepare_test_font_conf
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${CMAKE_INSTALL_PREFIX}/etc/fonts"
+      # TODO: to "${test_BIN_DIR}/etc/fonts"
       "${font_BIN_DIR}"
   )
 
@@ -158,7 +159,7 @@ if(BUILD_TESTING)
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
   )
   # FIXME: Fix this test for these platforms.
-  if(NOT ANDROID AND NOT WIN32 AND NOT (APPLE AND NOT IOS AND XCODE))
+  if(NOT ANDROID AND NOT WIN32 AND NOT (APPLE AND XCODE))
     target_sources(${test_TARGET}
       PRIVATE
         ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
@@ -398,3 +399,127 @@ if(BUILD_TESTING)
 #        "${CMAKE_CURRENT_BINARY_DIR}/LiteHtmlDocument_1.ppm"
 #    )
   endif()
+
+
+  #-----------------------------------------------------------------------
+  # Run tests for iOS
+  #-----------------------------------------------------------------------
+
+  if(IOS)
+    set(IOS_TEST_BUNDLE_IDENTIFIER "${IOS_APP_BUNDLE_IDENTIFIER}.unit_tests")
+    set(IOS_TEST_APP_BIN_DIR
+      "${PROJECT_BINARY_DIR}/test/\${CONFIGURATION}\${EFFECTIVE_PLATFORM_NAME}/${test_TARGET}.app"
+    )
+    set(IOS_TEST_APP_FULL_BIN_DIR
+      "${PROJECT_BINARY_DIR}/test/$<CONFIG>-iphonesimulator/${test_TARGET}.app"
+    )
+
+    set_target_properties(${test_TARGET} PROPERTIES
+      MACOSX_BUNDLE_INFO_STRING "${IOS_TEST_BUNDLE_IDENTIFIER}"
+      MACOSX_BUNDLE_GUI_IDENTIFIER "${IOS_TEST_BUNDLE_IDENTIFIER}"
+      MACOSX_BUNDLE_BUNDLE_NAME "${IOS_TEST_BUNDLE_IDENTIFIER}"
+
+      XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "${IOS_CODE_SIGN_IDENTITY}"
+      XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${DEVELOPMENT_TEAM_ID}
+      XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET ${IOS_DEPLOYMENT_TARGET}
+      XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY ${IOS_DEVICE_FAMILY}
+    )
+
+    add_custom_command(TARGET ${test_TARGET} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${IOS_TEST_APP_BIN_DIR}/fonts"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${font_BIN_DIR}"
+        "${IOS_TEST_APP_BIN_DIR}/fonts/"
+
+      COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${IOS_TEST_APP_BIN_DIR}/data"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${data_BIN_DIR}"
+        "${IOS_TEST_APP_BIN_DIR}/data/"
+
+      COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${IOS_TEST_APP_BIN_DIR}/share/icu"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_INSTALL_PREFIX}/share/icu"
+        "${IOS_TEST_APP_BIN_DIR}/share/icu/"
+    )
+
+    if(BUILD_SHARED_LIBS)
+      add_custom_command(TARGET ${test_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+          "${IOS_TEST_APP_BIN_DIR}/lib"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_INSTALL_PREFIX}/lib"
+          "${IOS_TEST_APP_BIN_DIR}/lib/"
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${PROJECT_BINARY_DIR}/Feographia/$<CONFIG>-iphonesimulator/libfeographia_kardia.dylib"
+          "${IOS_TEST_APP_BIN_DIR}/lib/libfeographia_kardia.dylib"
+      )
+    endif()
+
+    if(IOS_CODE_SIGN_IDENTITY)
+      # Codesign the framework in it's new spot
+      add_custom_command(TARGET ${test_TARGET} POST_BUILD
+        #COMMAND codesign --force --verbose
+        #    ${IOS_TEST_APP_BIN_DIR}/Frameworks/${FRAMEWORK_NAME}.framework
+        #    --sign ${IOS_CODE_SIGN_IDENTITY}
+        #COMMAND codesign --force --verbose
+        #    \${BUILT_PRODUCTS_DIR}/${test_TARGET}.app/Frameworks/${FRAMEWORK_NAME}.framework
+        #    --sign ${IOS_CODE_SIGN_IDENTITY}
+        COMMAND codesign --force --verbose
+            ${IOS_TEST_APP_BIN_DIR}/${test_TARGET}
+            --sign ${IOS_CODE_SIGN_IDENTITY}
+      )
+    endif()
+
+    #if(run with spawn)
+    #  add_test(NAME copy_icu_dat_file_of_${test_TARGET}
+    #    COMMAND bash -c
+    #      "TEST_APP_HOME_DIR=$(xcrun simctl getenv booted HOME) && cp -R ${CMAKE_INSTALL_PREFIX}/share $TEST_APP_HOME_DIR"
+    #  )
+    #  add_test(NAME ${test_TARGET}
+    #    COMMAND xcrun simctl spawn booted
+    #      ${IOS_TEST_APP_FULL_BIN_DIR}/${test_TARGET}
+    #  )
+    #
+    #else()  # With install app.
+      add_test(NAME install_${test_TARGET}
+        COMMAND xcrun simctl install booted ${IOS_TEST_APP_FULL_BIN_DIR}/
+      )
+
+      # Must be after the app installing.
+      #add_test(NAME copy_icu_dat_file_of_${test_TARGET}
+      #  COMMAND bash -c
+      #    "TEST_APP_HOME_DIR=$(xcrun simctl get_app_container booted ${IOS_TEST_BUNDLE_IDENTIFIER} data) && cp -R ${CMAKE_INSTALL_PREFIX}/share $TEST_APP_HOME_DIR"
+      #)
+
+      add_test(NAME ${test_TARGET}
+        COMMAND xcrun simctl launch --console-pty booted
+          ${IOS_TEST_BUNDLE_IDENTIFIER}
+      )
+    #endif()
+
+    # NOTE: Use '--console-pty' with 'xcrun simctl launch' for Travis CI,
+    # not '--console'. With '--console' is error:
+    # -----------------------------------------------------------------------
+    # Unable to establish FIFO: Error 2
+    # An error was encountered processing the command (domain=NSPOSIXErrorDomain, code=2):
+    # The operation couldn.t be completed. No such file or directory
+    # No such file or directory
+    # -----------------------------------------------------------------------
+  endif()
+
+
+  #-----------------------------------------------------------------------
+  # Common test settings
+  #-----------------------------------------------------------------------
+
+  set_tests_properties(${test_TARGET} PROPERTIES
+    PASS_REGULAR_EXPRESSION "PASSED"
+  )
+  set_tests_properties(${test_TARGET} PROPERTIES
+    FAIL_REGULAR_EXPRESSION "FAILED"
+  )
+endif()

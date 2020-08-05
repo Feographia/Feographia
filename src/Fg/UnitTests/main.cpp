@@ -25,6 +25,9 @@
 
 #include "Fg/Util/Filesystem.h"
 
+//#include <unistd.h>
+//extern char **environ;
+
 ///*inline*/ fg::filesystem::path testDir;
 ///*inline*/ fg::filesystem::path fontDir;
 ///*inline*/ fg::filesystem::path dataDir;
@@ -35,6 +38,19 @@ inline fg::filesystem::path dataDir;
 
 int main(int argc, char** argv)
 {
+//  fprintf(stdout, "================================== 01\n");
+//  char buff[4096];
+//  printf("work dir: %s\n", getcwd(buff, 4096));
+
+//  int i = 1;
+//  char *s = *environ;
+
+//  for (; s; i++) {
+//    printf("%s\n", s);
+//    s = *(environ+i);
+//  }
+//  fprintf(stdout, "================================== 02\n");
+
   testing::InitGoogleTest(&argc, argv);
 
   // https://stackoverflow.com/a/55579815

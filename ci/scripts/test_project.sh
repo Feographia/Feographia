@@ -27,10 +27,11 @@ fi
 
 #if [[ ${cmr_ANDROID_ABI} == "arm64-v8a" ]]; then travis_terminate 0 ; fi
 
-# ==== Run iOS emulator ====
-#if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
-#  # TODO: run iOS emulator.
-#fi
+# ==== Run iOS simulator ====
+if [[ ${cmr_TARGET_OS} == "iOS" ]]; then
+  echo "==== Debug: Start iOS simulator"
+  xcrun simctl boot "iPhone 8"
+fi
 
 
 # ==== Run tests ====

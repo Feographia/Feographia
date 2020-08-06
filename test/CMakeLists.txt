@@ -159,7 +159,7 @@ if(BUILD_TESTING)
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
   )
   # FIXME: Fix this test for these platforms.
-  if(NOT ANDROID AND NOT WIN32 AND NOT (APPLE AND XCODE))
+  if(NOT ANDROID AND NOT WIN32 AND NOT APPLE)
     target_sources(${test_TARGET}
       PRIVATE
         ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp

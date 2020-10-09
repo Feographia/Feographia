@@ -59,7 +59,7 @@ void Text::sqlOpenDatabase(sqlite::OpenFlags flags)
     config.flags = flags;
     // The encoding is respected only if you create a new database.
     config.encoding = sqlite::Encoding::UTF8;
-    sqlite::database db {mModuleFile, config};
+    sqlite::database db {mModuleFile.string(), config};
 
     mDbConnection = db.connection();
   }

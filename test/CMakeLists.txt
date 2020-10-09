@@ -153,6 +153,7 @@ if(BUILD_TESTING)
     PRIVATE
       ${test_SRC_DIR}/Fg/UnitTests/main.cpp
       ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
+      ${test_SRC_DIR}/Fg/Module/Bible/Text/Text_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
       #${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp

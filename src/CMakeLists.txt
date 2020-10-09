@@ -82,10 +82,14 @@ target_sources(${fgkardia_TARGET}
 #    ${private_src_DIR}/Fg/Module/Bible/Block/BlockDeque.cpp
 #    ${private_src_DIR}/Fg/Module/Bible/Block/BlockView.cpp
 
-    ${private_src_DIR}/Fg/Module/Bible/Block/Word/Item.cpp
-#    ${private_src_DIR}/Fg/Module/Bible/Block/Word/ItemDeque.cpp
-    ${private_src_DIR}/Fg/Module/Bible/Block/Word/ItemView.cpp
-    ${private_src_DIR}/Fg/Module/Bible/Block/Word/WordPartView.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Text/WordDeque.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Text/WordView.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Text/WordPartView.cpp
+
+    ${private_src_DIR}/Fg/Module/Bible/Text/Text.cpp
+    ${private_src_DIR}/Fg/Module/Bible/Text/TextCreateTable.sql
+    ${private_src_DIR}/Fg/Module/Bible/Text/TextInsertWords.sql
+    ${private_src_DIR}/Fg/Module/Bible/Text/TextSelectWords.sql
 
     ${private_src_DIR}/Fg/Renderer/Cairo.cpp
 
@@ -108,10 +112,11 @@ target_sources(${fgkardia_TARGET}
 #    ${public_src_DIR}/Fg/Module/Bible/Block/BlockDeque.h
 #    ${public_src_DIR}/Fg/Module/Bible/Block/BlockView.h
 
-    ${public_src_DIR}/Fg/Module/Bible/Block/Word/Item.h
-#    ${public_src_DIR}/Fg/Module/Bible/Block/Word/ItemDeque.h
-    ${public_src_DIR}/Fg/Module/Bible/Block/Word/ItemView.h
-    ${public_src_DIR}/Fg/Module/Bible/Block/Word/WordPartView.h
+#    ${public_src_DIR}/Fg/Module/Bible/Text/WordDeque.h
+#    ${public_src_DIR}/Fg/Module/Bible/Text/WordView.h
+#    ${public_src_DIR}/Fg/Module/Bible/Text/WordPartView.h
+
+    ${public_src_DIR}/Fg/Module/Bible/Text/Text.h
 
     ${public_src_DIR}/Fg/Renderer/Cairo.h
 

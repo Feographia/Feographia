@@ -109,7 +109,7 @@ if(BUILD_TESTING)
 
   add_custom_target(prepare_test_font_conf
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${CMAKE_INSTALL_PREFIX}/etc/fonts"
+      "${cmr_INSTALL_DIR}/etc/fonts"
       # TODO: to "${test_BIN_DIR}/etc/fonts"
       "${font_BIN_DIR}"
   )
@@ -147,6 +147,13 @@ if(BUILD_TESTING)
   # Test executable
   #-----------------------------------------------------------------------
 
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+       OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(
+      -Wno-global-constructors
+    )
+  endif()
+
   add_executable(${test_TARGET} ${IOS_MACOSX_BUNDLE} "")
 
   target_sources(${test_TARGET}
@@ -156,16 +163,9 @@ if(BUILD_TESTING)
       ${test_SRC_DIR}/Fg/Module/Bible/Text/Text_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
-      #${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
   )
-  # FIXME: Fix this test for these platforms.
-  if(NOT ANDROID AND NOT WIN32 AND NOT APPLE)
-    target_sources(${test_TARGET}
-      PRIVATE
-        ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
-    )
-  endif()
 
   set_target_properties(${test_TARGET} PROPERTIES
     CXX_STANDARD 17
@@ -175,6 +175,15 @@ if(BUILD_TESTING)
     set_target_properties(${test_TARGET} PROPERTIES
       # Link all libraries into the target so as not to use LD_LIBRARY_PATH.
       LINK_WHAT_YOU_USE ON
+    )
+  endif()
+
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+       OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set_source_files_properties(
+      ${test_SRC_DIR}/Fg/UnitTests/main.cpp
+      PROPERTIES COMPILE_OPTIONS
+      "-Wno-exit-time-destructors"
     )
   endif()
 
@@ -442,7 +451,7 @@ if(BUILD_TESTING)
       COMMAND ${CMAKE_COMMAND} -E make_directory
         "${IOS_TEST_APP_BIN_DIR}/share/icu"
       COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_INSTALL_PREFIX}/share/icu"
+        "${cmr_INSTALL_DIR}/share/icu"
         "${IOS_TEST_APP_BIN_DIR}/share/icu/"
     )
 
@@ -451,7 +460,7 @@ if(BUILD_TESTING)
         COMMAND ${CMAKE_COMMAND} -E make_directory
           "${IOS_TEST_APP_BIN_DIR}/lib"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${CMAKE_INSTALL_PREFIX}/lib"
+          "${cmr_INSTALL_DIR}/lib"
           "${IOS_TEST_APP_BIN_DIR}/lib/"
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -478,7 +487,7 @@ if(BUILD_TESTING)
     #if(run with spawn)
     #  add_test(NAME copy_icu_dat_file_of_${test_TARGET}
     #    COMMAND bash -c
-    #      "TEST_APP_HOME_DIR=$(xcrun simctl getenv booted HOME) && cp -R ${CMAKE_INSTALL_PREFIX}/share $TEST_APP_HOME_DIR"
+    #      "TEST_APP_HOME_DIR=$(xcrun simctl getenv booted HOME) && cp -R ${cmr_INSTALL_DIR}/share $TEST_APP_HOME_DIR"
     #  )
     #  add_test(NAME ${test_TARGET}
     #    COMMAND xcrun simctl spawn booted
@@ -493,7 +502,7 @@ if(BUILD_TESTING)
       # Must be after the app installing.
       #add_test(NAME copy_icu_dat_file_of_${test_TARGET}
       #  COMMAND bash -c
-      #    "TEST_APP_HOME_DIR=$(xcrun simctl get_app_container booted ${IOS_TEST_BUNDLE_IDENTIFIER} data) && cp -R ${CMAKE_INSTALL_PREFIX}/share $TEST_APP_HOME_DIR"
+      #    "TEST_APP_HOME_DIR=$(xcrun simctl get_app_container booted ${IOS_TEST_BUNDLE_IDENTIFIER} data) && cp -R ${cmr_INSTALL_DIR}/share $TEST_APP_HOME_DIR"
       #)
 
       add_test(NAME ${test_TARGET}

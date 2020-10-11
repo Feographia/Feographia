@@ -201,7 +201,7 @@ if(BUILD_TESTING)
 
   add_custom_target(prepare_wx_test_font_conf
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${CMAKE_INSTALL_PREFIX}/etc/fonts"
+      "${cmr_INSTALL_DIR}/etc/fonts"
       "${WX_FG_TEST_FONT_DIR}"
   )
 

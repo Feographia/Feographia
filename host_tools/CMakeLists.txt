@@ -21,6 +21,10 @@
 #     along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set(cmr_DEFAULT_CMAKE_INSTALL_PREFIX ON)
+endif()
+
 cmake_minimum_required(VERSION 3.8)
 
 project(FeographiaHostTools CXX)
@@ -53,6 +57,26 @@ if(NOT HOST_TOOLS_STAMP_FILE_NAME)
     "Please set HOST_TOOLS_STAMP_FILE_NAME with name of stamp file.")
 endif()
 
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+  set(platform_NAME "linux")
+elseif(APPLE AND NOT IOS)
+  set(platform_NAME "macos")
+elseif(WIN32)
+  set(platform_NAME "windows")
+elseif(ANDROID)
+  set(platform_NAME "android")
+elseif(IOS)
+  set(platform_NAME "ios")
+endif()
+
+set(compiler_NAME "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+if(MINGW)
+  set(compiler_NAME "MinGW_${compiler_NAME}")
+endif()
+
+set(platform_NAME "${platform_NAME}_${compiler_NAME}")
+set(cmr_LIBCMAKER_WORK_DIR "${PROJECT_SOURCE_DIR}/.libcmaker")
+
 if(NOT cmr_DOWNLOAD_DIR)
   set(cmr_DOWNLOAD_DIR "${CMAKE_CURRENT_LIST_DIR}/.downloads")
 endif()
@@ -63,7 +87,11 @@ if(NOT cmr_BUILD_DIR)
   set(cmr_BUILD_DIR "${PROJECT_BINARY_DIR}")
 endif()
 
-set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
+if(cmr_DEFAULT_CMAKE_INSTALL_PREFIX)
+  set(cmr_INSTALL_DIR "${cmr_LIBCMAKER_WORK_DIR}/${platform_NAME}/install")
+else()
+  set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
+endif()
 
 
 #-----------------------------------------------------------------------

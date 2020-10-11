@@ -26,6 +26,10 @@ if(EXISTS ${prj_options})
   include(${prj_options})
 endif()
 
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  option(cmr_DEFAULT_CMAKE_INSTALL_PREFIX "cmr_DEFAULT_CMAKE_INSTALL_PREFIX" ON)
+endif()
+
 cmake_minimum_required(VERSION 3.8)
 # C++17 compiler:
 #   GCC 8

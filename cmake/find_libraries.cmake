@@ -25,32 +25,34 @@
 # Set path vars
 #-----------------------------------------------------------------------
 
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+  set(platform_NAME "linux")
+elseif(APPLE AND NOT IOS)
+  set(platform_NAME "macos")
+elseif(WIN32)
+  set(platform_NAME "windows")
+elseif(ANDROID)
+  set(platform_NAME "android")
+elseif(IOS)
+  set(platform_NAME "ios")
+endif()
+
+set(compiler_NAME "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+if(MINGW)
+  set(compiler_NAME "MinGW_${compiler_NAME}")
+endif()
+
+set(platform_NAME "${platform_NAME}_${compiler_NAME}")
+
 set(libs_DIR "${PROJECT_SOURCE_DIR}/libs")
 set(build_libs_DIR "${PROJECT_BINARY_DIR}/build_libs")
+set(cmr_LIBCMAKER_WORK_DIR "${PROJECT_SOURCE_DIR}/.libcmaker")
 
 if(NOT cmr_DOWNLOAD_DIR)
   set(cmr_DOWNLOAD_DIR "${PROJECT_SOURCE_DIR}/.downloads")
 endif()
 
 if(NOT cmr_UNPACKED_DIR)
-  if(UNIX AND NOT APPLE AND NOT ANDROID)
-    set(platform_DIR "_linux")
-  elseif(APPLE AND NOT IOS)
-    set(platform_DIR "_macos")
-  elseif(WIN32)
-    set(platform_DIR "_windows")
-  elseif(ANDROID)
-    set(platform_DIR "_android")
-  elseif(IOS)
-    set(platform_DIR "_ios")
-  endif()
-
-  if(MSVC)
-    set(compiler_DIR "_msvc")
-  elseif(MINGW)
-    set(compiler_DIR "_mingw")
-  endif()
-
   set(cmr_UNPACKED_DIR
     "${cmr_DOWNLOAD_DIR}/.unpacked${platform_DIR}${compiler_DIR}"
   )
@@ -60,13 +62,17 @@ if(NOT cmr_BUILD_DIR)
   set(cmr_BUILD_DIR "${build_libs_DIR}/LibCMaker")
 endif()
 
-set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
-
 if(NOT cmr_HOST_UNPACKED_DIR)
   set(cmr_HOST_UNPACKED_DIR "${cmr_UNPACKED_DIR}/.host_tools_sources")
 endif()
 if(NOT cmr_HOST_BUILD_DIR)
   set(cmr_HOST_BUILD_DIR "${cmr_BUILD_DIR}/.build_host_tools")
+endif()
+
+if(cmr_DEFAULT_CMAKE_INSTALL_PREFIX)
+  set(cmr_INSTALL_DIR "${cmr_LIBCMAKER_WORK_DIR}/${platform_NAME}/install")
+else()
+  set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 

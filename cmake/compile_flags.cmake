@@ -85,6 +85,100 @@ elseif(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif()
 endif()
 
+# TODO: use link-time optimization (LTO).
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  add_compile_options(
+    # GNU C/C++
+    -Werror -Wall -Wextra -Wpedantic -pedantic -pedantic-errors
+    -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wdouble-promotion
+    -Wnull-dereference -Wimplicit-fallthrough=5 -Wmissing-include-dirs
+    -Wswitch-default -Wswitch-enum -Wunused-parameter -Wuninitialized
+    -Wstrict-overflow=5 -Wstringop-truncation
+    -Wsuggest-attribute=pure -Wsuggest-attribute=const
+    -Wsuggest-attribute=noreturn -Wmissing-noreturn -Wsuggest-attribute=malloc
+    -Wsuggest-attribute=format -Wmissing-format-attribute
+    -Wsuggest-attribute=cold
+    -Wsuggest-final-types -Wsuggest-final-methods -Wsuggest-override
+    -Walloc-zero -Walloca -Wattribute-alias=2
+    -Wduplicated-branches -Wduplicated-cond -Wtrampolines -Wfloat-equal
+    -Wplacement-new=2 -Wshadow -Wunsafe-loop-optimizations -Wundef
+    -Wunused-macros -Wcast-qual -Wcast-align=strict -Wcatch-value=3
+    -Wconditionally-supported -Wconversion -Wsign-conversion
+    -Wzero-as-null-pointer-constant -Wdate-time -Wuseless-cast -Wextra-semi
+    -Wlogical-op -Wmissing-declarations -Wpacked
+#    -Wpadded
+    -Wredundant-decls -Winline -Winvalid-pch
+    -Wvector-operation-performance -Wvla -Wdisabled-optimization
+
+    # GNU C++
+    -Wctor-dtor-privacy -Wdeprecated-copy-dtor -Wnoexcept -Wnoexcept-type
+    -Wold-style-cast -Woverloaded-virtual -Wsign-promo -Wmultiple-inheritance
+    -Wvirtual-inheritance -Wnon-virtual-dtor -Weffc++
+    # NOTE: -Weffc++: be aware that the standard library headers
+    # do not obey all of these guidelines.
+
+    # -Wno-*
+    -Wno-unknown-pragmas
+  )
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+     OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  add_compile_options(
+    -Werror -Wall -Wextra -Wpedantic -pedantic-errors
+    -Warray-bounds-pointer-arithmetic -Wassign-enum -Wauto-import
+    -Wbad-function-cast -Wbind-to-temporary-copy -Wbitfield-enum-conversion
+    -Wc++11-narrowing -Wcast-align -Wcast-qual -Wclass-varargs -Wcomma
+    -Wconditional-uninitialized -Wconsumed -Wconversion -Wdeprecated
+    -Wdirect-ivar-access -Wdisabled-macro-expansion -Wdocumentation
+    -Wdocumentation-pedantic -Wdouble-promotion
+    -Wduplicate-decl-specifier -Wduplicate-enum -Wduplicate-method-arg
+    -Wduplicate-method-match -Wdynamic-exception-spec
+    -Weffc++ -Wnon-virtual-dtor
+    -Wexit-time-destructors -Wexpansion-to-defined -Wexplicit-ownership-type
+    -Wextra-semi -Wextra-semi-stmt
+    -Wfloat-conversion -Wfloat-equal -Wfloat-overflow-conversion
+    -Wfloat-zero-conversion -Wformat-non-iso -Wformat-pedantic -Wformat=2
+    -Wglobal-constructors -Wheader-hygiene -Widiomatic-parentheses
+    -Wimplicit-atomic-properties -Wimplicit-fallthrough
+    -Wimplicit-float-conversion -Wimplicit-int-conversion -Wimplicit-retain-self
+    -Wincomplete-module -Winconsistent-missing-destructor-override
+    -Wloop-analysis -Wmain -Wmethod-signatures
+    -Wmissing-noreturn -Wmissing-prototypes -Wmissing-variable-declarations
+    -Wnewline-eof -Wnonportable-system-include-path
+    -Wnullable-to-nonnull-conversion -Wold-style-cast -Wover-aligned
+    -Woverriding-method-mismatch -Wpacked
+#    -Wpadded
+    -Wpointer-arith -Wprofile-instr-missing -Wreceiver-forward-class
+    -Wredundant-parens -Wreserved-id-macro -Wreserved-user-defined-literal
+    -Wreturn-std-move-in-c++11 -Wselector -Wshadow-all -Wshift-sign-overflow
+    -Wshorten-64-to-32 -Wsign-conversion -Wsigned-enum-bitfield
+    -Wsometimes-uninitialized -Wstatic-in-inline
+    -Wstrict-prototypes -Wstrict-selector-match -Wstring-conversion
+    -Wsuper-class-method-mismatch -Wswitch-enum -Wtautological-compare
+    -Wtautological-constant-in-range-compare -Wtautological-overlap-compare
+    -Wthread-safety -Wthread-safety-beta -Wthread-safety-negative
+    -Wthread-safety-verbose -Wundeclared-selector -Wundef
+    -Wundefined-func-template -Wundefined-reinterpret-cast
+    -Wunguarded-availability -Wunnamed-type-template-args
+    -Wunneeded-internal-declaration -Wunneeded-member-function
+    -Wunreachable-code-aggressive -Wunsupported-dll-base-class-template
+    -Wunused-const-variable -Wunused-exception-parameter -Wunused-macros
+    -Wunused-member-function -Wunused-template -Wused-but-marked-unused
+    -Wvariadic-macros -Wvector-conversion -Wvla -Wweak-template-vtables
+    -Wweak-vtables -Wzero-as-null-pointer-constant
+    -Wgnu -Wmicrosoft
+
+    # -Wno-*
+    -Wno-unknown-warning-option
+  )
+endif()
+
+if(MSVC)
+  add_compile_options(/Wall /WX)
+endif()
+
 option(cmr_BUILD_MULTIPROC "cmr_BUILD_MULTIPROC" ON)
 
 if(cmr_BUILD_MULTIPROC)

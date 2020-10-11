@@ -76,7 +76,7 @@ target_sources(${fgkardia_TARGET}
   PRIVATE
 #    ${private_src_DIR}/Fg/Module/Bible/Base/Deque.cpp
 #    ${private_src_DIR}/Fg/Module/Bible/Base/Fragment.cpp
-    ${private_src_DIR}/Fg/Module/Bible/Base/View.cpp
+#    ${private_src_DIR}/Fg/Module/Bible/Base/View.cpp
 
 #    ${private_src_DIR}/Fg/Module/Bible/Block/Block.cpp
 #    ${private_src_DIR}/Fg/Module/Bible/Block/BlockDeque.cpp
@@ -106,7 +106,7 @@ target_sources(${fgkardia_TARGET}
 
 #    ${public_src_DIR}/Fg/Module/Bible/Base/Deque.h
 #    ${public_src_DIR}/Fg/Module/Bible/Base/Fragment.h
-    ${public_src_DIR}/Fg/Module/Bible/Base/View.h
+#    ${public_src_DIR}/Fg/Module/Bible/Base/View.h
 
 #    ${public_src_DIR}/Fg/Module/Bible/Block/Block.h
 #    ${public_src_DIR}/Fg/Module/Bible/Block/BlockDeque.h
@@ -130,6 +130,14 @@ target_sources(${fgkardia_TARGET}
     ${public_src_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer.h
     ${public_src_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer.h
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set_source_files_properties(
+    ${private_src_DIR}/Fg/Module/Bible/Text/Text.cpp
+    PROPERTIES COMPILE_OPTIONS
+    "-Wno-noexcept"
+  )
+endif()
 
 
 #-----------------------------------------------------------------------

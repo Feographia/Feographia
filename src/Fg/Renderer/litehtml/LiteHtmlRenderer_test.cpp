@@ -53,16 +53,17 @@ TEST(HtmlRenderer, drawHtml)
   };
 
   const cairo_format_t colorFormat = CAIRO_FORMAT_ARGB32;
-  const unsigned int frameWidth = 640;
-  const unsigned int frameHeight = 480;
+  const int frameWidth = 640;
+  const int frameHeight = 480;
   //const int stride = frameWidth * BYTES_PER_PIXEL;
   const int stride = cairo_format_stride_for_width(colorFormat, frameWidth);
 
-  std::vector<unsigned char> frameBuf(stride * frameHeight);
+  std::vector<unsigned char> frameBuf(
+      static_cast<unsigned int>(std::abs(stride * frameHeight)));
 
   fg::CairoPtr cairo = std::make_shared<fg::Cairo>(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride);
-  cairo->clear(fg::Color{1, 1, 1, 1});
+  cairo->clear(fg::Color {1, 1, 1, 1});
 
   //// HtmlGrapheasKamva init.
 
@@ -140,16 +141,18 @@ TEST(HtmlRenderer, drawHtml)
 
   htmlRenderer.drawHtml(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride, 205, 207);
-  htmlRenderer.drawHtml(frameBuf.data(), colorFormat, frameWidth, frameHeight,
-      stride, -304, -217);
+  htmlRenderer.drawHtml(
+      frameBuf.data(), colorFormat, frameWidth, frameHeight, stride, -304,
+      -217);
   htmlRenderer.drawHtml(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride, 0, 0);
 
   // Write our picture to file.
   std::string fileName1 = "LiteHtmlDocument_1.ppm";
   fg::filesystem::path fileOutTest1 = testDir / fileName1;
-  fg::util::writePpmFile(frameBuf.data(), frameWidth, frameHeight,
-      BYTES_PER_PIXEL, fileOutTest1.c_str());
+  fg::util::writePpmFile(
+      frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL,
+      fileOutTest1.c_str());
 
   // Compare our file with prototype.
   fg::filesystem::path fileTest1 = dataDir / "LiteHtmlDocument_1.ppm";

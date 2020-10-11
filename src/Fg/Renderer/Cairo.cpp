@@ -29,14 +29,17 @@
 
 namespace fg
 {
-Cairo::Cairo(unsigned char* buffer,
+Cairo::Cairo(
+    unsigned char* buffer,
     const cairo_format_t colorFormat,
-    const unsigned int width,
-    const unsigned int height,
+    const int width,
+    const int height,
     const int stride)
+    : mContext {nullptr}
 {
-  SurfacePtr surface = {cairo_image_surface_create_for_data(
-                            buffer, colorFormat, width, height, stride),
+  SurfacePtr surface = {
+      cairo_image_surface_create_for_data(
+          buffer, colorFormat, width, height, stride),
       cairo_surface_destroy};
   checkStatus(cairo_surface_status, surface.get());
 
@@ -73,7 +76,8 @@ void Cairo::clear(const Color& color /*= Color{}*/)
   cairo_restore(mContext.get());
 }
 
-void Cairo::drawLine(const double x1,
+void Cairo::drawLine(
+    const double x1,
     const double y1,
     const double x2,
     const double y2,
@@ -90,7 +94,8 @@ void Cairo::drawLine(const double x1,
   cairo_restore(mContext.get());
 }
 
-void Cairo::showGlyphs(const GlyphVector& glyphs,
+void Cairo::showGlyphs(
+    const GlyphVector& glyphs,
     const ScaledFontPtr scaledFont,
     const double x,
     const double y,
@@ -99,14 +104,16 @@ void Cairo::showGlyphs(const GlyphVector& glyphs,
 {
   cairo_save(mContext.get());
   cairo_translate(mContext.get(), x, y);
-  cairo_rectangle(mContext.get(), extents.x_bearing, extents.y_bearing,
-      extents.width, extents.height);
+  cairo_rectangle(
+      mContext.get(), extents.x_bearing, extents.y_bearing, extents.width,
+      extents.height);
   cairo_clip(mContext.get());
   cairo_set_source_rgba(
       mContext.get(), color.mRed, color.mGreen, color.mBlue, color.mAlpha);
   cairo_set_scaled_font(mContext.get(), scaledFont.get());
   // NOTE: See also: cairo_show_text_glyphs(), cairo_glyph_path()
-  cairo_show_glyphs(mContext.get(), glyphs.data(), glyphs.size());
+  cairo_show_glyphs(
+      mContext.get(), glyphs.data(), static_cast<int>(glyphs.size()));
   cairo_restore(mContext.get());
 }
 
@@ -138,7 +145,7 @@ int Cairo::formatBitsPerPixel(cairo_format_t format)
 Cairo::ScaledFontPtr Cairo::getScaledFont(
     const FT_Face ftFace, const int ftLoadFlags, const int pixelSize)
 {
-  FontFacePtr fontFace{
+  FontFacePtr fontFace {
       cairo_ft_font_face_create_for_ft_face(ftFace, ftLoadFlags),
       cairo_font_face_destroy};
   checkPtrStatus(fontFace);
@@ -148,7 +155,7 @@ Cairo::ScaledFontPtr Cairo::getScaledFont(
   cairo_matrix_t ctm;
   cairo_matrix_init_identity(&ctm);
 
-  FontOptionsPtr fontOptions{
+  FontOptionsPtr fontOptions {
       cairo_font_options_create(), cairo_font_options_destroy};
   checkStatus(cairo_font_options_status, fontOptions.get());
   cairo_font_options_set_antialias(fontOptions.get(), CAIRO_ANTIALIAS_GRAY);
@@ -159,8 +166,9 @@ Cairo::ScaledFontPtr Cairo::getScaledFont(
   // (in Chrome browser!) see http://css.yoksel.ru/opentype-variable-fonts/
   //cairo_font_options_set_variations(options, "wght=200, wdth=140.5");
 
-  ScaledFontPtr scaledFont{cairo_scaled_font_create(fontFace.get(), &fontMatrix,
-                               &ctm, fontOptions.get()),
+  ScaledFontPtr scaledFont {
+      cairo_scaled_font_create(
+          fontFace.get(), &fontMatrix, &ctm, fontOptions.get()),
       cairo_scaled_font_destroy};
   checkStatus(cairo_scaled_font_status, scaledFont.get());
 
@@ -201,9 +209,8 @@ void Cairo::rasterCopy(int diffX, int diffY)
   }
 
   if(diffX == 0) {  // Vertical copying
-    int dstY = (diffY > 0) ? 0 : -diffY * stride;
+    dstY = (diffY > 0) ? 0 : -diffY * stride;
     std::copy(data + srcY1, data + srcY2, data + dstY);
-
   } else {
     int width = cairo_image_surface_get_width(surface);
     int bpp = stride / width;  // Bytes per pixel.
@@ -222,13 +229,15 @@ void Cairo::rasterCopy(int diffX, int diffY)
     if(diffY > 0) {
       for(int currSrcY = srcY1, currDstY = dstY; currSrcY < srcY2;
           currSrcY += stride, currDstY += stride) {
-        std::copy(data + currSrcY + srcX1, data + currSrcY + srcX2,
+        std::copy(
+            data + currSrcY + srcX1, data + currSrcY + srcX2,
             data + currDstY + dstX);
       }
     } else {
       for(int currSrcY = srcY2 - stride, currDstY = dstY - stride;
           currSrcY >= srcY1; currSrcY -= stride, currDstY -= stride) {
-        std::copy(data + currSrcY + srcX1, data + currSrcY + srcX2,
+        std::copy(
+            data + currSrcY + srcX1, data + currSrcY + srcX2,
             data + currDstY + dstX);
       }
     }

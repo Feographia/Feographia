@@ -43,7 +43,8 @@ public:
 
   void createHtmlDocumentFromUtf8(const std::string& htmlText);
   int renderHtml(int width, int height);
-  virtual void drawHtml(unsigned char* buffer,
+  virtual void drawHtml(
+      unsigned char* buffer,
       const cairo_format_t colorFormat,
       const int width,
       const int height,
@@ -67,7 +68,6 @@ private:
 
   CairoPtr mCairo;
 
-  unsigned char* mBuffer;
   int mBufferWidth;
   int mBufferHeight;
   int mBufferStride;

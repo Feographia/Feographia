@@ -31,14 +31,17 @@
 namespace fg
 {
 Font::Font(FtLibraryPtr ftLibrary, const int textCacheSize)
-    : mFtLibrary{ftLibrary}
-    , mHbBuffer{hb_buffer_create(), hb_buffer_destroy}
-    , mScaledFontExtents{0.0, 0.0, 0.0, 0.0, 0.0}
-    , mTextLayoutCache{std::make_shared<TextLayoutCache>(textCacheSize)}
-    , mPixelSize{10}
-    , mStrikeout{false}
-    , mUnderline{false}
-    , mxHeight{0.0}
+    : mFtLibrary {ftLibrary}
+    , mFtFace {nullptr}
+    , mHbBuffer {hb_buffer_create(), hb_buffer_destroy}
+    , mHbFont {nullptr}
+    , mCairoScaledFont {nullptr}
+    , mScaledFontExtents {0.0, 0.0, 0.0, 0.0, 0.0}
+    , mTextLayoutCache {std::make_shared<TextLayoutCache>(textCacheSize)}
+    , mPixelSize {10}
+    , mStrikeout {false}
+    , mUnderline {false}
+    , mxHeight {0.0}
 {
 }
 
@@ -54,8 +57,7 @@ bool Font::createFtFace(
   // TODO: see: https://stackoverflow.com/questions/10075032/can-freetype-functions-accept-unicode-filenames
   const std::string pathStr(fontFilePath.string());
   FT_Face ftFace;
-  if(FT_New_Face(mFtLibrary.get(), pathStr.c_str(), 0, &ftFace)
-      != FT_Err_Ok) {
+  if(FT_New_Face(mFtLibrary.get(), pathStr.c_str(), 0, &ftFace) != FT_Err_Ok) {
     throw std::logic_error("FT_New_Face() != FT_Err_Ok");
   }
   mFtFace = {ftFace, FT_Done_Face};
@@ -94,9 +96,9 @@ int Font::forceUcs2Charmap(FT_Face ftf)
 {
   for(int i = 0; i < ftf->num_charmaps; i++) {
     if(((ftf->charmaps[i]->platform_id == 0)
-           && (ftf->charmaps[i]->encoding_id == 3))
-        || ((ftf->charmaps[i]->platform_id == 3)
-               && (ftf->charmaps[i]->encoding_id == 1))) {
+        && (ftf->charmaps[i]->encoding_id == 3))
+       || ((ftf->charmaps[i]->platform_id == 3)
+           && (ftf->charmaps[i]->encoding_id == 1))) {
       return (FT_Set_Charmap(ftf, ftf->charmaps[i]));
     }
   }
@@ -129,8 +131,10 @@ void Font::setLanguage(const std::string& language)
 {
   // For ISO 639 Code see
   // http://www.loc.gov/standards/iso639-2/php/code_list.php
-  hb_buffer_set_language(mHbBuffer.get(),
-      hb_language_from_string(language.c_str(), language.size()));
+  hb_buffer_set_language(
+      mHbBuffer.get(),
+      hb_language_from_string(
+          language.c_str(), static_cast<int>(language.size())));
 }
 
 typename Font::TextLayoutPtr Font::getTextLayout(const std::string& text)
@@ -150,7 +154,8 @@ typename Font::TextLayoutPtr Font::getTextLayout(const std::string& text)
 
   // Layout the text
   hb_buffer_add_utf8(
-      mHbBuffer.get(), text.c_str(), text.size(), 0, text.size());
+      mHbBuffer.get(), text.c_str(), static_cast<int>(text.size()), 0,
+      static_cast<int>(text.size()));
   hb_shape(mHbFont.get(), mHbBuffer.get(), nullptr, 0);
 
   unsigned int glyphCount;
@@ -173,10 +178,10 @@ typename Font::TextLayoutPtr Font::getTextLayout(const std::string& text)
     y -= static_cast<double>(glyphPos[i].y_advance) / FT_64_DOUBLE;
   }
 
-  Cairo::TextExtentsPtr textExtents =
-      std::make_shared<cairo_text_extents_t>();
+  Cairo::TextExtentsPtr textExtents = std::make_shared<cairo_text_extents_t>();
   cairo_scaled_font_glyph_extents(
-      mCairoScaledFont.get(), glyphs->data(), glyphCount, textExtents.get());
+      mCairoScaledFont.get(), glyphs->data(), static_cast<int>(glyphCount),
+      textExtents.get());
 
   TextLayoutPtr textLayout = std::make_shared<TextLayout>(glyphs, textExtents);
   mTextLayoutCache->insert(text, textLayout);
@@ -197,15 +202,17 @@ Cairo::TextExtentsPtr Font::getTextExtents(const std::string& text)
   return getTextLayout(text)->mExtents;
 }
 
-void Font::drawText(CairoPtr cairo,
+void Font::drawText(
+    CairoPtr cairo,
     const std::string& text,
     const double x,
     const double y,
     const Color& color)
 {
   TextLayoutPtr textLayout = getTextLayout(text);
-  cairo->showGlyphs(*textLayout->mGlyphs, mCairoScaledFont, x, y,
-      *textLayout->mExtents, color);
+  cairo->showGlyphs(
+      *textLayout->mGlyphs, mCairoScaledFont, x, y, *textLayout->mExtents,
+      color);
 }
 
 double Font::xHeight()

@@ -48,16 +48,17 @@ TEST(ContainerTest, create_font)
   };
 
   const cairo_format_t colorFormat = CAIRO_FORMAT_ARGB32;
-  const unsigned int frameWidth = 250;
-  const unsigned int frameHeight = 50;
+  const int frameWidth = 250;
+  const int frameHeight = 50;
   //const int stride = frameWidth * BYTES_PER_PIXEL;
   const int stride = cairo_format_stride_for_width(colorFormat, frameWidth);
 
-  std::vector<unsigned char> frameBuf(stride * frameHeight);
+  std::vector<unsigned char> frameBuf(
+      static_cast<unsigned int>(std::abs(stride * frameHeight)));
 
   fg::CairoPtr cairo = std::make_shared<fg::Cairo>(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride);
-  cairo->clear(fg::Color{0, 0, 0, 1});
+  cairo->clear(fg::Color {0, 0, 0, 1});
 
   ////
 
@@ -67,7 +68,7 @@ TEST(ContainerTest, create_font)
   EXPECT_FALSE(fontConfig.empty());
 
   litehtml::font_metrics fm;
-  fg::LiteHtmlContainer container{};
+  fg::LiteHtmlContainer container {};
   container.setFontTextCacheSize(1000);
   EXPECT_TRUE(container.parseAndLoadFontConfigFromMemory(fontConfig, true));
   EXPECT_TRUE(container.addFontDir(fontDir));
@@ -104,25 +105,26 @@ TEST(ContainerTest, draw_text)
   };
 
   const cairo_format_t colorFormat = CAIRO_FORMAT_ARGB32;
-  const unsigned int frameWidth = 250;
-  const unsigned int frameHeight = 50;
+  const int frameWidth = 250;
+  const int frameHeight = 50;
   //const int stride = frameWidth * BYTES_PER_PIXEL;
   const int stride = cairo_format_stride_for_width(colorFormat, frameWidth);
 
-  std::vector<unsigned char> frameBuf(stride * frameHeight);
+  std::vector<unsigned char> frameBuf(
+      static_cast<unsigned int>(std::abs(stride * frameHeight)));
 
   fg::CairoPtr cairo = std::make_shared<fg::Cairo>(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride);
-  cairo->clear(fg::Color{0, 0, 0, 1});
+  cairo->clear(fg::Color {0, 0, 0, 1});
 
   //// HtmlGrapheasKamva init.
 
   litehtml::font_metrics fm;
-  fg::LiteHtmlContainer container{};
+  fg::LiteHtmlContainer container {};
   container.setFontTextCacheSize(1000);
   EXPECT_TRUE(container.addFontDir(fontDir));
-  litehtml::uint_ptr hFont = container.create_font("Tinos", 16, 400,
-      litehtml::font_style::fontStyleNormal,
+  litehtml::uint_ptr hFont = container.create_font(
+      "Tinos", 16, 400, litehtml::font_style::fontStyleNormal,
       litehtml::font_decoration_linethrough
           | litehtml::font_decoration_underline,
       &fm);
@@ -139,8 +141,9 @@ TEST(ContainerTest, draw_text)
   litehtml::web_color textColor(128, 128, 128);
 
   // draw_text()
-  container.draw_text(reinterpret_cast<litehtml::uint_ptr>(&cairo),
-      "This is some english text", hFont, textColor, pos);
+  container.draw_text(
+      reinterpret_cast<litehtml::uint_ptr>(&cairo), "This is some english text",
+      hFont, textColor, pos);
 
   // Write our picture to file.
   std::string fileName1 = "LiteHtmlContainer_1.ppm";
@@ -155,11 +158,12 @@ TEST(ContainerTest, draw_text)
   //////// Repeat tests for new text.
 
   // Make cleaning before new text.
-  cairo->clear(fg::Color{0, 0, 0, 1});
+  cairo->clear(fg::Color {0, 0, 0, 1});
 
   // draw_text()
-  container.draw_text(reinterpret_cast<litehtml::uint_ptr>(&cairo),
-      "some english", hFont, textColor, pos);
+  container.draw_text(
+      reinterpret_cast<litehtml::uint_ptr>(&cairo), "some english", hFont,
+      textColor, pos);
 
   // Write our picture to file.
   std::string fileName2 = "LiteHtmlContainer_2.ppm";
@@ -193,20 +197,21 @@ TEST(ContainerTest, drawHtmlDocument)
   };
 
   const cairo_format_t colorFormat = CAIRO_FORMAT_ARGB32;
-  const unsigned int frameWidth = 640;
-  const unsigned int frameHeight = 480;
+  const int frameWidth = 640;
+  const int frameHeight = 480;
   //const int stride = frameWidth * BYTES_PER_PIXEL;
   const int stride = cairo_format_stride_for_width(colorFormat, frameWidth);
 
-  std::vector<unsigned char> frameBuf(stride * frameHeight);
+  std::vector<unsigned char> frameBuf(
+      static_cast<unsigned int>(std::abs(stride * frameHeight)));
 
   fg::CairoPtr cairo = std::make_shared<fg::Cairo>(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride);
-  cairo->clear(fg::Color{1, 1, 1, 1});
+  cairo->clear(fg::Color {1, 1, 1, 1});
 
   //// HtmlGrapheasKamva init.
 
-  fg::LiteHtmlContainer container{};
+  fg::LiteHtmlContainer container {};
 
   // Set fonts.
   container.setFontTextCacheSize(1000);
@@ -247,9 +252,9 @@ TEST(ContainerTest, drawHtmlDocument)
           </body>
         </html>
       )";
-  litehtml::document::ptr htmlDocument =
-      litehtml::document::createFromUTF8(htmlText.c_str(), &container,
-          &htmlContext /*, litehtml::css* user_styles = 0 */);
+  litehtml::document::ptr htmlDocument = litehtml::document::createFromUTF8(
+      htmlText.c_str(), &container,
+      &htmlContext /*, litehtml::css* user_styles = 0 */);
 
   // Render HTML document.
   int bestWidth = htmlDocument->render(frameWidth);

@@ -21,6 +21,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -52,21 +53,21 @@ TEST(FontTest, FontTest)
 
   enum
   {
-    //BYTES_PER_PIXEL = 3
     BYTES_PER_PIXEL = 4
   };
 
-  const cairo_format_t colorFormat = CAIRO_FORMAT_ARGB32;
-  const unsigned int frameWidth = 250;
-  const unsigned int frameHeight = 50;
+  const cairo_format_t colorFormat = CAIRO_FORMAT_RGB24;
+  const int frameWidth = 250;
+  const int frameHeight = 50;
   //const int stride = frameWidth * BYTES_PER_PIXEL;
   const int stride = cairo_format_stride_for_width(colorFormat, frameWidth);
 
-  std::vector<unsigned char> frameBuf(stride * frameHeight);
+  std::vector<unsigned char> frameBuf(
+      static_cast<unsigned int>(std::abs(stride * frameHeight)));
 
   fg::CairoPtr cairo = std::make_shared<fg::Cairo>(
       frameBuf.data(), colorFormat, frameWidth, frameHeight, stride);
-  cairo->clear(fg::Color{0, 0, 0, 1});
+  cairo->clear(fg::Color {0, 0, 0, 1});
 
   //// Init.
 
@@ -125,7 +126,8 @@ TEST(FontTest, FontTest)
   // Set text position.
   int x = 10;
   //int y = 10 + font.getScaledFontExtents().ascent;
-  int y = frameHeight - 10 - font.getScaledFontExtents().descent;
+  int y =
+      static_cast<int>(frameHeight - 10 - font.getScaledFontExtents().descent);
 
   // Set text color.
   fg::Color color(0.5, 0.5, 0.5, 1);
@@ -149,7 +151,7 @@ TEST(FontTest, FontTest)
 
   // Make cleaning before new text.
   font.clearBuffer();
-  cairo->clear(fg::Color{0, 0, 0, 1});
+  cairo->clear(fg::Color {0, 0, 0, 1});
 
   // Set HarfBuzz params.
   font.setDirection(HB_DIRECTION_LTR);
@@ -171,8 +173,9 @@ TEST(FontTest, FontTest)
   // Write our picture to file.
   std::string fileName2 = "FontTest_2.ppm";
   fg::filesystem::path fileOutTest2 = testDir / fileName2;
-  fg::util::writePpmFile(frameBuf.data(), frameWidth, frameHeight,
-      BYTES_PER_PIXEL, fileOutTest2.c_str());
+  fg::util::writePpmFile(
+      frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL,
+      fileOutTest2.c_str());
 
   // Compare our file with prototype.
   fg::filesystem::path fileTest2 = dataDir / fileName2;

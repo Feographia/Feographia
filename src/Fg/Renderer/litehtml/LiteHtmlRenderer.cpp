@@ -33,15 +33,15 @@ namespace fg
 {
 LiteHtmlRenderer::LiteHtmlRenderer()
     : mBackgroundColor(1, 1, 1, 1)
-    , mContainer{std::make_shared<LiteHtmlContainer>()}
-    , mHtmlContext{std::make_shared<litehtml::context>()}
-    , mHtmlDocument(nullptr)
-    , mBuffer(nullptr)
-    , mBufferWidth(0)
-    , mBufferHeight(0)
-    , mBufferStride(0)
-    , mHtmlX(0)
-    , mHtmlY(0)
+    , mContainer {std::make_shared<LiteHtmlContainer>()}
+    , mHtmlContext {std::make_shared<litehtml::context>()}
+    , mHtmlDocument {nullptr}
+    , mCairo {nullptr}
+    , mBufferWidth {0}
+    , mBufferHeight {0}
+    , mBufferStride {0}
+    , mHtmlX {0}
+    , mHtmlY {0}
 {
 }
 
@@ -64,7 +64,8 @@ int LiteHtmlRenderer::renderHtml(int width, int height)
   return bestWidth;
 }
 
-void LiteHtmlRenderer::drawHtml(unsigned char* buffer,
+void LiteHtmlRenderer::drawHtml(
+    unsigned char* buffer,
     const cairo_format_t colorFormat,
     const int width,
     const int height,
@@ -77,9 +78,9 @@ void LiteHtmlRenderer::drawHtml(unsigned char* buffer,
 
   litehtml::uint_ptr hdcCairo = reinterpret_cast<litehtml::uint_ptr>(&mCairo);
 
-  bool fullDraw = buffer != mBuffer || width != mBufferWidth
-      || height != mBufferHeight || stride != mBufferStride
-      || abs(mHtmlX - htmlX) >= width || abs(mHtmlY - htmlY) >= height;
+  bool fullDraw = width != mBufferWidth || height != mBufferHeight
+      || stride != mBufferStride || abs(mHtmlX - htmlX) >= width
+      || abs(mHtmlY - htmlY) >= height;
 
   if(fullDraw) {
     mCairo =
@@ -147,9 +148,6 @@ void LiteHtmlRenderer::drawHtml(unsigned char* buffer,
     }
   }
 
-  if(buffer != mBuffer) {
-    mBuffer = buffer;
-  }
   if(width != mBufferWidth) {
     mBufferWidth = width;
   }

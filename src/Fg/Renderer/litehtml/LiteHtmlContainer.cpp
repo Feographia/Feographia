@@ -30,20 +30,20 @@
 namespace fg
 {
 LiteHtmlContainer::LiteHtmlContainer()
-    : mFontLibrary{std::make_shared<FontLibrary>()}
-    , mFontDefaultName{"Times New Roman"}
-    , mDefaultFontSize{16}
-    , mFontTextCacheSize{1000}
-    , mDeviceWidth{320}
-    , mDeviceHeight{240}
-    , mDeviceDpiX{96}
-    , mDeviceDpiY{96}
-    , mDisplayAreaWidth{320}
-    , mDisplayAreaHeight{240}
-    , mDeviceMonochromeBits{0}
-    , mDeviceColorBits{8}
-    , mDeviceColorIndex{256}
-    , mDeviceMediaType{litehtml::media_type_screen}
+    : mFontLibrary {std::make_shared<FontLibrary>()}
+    , mFontDefaultName {"Times New Roman"}
+    , mDefaultFontSize {16}
+    , mFontTextCacheSize {1000}
+    , mDeviceWidth {320}
+    , mDeviceHeight {240}
+    , mDeviceDpiX {96}
+    , mDeviceDpiY {96}
+    , mDisplayAreaWidth {320}
+    , mDisplayAreaHeight {240}
+    , mDeviceMonochromeBits {0}
+    , mDeviceColorBits {8}
+    , mDeviceColorIndex {256}
+    , mDeviceMediaType {litehtml::media_type_screen}
 {
 }
 
@@ -95,10 +95,10 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
   // Note: for font metric precision (in particular for TTF) see
   // https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Size_Metrics
   const cairo_font_extents_t& fontExtents = font->getScaledFontExtents();
-  fm->ascent = fontExtents.ascent;
-  fm->descent = -fontExtents.descent;
-  fm->height = fontExtents.height;
-  fm->x_height = font->xHeight();
+  fm->ascent = static_cast<int>(fontExtents.ascent);
+  fm->descent = static_cast<int>(-fontExtents.descent);
+  fm->height = static_cast<int>(fontExtents.height);
+  fm->x_height = static_cast<int>(font->xHeight());
   if(italic == litehtml::fontStyleItalic || decoration) {
     fm->draw_spaces = true;
   } else {
@@ -125,10 +125,11 @@ int LiteHtmlContainer::text_width(
   }
 
   Cairo::TextExtentsPtr extents = font->getTextExtents(text);
-  return extents->x_advance - extents->x_bearing;
+  return static_cast<int>(extents->x_advance - extents->x_bearing);
 }
 
-void LiteHtmlContainer::draw_text(litehtml::uint_ptr hdc,
+void LiteHtmlContainer::draw_text(
+    litehtml::uint_ptr hdc,
     const litehtml::tchar_t* text,
     litehtml::uint_ptr hFont,
     litehtml::web_color color,
@@ -150,10 +151,11 @@ void LiteHtmlContainer::draw_text(litehtml::uint_ptr hdc,
 
   const cairo_font_extents_t& fontExtents = font->getScaledFontExtents();
   int x = pos.left();
-  int y = pos.bottom() - fontExtents.descent;
+  int y = static_cast<int>(pos.bottom() - fontExtents.descent);
 
   font->drawText(
-      cairo, text, x, y, Color{LiteHtmlContainer::getColorFromWebColor(color)});
+      cairo, text, x, y,
+      Color {LiteHtmlContainer::getColorFromWebColor(color)});
 
   if(font->underline() || font->strikeout()) {
     int tw = text_width(text, hFont);
@@ -163,17 +165,19 @@ void LiteHtmlContainer::draw_text(litehtml::uint_ptr hdc,
       // TODO: set line position by font's parameters.
       //cairo->drawLine(x, y + 1.5, x + tw, y + 1.5, 1,
       //    Color{Container::getColorFromWebColor(color)});
-      cairo->drawLine(x, y + 3, x + tw, y + 3, 1.5,
-          Color{LiteHtmlContainer::getColorFromWebColor(color)});
+      cairo->drawLine(
+          x, y + 3, x + tw, y + 3, 1.5,
+          Color {LiteHtmlContainer::getColorFromWebColor(color)});
     }
 
     if(font->strikeout()) {
       // TODO: set line width by font's height.
-      int lnY = y - font->xHeight() / 2.0;
+      int lnY = static_cast<int>(y - font->xHeight() / 2.0);
       //cairo->drawLine(x, lnY - 0.5, x + tw, lnY - 0.5, 1,
       //    Color{Container::getColorFromWebColor(color)});
-      cairo->drawLine(x, lnY, x + tw, lnY, 1.5,
-          Color{LiteHtmlContainer::getColorFromWebColor(color)});
+      cairo->drawLine(
+          x, lnY, x + tw, lnY, 1.5,
+          Color {LiteHtmlContainer::getColorFromWebColor(color)});
     }
   }
 }
@@ -194,65 +198,71 @@ const litehtml::tchar_t* LiteHtmlContainer::get_default_font_name() const
 }
 
 void LiteHtmlContainer::draw_list_marker(
-    litehtml::uint_ptr hdc, const litehtml::list_marker& marker)
+    litehtml::uint_ptr /*hdc*/, const litehtml::list_marker& /*marker*/)
 {
 }
 
-void LiteHtmlContainer::load_image(const litehtml::tchar_t* src,
-    const litehtml::tchar_t* baseurl,
-    bool redraw_on_ready)
+void LiteHtmlContainer::load_image(
+    const litehtml::tchar_t* /*src*/,
+    const litehtml::tchar_t* /*baseurl*/,
+    bool /*redraw_on_ready*/)
 {
 }
 
-void LiteHtmlContainer::get_image_size(const litehtml::tchar_t* src,
-    const litehtml::tchar_t* baseurl,
-    litehtml::size& sz)
+void LiteHtmlContainer::get_image_size(
+    const litehtml::tchar_t* /*src*/,
+    const litehtml::tchar_t* /*baseurl*/,
+    litehtml::size& /*sz*/)
 {
 }
 
 void LiteHtmlContainer::draw_background(
-    litehtml::uint_ptr hdc, const litehtml::background_paint& bg)
+    litehtml::uint_ptr /*hdc*/, const litehtml::background_paint& /*bg*/)
 {
 }
 
-void LiteHtmlContainer::draw_borders(litehtml::uint_ptr hdc,
-    const litehtml::borders& borders,
-    const litehtml::position& draw_pos,
-    bool root)
+void LiteHtmlContainer::draw_borders(
+    litehtml::uint_ptr /*hdc*/,
+    const litehtml::borders& /*borders*/,
+    const litehtml::position& /*draw_pos*/,
+    bool /*root*/)
 {
 }
 
-void LiteHtmlContainer::set_caption(const litehtml::tchar_t* caption) {}
+void LiteHtmlContainer::set_caption(const litehtml::tchar_t* /*caption*/) {}
 
-void LiteHtmlContainer::set_base_url(const litehtml::tchar_t* base_url) {}
+void LiteHtmlContainer::set_base_url(const litehtml::tchar_t* /*base_url*/) {}
 
-void LiteHtmlContainer::link(const std::shared_ptr<litehtml::document>& ptr,
-    const litehtml::element::ptr& el)
+void LiteHtmlContainer::link(
+    const std::shared_ptr<litehtml::document>& /*ptr*/,
+    const litehtml::element::ptr& /*el*/)
 {
 }
 
 void LiteHtmlContainer::on_anchor_click(
-    const litehtml::tchar_t* url, const litehtml::element::ptr& el)
+    const litehtml::tchar_t* /*url*/, const litehtml::element::ptr& /*el*/)
 {
 }
 
-void LiteHtmlContainer::set_cursor(const litehtml::tchar_t* cursor) {}
+void LiteHtmlContainer::set_cursor(const litehtml::tchar_t* /*cursor*/) {}
 
 void LiteHtmlContainer::transform_text(
-    litehtml::tstring& text, litehtml::text_transform tt)
+    litehtml::tstring& /*text*/, litehtml::text_transform /*tt*/)
 {
 }
 
-void LiteHtmlContainer::import_css(litehtml::tstring& text,
-    const litehtml::tstring& url,
-    litehtml::tstring& baseurl)
+void LiteHtmlContainer::import_css(
+    litehtml::tstring& /*text*/,
+    const litehtml::tstring& /*url*/,
+    litehtml::tstring& /*baseurl*/)
 {
 }
 
-void LiteHtmlContainer::set_clip(const litehtml::position& pos,
-    const litehtml::border_radiuses& bdr_radius,
-    bool valid_x,
-    bool valid_y)
+void LiteHtmlContainer::set_clip(
+    const litehtml::position& /*pos*/,
+    const litehtml::border_radiuses& /*bdr_radius*/,
+    bool /*valid_x*/,
+    bool /*valid_y*/)
 {
 }
 
@@ -265,9 +275,9 @@ void LiteHtmlContainer::get_client_rect(litehtml::position& client) const
 }
 
 std::shared_ptr<litehtml::element> LiteHtmlContainer::create_element(
-    const litehtml::tchar_t* tag_name,
-    const litehtml::string_map& attributes,
-    const std::shared_ptr<litehtml::document>& doc)
+    const litehtml::tchar_t* /*tag_name*/,
+    const litehtml::string_map& /*attributes*/,
+    const std::shared_ptr<litehtml::document>& /*doc*/)
 {
   return nullptr;
 }

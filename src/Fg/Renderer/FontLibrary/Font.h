@@ -32,8 +32,17 @@
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
 
+// For Clang
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wshift-sign-overflow"
+
 #include <hb-ft.h>
 #include <hb.h>
+
+#pragma clang diagnostic pop
 
 #include <stlcache/stlcache.hpp>
 
@@ -68,7 +77,8 @@ public:
 
   const cairo_font_extents_t& getScaledFontExtents();
   Cairo::TextExtentsPtr getTextExtents(const std::string& text);
-  void drawText(CairoPtr cairo,
+  void drawText(
+      CairoPtr cairo,
       const std::string& text,
       const double x,
       const double y,
@@ -99,9 +109,10 @@ private:
   struct TextLayout
   {
     explicit TextLayout(
-        Cairo::GlyphVectorPtr glyphs, Cairo::TextExtentsPtr textExtents)
-        : mGlyphs{glyphs}
-        , mExtents{textExtents}
+        Cairo::GlyphVectorPtr glyphs,
+        Cairo::TextExtentsPtr textExtents) noexcept
+        : mGlyphs {glyphs}
+        , mExtents {textExtents}
     {
     }
 

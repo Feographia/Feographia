@@ -59,8 +59,8 @@ public:
   // TODO: Copy/move constructors/operators.
   explicit Cairo(unsigned char* buffer,
       const cairo_format_t colorFormat,
-      const unsigned int width,
-      const unsigned int height,
+      const int width,
+      const int height,
       const int stride);
   ~Cairo();
 

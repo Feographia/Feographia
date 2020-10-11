@@ -28,7 +28,8 @@
 namespace fg
 {
 FontLibrary::FontLibrary()
-    : mFcConfig{FcInitLoadConfig(), FcConfigDestroy}
+    : mFcConfig {FcInitLoadConfig(), FcConfigDestroy}
+    , mFtLibrary {nullptr}
 {
   FT_Library frLibrary;
   FT_Init_FreeType(&frLibrary);
@@ -53,7 +54,8 @@ bool FontLibrary::addFontDir(const fg::filesystem::path& dirPath)
   return FcConfigAppFontAddDir(mFcConfig.get(), dir);
 }
 
-fg::filesystem::path FontLibrary::getFontFilePath(const std::vector<String>& fontNames,
+fg::filesystem::path FontLibrary::getFontFilePath(
+    const std::vector<String>& fontNames,
     const int pixelSize,
     const int weight,
     const FontStyle fontStyle,
@@ -61,7 +63,7 @@ fg::filesystem::path FontLibrary::getFontFilePath(const std::vector<String>& fon
 {
   fg::filesystem::path ret;
 
-  FcPatternPtr pat{FcPatternCreate(), FcPatternDestroy};
+  FcPatternPtr pat {FcPatternCreate(), FcPatternDestroy};
 
   for(const auto& font : fontNames) {
     const FcChar8* fcFamily = reinterpret_cast<const FcChar8*>(font.c_str());
@@ -80,7 +82,7 @@ fg::filesystem::path FontLibrary::getFontFilePath(const std::vector<String>& fon
 
   // Find the font.
   FcResult fcResult;
-  FcPatternPtr fontPat{
+  FcPatternPtr fontPat {
       FcFontMatch(mFcConfig.get(), pat.get(), &fcResult), FcPatternDestroy};
 
   if(fontPat && FcResultMatch == fcResult) {
@@ -97,7 +99,7 @@ fg::filesystem::path FontLibrary::getFontFilePath(const std::vector<String>& fon
         *result = FontMatches::allMatched;
 
         if(FcPatternGetString(fontPat.get(), FC_FAMILY, 0, &retFamily)
-            == FcResultMatch) {
+           == FcResultMatch) {
           bool found = false;
           for(const auto& font : fontNames) {
             if(0 == font.compare(reinterpret_cast<const char*>(retFamily))) {
@@ -111,18 +113,18 @@ fg::filesystem::path FontLibrary::getFontFilePath(const std::vector<String>& fon
         }
 
         if(FcPatternGetInteger(fontPat.get(), FC_SLANT, 0, &retSlant)
-                == FcResultMatch
-            && retSlant != fcSlant) {
+               == FcResultMatch
+           && retSlant != fcSlant) {
           *result |= FontMatches::notMatchedFontStyle;
         }
         if(FcPatternGetInteger(fontPat.get(), FC_PIXEL_SIZE, 0, &retPixelSize)
-                == FcResultMatch
-            && retPixelSize != pixelSize) {
+               == FcResultMatch
+           && retPixelSize != pixelSize) {
           *result |= FontMatches::notMatchedPixelSize;
         }
         if(FcPatternGetInteger(fontPat.get(), FC_WEIGHT, 0, &retWeight)
-                == FcResultMatch
-            && retWeight != fcWeight) {
+               == FcResultMatch
+           && retWeight != fcWeight) {
           *result |= FontMatches::notMatchedWeight;
         }
       }

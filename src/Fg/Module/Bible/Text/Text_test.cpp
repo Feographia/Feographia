@@ -27,8 +27,6 @@
 #include <sstream>
 #include <utility>
 
-#include <sqlite_modern_cpp.h>
-
 #include "Fg/Module/Bible/Text/Text.h"
 #include "Fg/Util/Filesystem.h"
 
@@ -60,7 +58,7 @@ TEST(TextTest, sqlCreateModule)
       words.emplace_back(fg::ItemId {1, 1, 1, 9}, "the");
       words.emplace_back(fg::ItemId {1, 1, 1, 10}, "earth.");
 
-      fg::WordTextId id = (1L << 48) + (1L << 32) + (1L << 16) + 1L;
+      fg::WordTextId id = (1LL << 48) + (1LL << 32) + (1LL << 16) + 1LL;
       std::stringstream ss;
       for(const auto& word : words) {
         EXPECT_EQ(word.getId().getWordTextId(), id++);
@@ -86,7 +84,7 @@ TEST(TextTest, sqlCreateModule)
       module.sqlSelectWords(fromId, toId);
       module.sqlCloseDatabase();
 
-      fg::WordTextId id = (1L << 48) + (1L << 32) + (1L << 16) + 4L;
+      fg::WordTextId id = (1LL << 48) + (1LL << 32) + (1LL << 16) + 4LL;
       std::stringstream ss;
       for(const auto& word : module.getWords()) {
         EXPECT_EQ(word.getId().getWordTextId(), id);
@@ -97,7 +95,7 @@ TEST(TextTest, sqlCreateModule)
     }
 
     EXPECT_TRUE(true);
-  } catch(const fg::filesystem::filesystem_error& e) {
+  } catch(const fg::filesystem::filesystem_error& /*e*/) {
     EXPECT_TRUE(false);
   } catch(const sqlite::sqlite_exception& e) {
     std::cout << "SQLITE ERROR CODE: " << e.get_code() << "\n"

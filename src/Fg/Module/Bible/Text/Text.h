@@ -29,7 +29,28 @@
 #include <utility>
 #include <vector>
 
+// GCC pragmas
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic ignored "-Wnoexcept"
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wswitch-default"
+
+// Clang pragmas
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdouble-promotion"
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+#pragma clang diagnostic ignored "-Wshadow-field-in-constructor"
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wweak-vtables"
+
 #include <sqlite_modern_cpp.h>
+
+#pragma clang diagnostic pop
+#pragma GCC diagnostic pop
 
 #include "Fg/Shared/Types.h"
 #include "Fg/Util/Filesystem.h"
@@ -200,6 +221,8 @@ private:
 
 inline Text::Text(fg::filesystem::path module)
     : mModuleFile {std::move(module)}
+    , mDbConnection {nullptr}
+    , mWords {}
 {
 }
 

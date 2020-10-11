@@ -55,6 +55,7 @@ build/
 # Main project
 .downloads/
 .install_*/
+.libcmaker/
 build_*/
 ci/TravisCiKey
 /.prj_options.cmake

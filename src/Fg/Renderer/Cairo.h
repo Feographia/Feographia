@@ -24,7 +24,9 @@
 #ifndef FG_CAIRO_H
 #define FG_CAIRO_H
 
+
 #include <memory>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -83,7 +85,7 @@ public:
       const cairo_text_extents_t& extents,
       const Color& color);
 
-  static int formatBitsPerPixel(cairo_format_t format);
+  static constexpr int formatBitsPerPixel(cairo_format_t format);
   static ScaledFontPtr getScaledFont(
       const FT_Face ftFace, const int ftLoadFlags, const int pixelSize);
   static double xHeight(const ScaledFontPtr scaledFont);

@@ -25,6 +25,8 @@
 
 namespace fg
 {
+Text::~Text() = default;
+
 void Text::sqlCreateDatabase()
 {
   if(fg::filesystem::exists(mModuleFile)) {

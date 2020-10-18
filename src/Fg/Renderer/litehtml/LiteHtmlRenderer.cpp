@@ -45,6 +45,8 @@ LiteHtmlRenderer::LiteHtmlRenderer()
 {
 }
 
+LiteHtmlRenderer::~LiteHtmlRenderer() = default;
+
 void LiteHtmlRenderer::createHtmlDocumentFromUtf8(const std::string& htmlText)
 {
   mHtmlDocument = litehtml::document::createFromUTF8(
@@ -109,16 +111,15 @@ void LiteHtmlRenderer::drawHtml(
       } else {
         x2 = -diffX;  // x2 = x1 - diffX, but x1 == 0;
       }
-      if(x1 != x2) {
-        int clipWidth = x2 - x1;
-        int clipHeight = y2 - y1;
-        mCairo->save();
-        mCairo->clip(x1, y1, clipWidth, clipHeight);
-        mCairo->clear(mBackgroundColor);
-        litehtml::position textClip(x1, y1, clipWidth, clipHeight);
-        mHtmlDocument->draw(hdcCairo, -htmlX, -htmlY, &textClip);
-        mCairo->restore();
-      }
+
+      int clipWidth = x2 - x1;
+      int clipHeight = y2 - y1;
+      mCairo->save();
+      mCairo->clip(x1, y1, clipWidth, clipHeight);
+      mCairo->clear(mBackgroundColor);
+      litehtml::position textClip(x1, y1, clipWidth, clipHeight);
+      mHtmlDocument->draw(hdcCairo, -htmlX, -htmlY, &textClip);
+      mCairo->restore();
     }
 
     if(diffY != 0) {
@@ -135,16 +136,15 @@ void LiteHtmlRenderer::drawHtml(
       } else {
         y2 = -diffY;  // y2 = y1 - diffY, but y1 == 0;
       }
-      if(y1 != y2) {
-        int clipWidth = x2 - x1;
-        int clipHeight = y2 - y1;
-        mCairo->save();
-        mCairo->clip(x1, y1, clipWidth, clipHeight);
-        mCairo->clear(mBackgroundColor);
-        litehtml::position textClip(x1, y1, clipWidth, clipHeight);
-        mHtmlDocument->draw(hdcCairo, -htmlX, -htmlY, &textClip);
-        mCairo->restore();
-      }
+
+      int clipWidth = x2 - x1;
+      int clipHeight = y2 - y1;
+      mCairo->save();
+      mCairo->clip(x1, y1, clipWidth, clipHeight);
+      mCairo->clear(mBackgroundColor);
+      litehtml::position textClip(x1, y1, clipWidth, clipHeight);
+      mHtmlDocument->draw(hdcCairo, -htmlX, -htmlY, &textClip);
+      mCairo->restore();
     }
   }
 

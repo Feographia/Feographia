@@ -118,7 +118,7 @@ void Cairo::showGlyphs(
 }
 
 // static
-int Cairo::formatBitsPerPixel(cairo_format_t format)
+constexpr int Cairo::formatBitsPerPixel(cairo_format_t format)
 {
   switch(format) {
     case CAIRO_FORMAT_RGBA128F:

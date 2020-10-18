@@ -45,7 +45,7 @@ class LiteHtmlContainer : public litehtml::document_container
 public:
   // TODO: Copy/move constructors/operators.
   explicit LiteHtmlContainer();
-  virtual ~LiteHtmlContainer() override = default;
+  virtual ~LiteHtmlContainer() override;
 
   bool parseAndLoadFontConfigFromMemory(
       const std::string& fontConfig, bool complain);

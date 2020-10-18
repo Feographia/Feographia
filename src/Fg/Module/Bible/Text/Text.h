@@ -194,9 +194,9 @@ public:
 
   Text(const Text& other) = default;
   Text(Text&& other) = default;
-  ~Text() = default;
 
   Text(fg::filesystem::path moduleFile);
+  ~Text();
 
   void sqlCreateDatabase();
   void sqlOpenDatabaseRW();

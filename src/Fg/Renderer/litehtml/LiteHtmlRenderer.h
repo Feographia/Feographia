@@ -39,7 +39,7 @@ class LiteHtmlRenderer
 public:
   // TODO: Copy/move constructors/operators.
   explicit LiteHtmlRenderer();
-  virtual ~LiteHtmlRenderer() = default;
+  virtual ~LiteHtmlRenderer();
 
   void createHtmlDocumentFromUtf8(const std::string& htmlText);
   int renderHtml(int width, int height);

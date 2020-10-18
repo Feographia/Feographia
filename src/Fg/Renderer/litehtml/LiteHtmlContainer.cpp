@@ -47,6 +47,8 @@ LiteHtmlContainer::LiteHtmlContainer()
 {
 }
 
+LiteHtmlContainer::~LiteHtmlContainer() = default;
+
 bool LiteHtmlContainer::parseAndLoadFontConfigFromMemory(
     const std::string& fontConfig, bool complain)
 {

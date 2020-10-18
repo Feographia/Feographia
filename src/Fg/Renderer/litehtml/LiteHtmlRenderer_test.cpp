@@ -76,9 +76,9 @@ TEST(HtmlRenderer, drawHtml)
   std::string fontConfig = fg::util::readFile(fontConfFile);
   EXPECT_FALSE(fontConfig.empty());
 
-  bool loadedFontConfig =
-      htmlContainer->parseAndLoadFontConfigFromMemory(fontConfig, true);
-  assert(loadedFontConfig);
+//  bool loadedFontConfig =
+//      htmlContainer->parseAndLoadFontConfigFromMemory(fontConfig, true);
+//  assert(loadedFontConfig);
 
   // Set fonts.
   htmlContainer->setFontTextCacheSize(1000);

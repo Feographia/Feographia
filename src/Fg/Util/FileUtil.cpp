@@ -101,7 +101,7 @@ std::string readFile(const fg::filesystem::path& fileName)
 
   ifs.seekg(0, std::ios::beg);
   std::vector<char> bytes(static_cast<std::size_t>(fileSize));
-  ifs.read(&bytes[0], fileSize);
+  ifs.read(&bytes[0], static_cast<std::streamsize>(fileSize));
 
   return std::string(&bytes[0], static_cast<std::size_t>(fileSize));
 }

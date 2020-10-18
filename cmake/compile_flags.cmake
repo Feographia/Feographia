@@ -94,12 +94,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wdouble-promotion
     -Wnull-dereference -Wimplicit-fallthrough=5 -Wmissing-include-dirs
     -Wswitch-default -Wswitch-enum -Wunused-parameter -Wuninitialized
-    -Wstrict-overflow=5 -Wstringop-truncation
-    -Wsuggest-attribute=pure -Wsuggest-attribute=const
-    -Wsuggest-attribute=noreturn -Wmissing-noreturn -Wsuggest-attribute=malloc
-    -Wsuggest-attribute=format -Wmissing-format-attribute
-    -Wsuggest-attribute=cold
-    -Wsuggest-final-types -Wsuggest-final-methods -Wsuggest-override
+    -Wstrict-overflow=5 -Wstringop-truncation -Wsuggest-attribute=const
+    -Wsuggest-override
     -Walloc-zero -Walloca -Wattribute-alias=2
     -Wduplicated-branches -Wduplicated-cond -Wtrampolines -Wfloat-equal
     -Wplacement-new=2 -Wshadow -Wunsafe-loop-optimizations -Wundef
@@ -107,7 +103,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     -Wconditionally-supported -Wconversion -Wsign-conversion
     -Wzero-as-null-pointer-constant -Wdate-time -Wuseless-cast -Wextra-semi
     -Wlogical-op -Wmissing-declarations -Wpacked
-#    -Wpadded
     -Wredundant-decls -Winline -Winvalid-pch
     -Wvector-operation-performance -Wvla -Wdisabled-optimization
 
@@ -149,7 +144,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
     -Wnewline-eof -Wnonportable-system-include-path
     -Wnullable-to-nonnull-conversion -Wold-style-cast -Wover-aligned
     -Woverriding-method-mismatch -Wpacked
-#    -Wpadded
     -Wpointer-arith -Wprofile-instr-missing -Wreceiver-forward-class
     -Wredundant-parens -Wreserved-id-macro -Wreserved-user-defined-literal
     -Wreturn-std-move-in-c++11 -Wselector -Wshadow-all -Wshift-sign-overflow
@@ -176,7 +170,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
 endif()
 
 if(MSVC)
-  add_compile_options(/Wall /WX)
+  add_compile_options(/WX /Wall)
 endif()
 
 option(cmr_BUILD_MULTIPROC "cmr_BUILD_MULTIPROC" ON)

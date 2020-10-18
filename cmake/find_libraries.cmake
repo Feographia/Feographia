@@ -37,7 +37,9 @@ elseif(IOS)
   set(platform_NAME "ios")
 endif()
 
-set(compiler_NAME "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+set(compiler_NAME
+  "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}_${CMAKE_BUILD_TYPE}"
+)
 if(MINGW)
   set(compiler_NAME "MinGW_${compiler_NAME}")
 endif()
@@ -149,7 +151,7 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
-if(ANDROID OR APPLE)
+if(USE_BOOST_LIB OR ANDROID OR APPLE)
 # TODO: Use POCO for work with file system.
   # TODO: Android:
   # std::filesystem support for Android see:

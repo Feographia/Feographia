@@ -40,11 +40,37 @@ cmake_minimum_required(VERSION 3.8)
 
 project(Feographia CXX)
 
+option(USE_BOOST_LIB "USE_BOOST_LIB" OFF)
+
 option(BUILD_SHARED_LIBS "BUILD_SHARED_LIBS" OFF)
 
 option(CMAKE_VERBOSE_MAKEFILE "CMAKE_VERBOSE_MAKEFILE" OFF)
 option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
 
+
+#-----------------------------------------------------------------------
+# Check compiler's version
+#-----------------------------------------------------------------------
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0.0)
+  message(FATAL_ERROR "GNU g++ compiler version 9+ is required.")
+endif()
+
+if((CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+     OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0.0)
+  message(FATAL_ERROR "Clang compiler version 9+ is required.")
+endif()
+
+if(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.15)
+  message(FATAL_ERROR "MSVC compiler version 19.15+ is required.")
+endif()
+
+
+#-----------------------------------------------------------------------
+# Feographia project
+#-----------------------------------------------------------------------
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 

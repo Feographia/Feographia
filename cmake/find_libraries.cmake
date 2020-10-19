@@ -26,25 +26,29 @@
 #-----------------------------------------------------------------------
 
 if(UNIX AND NOT APPLE AND NOT ANDROID)
-  set(platform_NAME "linux")
+  set(system_NAME "linux")
 elseif(APPLE AND NOT IOS)
-  set(platform_NAME "macos")
+  set(system_NAME "macos")
 elseif(WIN32)
-  set(platform_NAME "windows")
+  set(system_NAME "windows")
 elseif(ANDROID)
-  set(platform_NAME "android")
+  set(system_NAME "android")
 elseif(IOS)
-  set(platform_NAME "ios")
+  set(system_NAME "ios")
 endif()
 
-set(compiler_NAME
-  "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}_${CMAKE_BUILD_TYPE}"
-)
 if(MINGW)
-  set(compiler_NAME "MinGW_${compiler_NAME}")
+  set(system_NAME "${system_NAME}_MinGW")
 endif()
 
-set(platform_NAME "${platform_NAME}_${compiler_NAME}")
+set(compiler_NAME "${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+if(MSVC)
+  set(compiler_NAME
+    "${compiler_NAME}_${CMAKE_GENERATOR_PLATFORM}_${CMAKE_GENERATOR_TOOLSET}"
+  )
+endif()
+
+set(platform_NAME "${system_NAME}_${compiler_NAME}_${CMAKE_BUILD_TYPE}")
 
 set(libs_DIR "${PROJECT_SOURCE_DIR}/libs")
 set(build_libs_DIR "${PROJECT_BINARY_DIR}/build_libs")

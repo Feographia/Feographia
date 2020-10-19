@@ -189,7 +189,7 @@ if(BUILD_TESTING)
 
   if(MSVC)
     target_compile_options(${test_TARGET} PRIVATE
-      -wd4251 -wd4275
+      -wd4251 -wd4275 -wd4018
       # TODO: how to move -wd4388 and -wd4668 from main options to unit tests?
     )
   endif()

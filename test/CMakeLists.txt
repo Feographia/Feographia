@@ -187,6 +187,13 @@ if(BUILD_TESTING)
     )
   endif()
 
+  if(MSVC)
+    target_compile_options(${test_TARGET} PRIVATE
+      -wd4251 -wd4275
+      # TODO: how to move -wd4388 and -wd4668 from main options to unit tests?
+    )
+  endif()
+
   # feographia_kardia
   target_link_libraries(${test_TARGET} PRIVATE
     ${fgkardia_TARGET}

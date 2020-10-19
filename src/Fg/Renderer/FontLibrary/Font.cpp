@@ -95,11 +95,10 @@ bool Font::createFtFace(
 int Font::forceUcs2Charmap(FT_Face ftf)
 {
   for(int i = 0; i < ftf->num_charmaps; i++) {
-    if(((ftf->charmaps[i]->platform_id == 0)
-        && (ftf->charmaps[i]->encoding_id == 3))
-       || ((ftf->charmaps[i]->platform_id == 3)
-           && (ftf->charmaps[i]->encoding_id == 1))) {
-      return (FT_Set_Charmap(ftf, ftf->charmaps[i]));
+    auto& charmap = ftf->charmaps[i];
+    if(((charmap->platform_id == 0) && (charmap->encoding_id == 3))
+       || ((charmap->platform_id == 3) && (charmap->encoding_id == 1))) {
+      return (FT_Set_Charmap(ftf, charmap));
     }
   }
   return FT_Err_Invalid_Argument;

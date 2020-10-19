@@ -34,7 +34,7 @@ extern fg::filesystem::path testDir;
 extern fg::filesystem::path fontDir;
 extern fg::filesystem::path dataDir;
 
-TEST(ContainerTest, create_font)
+TEST(ContainerTest, DISABLED_create_font)
 {
   EXPECT_TRUE(fg::filesystem::exists(testDir));
   EXPECT_TRUE(fg::filesystem::exists(fontDir));
@@ -88,7 +88,7 @@ TEST(ContainerTest, create_font)
   container.delete_font(hFont);
 }
 
-TEST(ContainerTest, draw_text)
+TEST(ContainerTest, DISABLED_draw_text)
 {
   //////// Init part.
 

@@ -46,7 +46,15 @@ bool writePpmFile(
 {
   // FIXME: fileName.string() can be used on Windows only for ASCII code page.
   const std::string fileNameStr(fileName.string());
+
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 4996)
+
   FILE* fd = fopen(fileNameStr.c_str(), "wb");
+
+#pragma warning(pop)
+
   if(fd) {
     fprintf(fd, "P6 %d %d 255 ", width, height);
 

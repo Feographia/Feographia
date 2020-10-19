@@ -36,7 +36,7 @@ extern fg::filesystem::path testDir;
 extern fg::filesystem::path fontDir;
 extern fg::filesystem::path dataDir;
 
-TEST(HtmlRenderer, drawHtml)
+TEST(HtmlRenderer, DISABLED_drawHtml)
 {
   //////// Init part.
 

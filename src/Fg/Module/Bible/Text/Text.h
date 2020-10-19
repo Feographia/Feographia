@@ -47,8 +47,14 @@
 #pragma clang diagnostic ignored "-Wsign-conversion"
 #pragma clang diagnostic ignored "-Wweak-vtables"
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 4065 4244)
+#pragma warning(disable : 4623 4464 4365 4365)  // off by default
+
 #include <sqlite_modern_cpp.h>
 
+#pragma warning(pop)
 #pragma clang diagnostic pop
 #pragma GCC diagnostic pop
 

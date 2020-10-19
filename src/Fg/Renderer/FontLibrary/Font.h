@@ -32,7 +32,7 @@
 #include FT_GLYPH_H
 #include FT_OUTLINE_H
 
-// For Clang
+// Clang pragmas
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 #pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
@@ -44,7 +44,14 @@
 
 #pragma clang diagnostic pop
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 4100 4996)
+#pragma warning(disable : 4265)  // off by default
+
 #include <stlcache/stlcache.hpp>
+
+#pragma warning(pop)
 
 #include "Fg/Renderer/Cairo.h"
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"

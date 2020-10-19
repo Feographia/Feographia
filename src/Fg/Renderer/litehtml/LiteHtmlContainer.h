@@ -28,7 +28,14 @@
 #include <string>
 #include <utility>
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 4458 4100)
+#pragma warning(disable : 4365 4365)  // off by default
+
 #include "litehtml/litehtml.h"
+
+#pragma warning(pop)
 
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Shared/Types.h"

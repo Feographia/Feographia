@@ -31,6 +31,9 @@
 [submodule "libs/LibCMaker_ICU"]
   path = libs/LibCMaker_ICU
   url = git@github.com:LibCMaker/LibCMaker_ICU.git
+[submodule "libs/LibCMaker_POCO"]
+  path = libs/LibCMaker_POCO
+  url = git@github.com:LibCMaker/LibCMaker_POCO.git
 [submodule "libs/LibCMaker_Pixman"]
   path = libs/LibCMaker_Pixman
   url = git@github.com:LibCMaker/LibCMaker_Pixman.git

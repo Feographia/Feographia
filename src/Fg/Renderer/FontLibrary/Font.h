@@ -27,6 +27,14 @@
 #include <memory>
 #include <string>
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 5039 4619)
+
+#include "Poco/File.h"
+
+#pragma warning(pop)
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
@@ -49,15 +57,9 @@
 #pragma warning(disable : 4100 4996)
 #pragma warning(disable : 4265)  // off by default
 
+// FIXME: STLCache has 'using namespace std' in headers,
+// its include must be after Poco's.
 #include <stlcache/stlcache.hpp>
-
-#pragma warning(pop)
-
-// MSVC pragmas
-#pragma warning(push)
-#pragma warning(disable : 5039 4619)
-
-#include "Poco/File.h"
 
 #pragma warning(pop)
 

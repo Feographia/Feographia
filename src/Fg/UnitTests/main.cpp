@@ -23,7 +23,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Fg/Util/Filesystem.h"
+#include "Poco/Path.h"
 
 //#include <unistd.h>
 //extern char **environ;
@@ -32,9 +32,9 @@
 ///*inline*/ fg::filesystem::path fontDir;
 ///*inline*/ fg::filesystem::path dataDir;
 
-inline fg::filesystem::path testDir;
-inline fg::filesystem::path fontDir;
-inline fg::filesystem::path dataDir;
+inline Poco::Path testDir;
+inline Poco::Path fontDir;
+inline Poco::Path dataDir;
 
 int main(int argc, char** argv)
 {
@@ -57,10 +57,10 @@ int main(int argc, char** argv)
   // See also:
   // https://stackoverflow.com/a/42772814
   // https://habr.com/ru/post/343622/
-  testDir =
-      fg::filesystem::absolute(fg::filesystem::path(argv[0]).parent_path());
-  fontDir = testDir / "fonts";
-  dataDir = testDir / "data";
+  testDir = Poco::Path {argv[0]}.parent().makeAbsolute();
+  fontDir = dataDir = testDir;
+  fontDir.pushDirectory("fonts");
+  dataDir.pushDirectory("data");
 
   return RUN_ALL_TESTS();
 }

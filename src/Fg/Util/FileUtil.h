@@ -26,22 +26,22 @@
 
 #include <string>
 
-#include "Fg/Util/Filesystem.h"
+#include "Poco/File.h"
 
 namespace fg
 {
 namespace util
 {
-bool writePpmFile(const unsigned char* buf,
+bool writePpmFile(
+    const unsigned char* buf,
     unsigned width,
     unsigned height,
     unsigned bytePerPixel,
-    const fg::filesystem::path& fileName);
+    const Poco::File& file);
 
-bool compareFiles(const fg::filesystem::path& filePath1,
-    const fg::filesystem::path& filePath2);
+bool compareFiles(const Poco::File& file1, const Poco::File& file2);
 
-std::string readFile(const fg::filesystem::path& fileName);
+std::string readFile(const Poco::File& file);
 
 }  // namespace util
 }  // namespace fg

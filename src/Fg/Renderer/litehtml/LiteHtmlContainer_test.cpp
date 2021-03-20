@@ -23,21 +23,24 @@
 
 #include <string>
 
+#include "Poco/File.h"
+#include "Poco/Path.h"
+
 #include "gtest/gtest.h"
 
 #include "Fg/Renderer/Cairo.h"
 #include "Fg/Renderer/litehtml/LiteHtmlContainer.h"
 #include "Fg/Util/FileUtil.h"
-#include "Fg/Util/Filesystem.h"
 
-extern fg::filesystem::path testDir;
-extern fg::filesystem::path fontDir;
-extern fg::filesystem::path dataDir;
+extern Poco::Path testDir;
+extern Poco::Path fontDir;
+extern Poco::Path dataDir;
 
-TEST(ContainerTest, DISABLED_create_font)
+TEST(ContainerTest, create_font)
 {
-  EXPECT_TRUE(fg::filesystem::exists(testDir));
-  EXPECT_TRUE(fg::filesystem::exists(fontDir));
+  EXPECT_TRUE(Poco::File {testDir}.exists());
+  EXPECT_TRUE(Poco::File {fontDir}.exists());
+  //EXPECT_TRUE(Poco::File {dataDir}.exists());
 
   //// Cairo init.
 
@@ -62,8 +65,8 @@ TEST(ContainerTest, DISABLED_create_font)
 
   ////
 
-  fg::filesystem::path fontConfFile = fontDir / "fonts.conf";
-  EXPECT_TRUE(fg::filesystem::exists(fontConfFile));
+  Poco::File fontConfFile {Poco::Path {fontDir}.setFileName("fonts.conf")};
+  EXPECT_TRUE(fontConfFile.exists());
   std::string fontConfig = fg::util::readFile(fontConfFile);
   EXPECT_FALSE(fontConfig.empty());
 
@@ -88,13 +91,13 @@ TEST(ContainerTest, DISABLED_create_font)
   container.delete_font(hFont);
 }
 
-TEST(ContainerTest, DISABLED_draw_text)
+TEST(ContainerTest, draw_text)
 {
   //////// Init part.
 
-  EXPECT_TRUE(fg::filesystem::exists(testDir));
-  EXPECT_TRUE(fg::filesystem::exists(fontDir));
-  EXPECT_TRUE(fg::filesystem::exists(dataDir));
+  EXPECT_TRUE(Poco::File {testDir}.exists());
+  EXPECT_TRUE(Poco::File {fontDir}.exists());
+  EXPECT_TRUE(Poco::File {dataDir}.exists());
 
   //// Cairo init.
 
@@ -147,12 +150,12 @@ TEST(ContainerTest, DISABLED_draw_text)
 
   // Write our picture to file.
   std::string fileName1 = "LiteHtmlContainer_1.ppm";
-  fg::filesystem::path fileOutTest1 = testDir / fileName1;
+  Poco::File fileOutTest1 {Poco::Path {testDir}.setFileName(fileName1)};
   fg::util::writePpmFile(
       frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL, fileOutTest1);
 
   // Compare our file with prototype.
-  fg::filesystem::path fileTest1 = dataDir / fileName1;
+  Poco::File fileTest1 {Poco::Path {dataDir}.setFileName(fileName1)};
   EXPECT_TRUE(fg::util::compareFiles(fileTest1, fileOutTest1));
 
   //////// Repeat tests for new text.
@@ -167,12 +170,12 @@ TEST(ContainerTest, DISABLED_draw_text)
 
   // Write our picture to file.
   std::string fileName2 = "LiteHtmlContainer_2.ppm";
-  fg::filesystem::path fileOutTest2 = testDir / fileName2;
+  Poco::File fileOutTest2 {Poco::Path {testDir}.setFileName(fileName2)};
   fg::util::writePpmFile(
       frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL, fileOutTest2);
 
   // Compare our file with prototype.
-  fg::filesystem::path fileTest2 = dataDir / fileName2;
+  Poco::File fileTest2 {Poco::Path {dataDir}.setFileName(fileName2)};
   EXPECT_TRUE(fg::util::compareFiles(fileTest2, fileOutTest2));
 
   //////// Deinit part.
@@ -184,9 +187,9 @@ TEST(ContainerTest, drawHtmlDocument)
 {
   //////// Init part.
 
-  EXPECT_TRUE(fg::filesystem::exists(testDir));
-  EXPECT_TRUE(fg::filesystem::exists(fontDir));
-  EXPECT_TRUE(fg::filesystem::exists(dataDir));
+  EXPECT_TRUE(Poco::File {testDir}.exists());
+  EXPECT_TRUE(Poco::File {fontDir}.exists());
+  EXPECT_TRUE(Poco::File {dataDir}.exists());
 
   //// Cairo init.
 
@@ -234,7 +237,8 @@ TEST(ContainerTest, drawHtmlDocument)
   //////// Draw HTML document.
 
   // Load master CSS.
-  std::string masterCss = fg::util::readFile(dataDir / "master.css");
+  Poco::File masterCssFile {Poco::Path {dataDir}.setFileName("master.css")};
+  std::string masterCss = fg::util::readFile(masterCssFile);
   EXPECT_FALSE(masterCss.empty());
 
   litehtml::context htmlContext;
@@ -266,11 +270,11 @@ TEST(ContainerTest, drawHtmlDocument)
 
   // Write our picture to file.
   std::string fileName1 = "LiteHtmlDocument_1.ppm";
-  fg::filesystem::path fileOutTest1 = testDir / fileName1;
+  Poco::File fileOutTest1 {Poco::Path {testDir}.setFileName(fileName1)};
   fg::util::writePpmFile(
       frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL, fileOutTest1);
 
   // Compare our file with prototype.
-  fg::filesystem::path fileTest1 = dataDir / fileName1;
+  Poco::File fileTest1 {Poco::Path {dataDir}.setFileName(fileName1)};
   EXPECT_TRUE(fg::util::compareFiles(fileTest1, fileOutTest1));
 }

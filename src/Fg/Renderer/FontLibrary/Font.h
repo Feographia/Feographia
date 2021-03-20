@@ -53,10 +53,11 @@
 
 #pragma warning(pop)
 
+#include "Poco/File.h"
+
 #include "Fg/Renderer/Cairo.h"
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Shared/Types.h"
-#include "Fg/Util/Filesystem.h"
 
 namespace fg
 {
@@ -73,8 +74,7 @@ public:
   explicit Font(FtLibraryPtr ftLibrary, const int textCacheSize = 1000);
   ~Font();
 
-  bool createFtFace(
-      const fg::filesystem::path& fontFilePath, const int pixelSize);
+  bool createFtFace(const Poco::File& fontFilePath, const int pixelSize);
 
   void resetBuffer();
   void clearBuffer();

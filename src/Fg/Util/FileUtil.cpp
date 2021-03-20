@@ -42,16 +42,13 @@ bool writePpmFile(
     unsigned width,
     unsigned height,
     unsigned bytePerPixel,
-    const fg::filesystem::path& fileName)
+    const Poco::File& file)
 {
-  // FIXME: fileName.string() can be used on Windows only for ASCII code page.
-  const std::string fileNameStr(fileName.string());
-
 // MSVC pragmas
 #pragma warning(push)
 #pragma warning(disable : 4996)
 
-  FILE* fd = fopen(fileNameStr.c_str(), "wb");
+  FILE* fd = fopen(file.path().c_str(), "wb");
 
 #pragma warning(pop)
 
@@ -70,14 +67,10 @@ bool writePpmFile(
 }
 
 //https://stackoverflow.com/a/37575457
-bool compareFiles(
-    const fg::filesystem::path& filePath1,
-    const fg::filesystem::path& filePath2)
+bool compareFiles(const Poco::File& file1, const Poco::File& file2)
 {
-  std::ifstream f1(
-      filePath1.string(), std::ifstream::binary | std::ifstream::ate);
-  std::ifstream f2(
-      filePath2.string(), std::ifstream::binary | std::ifstream::ate);
+  std::ifstream f1(file1.path(), std::ifstream::binary | std::ifstream::ate);
+  std::ifstream f2(file2.path(), std::ifstream::binary | std::ifstream::ate);
 
   if(f1.fail() || f2.fail()) {
     return false;  // File problem.
@@ -98,10 +91,10 @@ bool compareFiles(
 
 // https://stackoverflow.com/a/525103
 // https://stackoverflow.com/a/43009155
-std::string readFile(const fg::filesystem::path& fileName)
+std::string readFile(const Poco::File& file)
 {
   std::ifstream ifs(
-      fileName.string(), std::ios::in | std::ios::binary | std::ios::ate);
+      file.path(), std::ios::in | std::ios::binary | std::ios::ate);
 
   std::ifstream::pos_type fileSize = ifs.tellg();
   if(fileSize < 0)

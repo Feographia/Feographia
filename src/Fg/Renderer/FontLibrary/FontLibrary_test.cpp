@@ -24,27 +24,29 @@
 #include <cstdlib>
 #include <string>
 
+#include "Poco/File.h"
+#include "Poco/Path.h"
+
 #include "gtest/gtest.h"
 
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Util/FileUtil.h"
-#include "Fg/Util/Filesystem.h"
 #include "Fg/Util/StringUtil.h"
 
-extern fg::filesystem::path testDir;
-extern fg::filesystem::path fontDir;
-//extern fg::filesystem::path dataDir;
+extern Poco::Path testDir;
+extern Poco::Path fontDir;
+//extern Poco::Path dataDir;
 
 TEST(FontLibraryTest, getFontFilePath)
 {
-  EXPECT_TRUE(fg::filesystem::exists(testDir));
-  EXPECT_TRUE(fg::filesystem::exists(fontDir));
-  //  EXPECT_TRUE(fg::filesystem::exists(dataDir));
+  EXPECT_TRUE(Poco::File {testDir}.exists());
+  EXPECT_TRUE(Poco::File {fontDir}.exists());
+  //EXPECT_TRUE(Poco::File {dataDir}.exists());
 
   fg::FontLibrary fontLibrary;
 
-  fg::filesystem::path fontConfFile = fontDir / "fonts.conf";
-  EXPECT_TRUE(fg::filesystem::exists(fontConfFile));
+  Poco::File fontConfFile {Poco::Path {fontDir}.setFileName("fonts.conf")};
+  EXPECT_TRUE(fontConfFile.exists());
   std::string fontConfig = fg::util::readFile(fontConfFile);
   EXPECT_FALSE(fontConfig.empty());
 
@@ -53,25 +55,31 @@ TEST(FontLibraryTest, getFontFilePath)
   EXPECT_TRUE(fontLibrary.addFontDir(fontDir));
 
   uint_least8_t result;
-  fg::filesystem::path filePath;
+  Poco::File filePath;
 
-  filePath = fontLibrary.getFontFilePath({"Some Unknown Font", "Tinos"}, 16, 400,
-      fg::FontStyle::fontStyleNormal, &result);
+  filePath = fontLibrary.getFontFilePath(
+      {"Some Unknown Font", "Tinos"}, 16, 400, fg::FontStyle::fontStyleNormal,
+      &result);
   EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
-  EXPECT_TRUE(filePath.filename() == "Tinos-Regular.ttf");
+  EXPECT_TRUE(
+      Poco::Path {filePath.path()}.getFileName() == "Tinos-Regular.ttf");
 
-  filePath = fontLibrary.getFontFilePath({"Some Unknown Font", "Tinos"}, 16, 400,
-      fg::FontStyle::fontStyleItalic, &result);
+  filePath = fontLibrary.getFontFilePath(
+      {"Some Unknown Font", "Tinos"}, 16, 400, fg::FontStyle::fontStyleItalic,
+      &result);
   EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
-  EXPECT_TRUE(filePath.filename() == "Tinos-Italic.ttf");
+  EXPECT_TRUE(Poco::Path {filePath.path()}.getFileName() == "Tinos-Italic.ttf");
 
-  filePath = fontLibrary.getFontFilePath({"Some Unknown Font", "Tinos"}, 16, 700,
-      fg::FontStyle::fontStyleNormal, &result);
+  filePath = fontLibrary.getFontFilePath(
+      {"Some Unknown Font", "Tinos"}, 16, 700, fg::FontStyle::fontStyleNormal,
+      &result);
   EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
-  EXPECT_TRUE(filePath.filename() == "Tinos-Bold.ttf");
+  EXPECT_TRUE(Poco::Path {filePath.path()}.getFileName() == "Tinos-Bold.ttf");
 
-  filePath = fontLibrary.getFontFilePath({"Some Unknown Font", "Tinos"}, 16, 700,
-      fg::FontStyle::fontStyleItalic, &result);
+  filePath = fontLibrary.getFontFilePath(
+      {"Some Unknown Font", "Tinos"}, 16, 700, fg::FontStyle::fontStyleItalic,
+      &result);
   EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
-  EXPECT_TRUE(filePath.filename() == "Tinos-BoldItalic.ttf");
+  EXPECT_TRUE(
+      Poco::Path {filePath.path()}.getFileName() == "Tinos-BoldItalic.ttf");
 }

@@ -37,9 +37,10 @@
 
 #pragma warning(pop)
 
+#include "Poco/File.h"
+
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Shared/Types.h"
-#include "Fg/Util/Filesystem.h"
 
 namespace fg
 {
@@ -56,7 +57,7 @@ public:
 
   bool parseAndLoadFontConfigFromMemory(
       const std::string& fontConfig, bool complain);
-  bool addFontDir(const fg::filesystem::path& dirPath);
+  bool addFontDir(const Poco::File& dirPath);
   void setDefaultFontName(const std::string& name);
   void setDefaultFontSize(int size);
   void setFontTextCacheSize(int size);

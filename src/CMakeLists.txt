@@ -124,7 +124,7 @@ target_sources(${fgkardia_TARGET}
     ${public_src_DIR}/Fg/Renderer/FontLibrary/FontLibrary.h
 
     ${public_src_DIR}/Fg/Util/FileUtil.h
-    ${public_src_DIR}/Fg/Util/Filesystem.h
+#    ${public_src_DIR}/Fg/Util/Filesystem.h
     ${public_src_DIR}/Fg/Util/StringUtil.h
 
     ${public_src_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer.h
@@ -167,14 +167,17 @@ target_link_libraries(${fgkardia_TARGET} PRIVATE
   ${HARFBUZZ_LIBRARY} Freetype::Freetype
 )
 
-if(USE_BOOST)
-  target_compile_definitions(${fgkardia_TARGET} PRIVATE USE_BOOST)
+#if(USE_BOOST)
+#  target_compile_definitions(${fgkardia_TARGET} PRIVATE USE_BOOST)
+#
+#  # Boost
+#  target_link_libraries(${fgkardia_TARGET} PRIVATE
+#    Boost::disable_autolinking Boost::filesystem Boost::system
+#  )
+#endif()
 
-  # Boost
-  target_link_libraries(${fgkardia_TARGET} PRIVATE
-    Boost::disable_autolinking Boost::filesystem Boost::system
-  )
-endif()
+# POCO
+target_link_libraries(${fgkardia_TARGET} PRIVATE Poco::Foundation)
 
 # SQLiteModernCPP
 target_include_directories(

@@ -23,15 +23,17 @@
 
 #include "Fg/Module/Bible/Text/Text.h"
 
+#include "Poco/Exception.h"
+
 namespace fg
 {
 Text::~Text() = default;
 
 void Text::sqlCreateDatabase()
 {
-  if(fg::filesystem::exists(mModuleFile)) {
-    throw new fg::filesystem::filesystem_error(
-        "Database file is existing", mModuleFile, {});
+  if(mModuleFile.exists()) {
+    throw new Poco::FileExistsException(
+        "Database file is existing", mModuleFile.path());
   }
 
   sqlOpenDatabase(sqlite::OpenFlags::READWRITE | sqlite::OpenFlags::CREATE);
@@ -61,7 +63,7 @@ void Text::sqlOpenDatabase(sqlite::OpenFlags flags)
     config.flags = flags;
     // The encoding is respected only if you create a new database.
     config.encoding = sqlite::Encoding::UTF8;
-    sqlite::database db {mModuleFile.string(), config};
+    sqlite::database db {mModuleFile.path(), config};
 
     mDbConnection = db.connection();
   }
@@ -107,8 +109,9 @@ void Text::sqlSelectWords(const ItemId& fromId, const ItemId& toId)
 
   stmt >> [&](WordId&& bookId, WordId&& chapterId, WordId&& verseId,
               WordId&& wordId, String&& text, ItemUuid&& uuid) {
-    ItemId id {std::move(bookId), std::move(chapterId), std::move(verseId),
-               std::move(wordId)};
+    ItemId id {
+        std::move(bookId), std::move(chapterId), std::move(verseId),
+        std::move(wordId)};
     // TODO: 1) use direction and pop from deque if deque size is bigger.then value.
     // TODO: 2) check if words is existing in deque
     // TODO: 1) and 2) in seperated method.

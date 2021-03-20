@@ -25,6 +25,7 @@
 #define FG_FONT_LIBRARY_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -33,8 +34,10 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "Poco/File.h"
+#include "Poco/Path.h"
+
 #include "Fg/Shared/Types.h"
-#include "Fg/Util/Filesystem.h"
 
 namespace fg
 {
@@ -64,9 +67,10 @@ public:
 
   bool parseAndLoadConfigFromMemory(
       const std::string& fontConfig, const bool complain);
-  bool addFontDir(const fg::filesystem::path& dirPath);
+  bool addFontDir(const Poco::File& dirPath);
 
-  fg::filesystem::path getFontFilePath(const std::vector<String>& fontNames,
+  Poco::File getFontFilePath(
+      const std::vector<String>& fontNames,
       const int pixelSize,
       const int weight,
       const FontStyle fontStyle,
@@ -107,8 +111,7 @@ inline int FontLibrary::weightToFcWeight(const int weight) const
     return FC_WEIGHT_NORMAL;
 }
 
-inline int FontLibrary::fontStyleToFcSlant(
-    const FontStyle fontStyle) const
+inline int FontLibrary::fontStyleToFcSlant(const FontStyle fontStyle) const
 {
   switch(fontStyle) {
     case FontStyle::fontStyleItalic:

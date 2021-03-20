@@ -55,7 +55,7 @@ bool LiteHtmlContainer::parseAndLoadFontConfigFromMemory(
   return mFontLibrary->parseAndLoadConfigFromMemory(fontConfig, complain);
 }
 
-bool LiteHtmlContainer::addFontDir(const fg::filesystem::path& dirPath)
+bool LiteHtmlContainer::addFontDir(const Poco::File& dirPath)
 {
   return mFontLibrary->addFontDir(dirPath);
 }
@@ -81,9 +81,10 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
   uint_least8_t result;
   // TODO: convert fonts to std::vector<String>.
   // TODO: convert italic to FontStyle.
-  fg::filesystem::path filePath = mFontLibrary->getFontFilePath(
+  Poco::File filePath = mFontLibrary->getFontFilePath(
       fonts, size, weight, static_cast<FontStyle>(italic), &result);
-  if(filePath.empty() || FontLibrary::FontMatches::allMatched != result) {
+  if(filePath.path().empty()
+     || FontLibrary::FontMatches::allMatched != result) {
     return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
 

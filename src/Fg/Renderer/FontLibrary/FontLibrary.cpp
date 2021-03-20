@@ -46,22 +46,21 @@ bool FontLibrary::parseAndLoadConfigFromMemory(
       && FcConfigSetCurrent(mFcConfig.get());
 }
 
-bool FontLibrary::addFontDir(const fg::filesystem::path& dirPath)
+bool FontLibrary::addFontDir(const Poco::File& dirPath)
 {
   // FIXME: fileName.string() can be used on Windows only for ASCII code page.
-  const std::string pathStr(dirPath.string());
-  const FcChar8* dir = reinterpret_cast<const FcChar8*>(pathStr.c_str());
+  const FcChar8* dir = reinterpret_cast<const FcChar8*>(dirPath.path().c_str());
   return FcConfigAppFontAddDir(mFcConfig.get(), dir);
 }
 
-fg::filesystem::path FontLibrary::getFontFilePath(
+Poco::File FontLibrary::getFontFilePath(
     const std::vector<String>& fontNames,
     const int pixelSize,
     const int weight,
     const FontStyle fontStyle,
     uint_least8_t* result) const
 {
-  fg::filesystem::path ret;
+  Poco::File ret;
 
   FcPatternPtr pat {FcPatternCreate(), FcPatternDestroy};
 

@@ -155,21 +155,30 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
-if(USE_BOOST_LIB OR ANDROID OR APPLE)
-# TODO: Use POCO for work with file system.
-  # TODO: Android:
-  # std::filesystem support for Android see:
-  # https://github.com/android/ndk/issues/609
-  # https://android.googlesource.com/platform/ndk/+/master/docs/Roadmap.md#c_file-system-api
-  # TODO: Apple:
-  # TODO: Only for iOS <13, macOS <10.15, watchOS <6, tvOS <13 with Xcode 11 or Clang 9
-  set(USE_BOOST ON)  # TODO: rename to USE_BOOST_FILESYSTEM
-  set(BOOST_lib_COMPONENTS
-    filesystem system
-    CACHE STRING "BOOST_lib_COMPONENTS"
-  )
-  include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
-endif()
+#if(USE_BOOST_LIB OR ANDROID OR APPLE)
+#  # TODO: Android std::filesystem support:
+#  # https://developer.android.com/ndk/downloads/revision_history
+#  # Android NDK, Revision r22:
+#  # std::filesystem support is now included. There are two known issues:
+#  #    Issue 1258: std::filesystem::perm_options::nofollow may not be honored on old devices.
+#  #    Issue 1260: std::filesystem::canonical will incorrectly succeed when passed a non-existent path on old devices.
+#  # Also see:
+#  # https://github.com/android/ndk/issues/609
+#  # https://android.googlesource.com/platform/ndk/+/master/docs/Roadmap.md#c_file-system-api
+#  #
+#  # TODO: Apple std::filesystem support:
+#  # Only for iOS 13+, macOS 10.15+, watchOS 6+, tvOS 13+ with Xcode 11 or Clang 9
+#  # https://developer.apple.com/documentation/xcode_release_notes/xcode_11_release_notes
+#  # "Clang now supports the C++17 <filesystem> library for iOS 13, macOS 10.15, watchOS 6, and tvOS 13."
+#
+#  set(USE_BOOST ON)  # TODO: rename to USE_BOOST_FILESYSTEM
+#  set(BOOST_lib_COMPONENTS
+#    filesystem system
+#    CACHE STRING "BOOST_lib_COMPONENTS"
+#  )
+#  include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
+#endif()
+include(${LibCMaker_LIB_DIR}/LibCMaker_POCO/cmr_build_poco.cmake)
 #include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
 include(
   ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake

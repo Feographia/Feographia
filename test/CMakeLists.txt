@@ -223,14 +223,17 @@ if(BUILD_TESTING)
     ${HARFBUZZ_LIBRARY} Freetype::Freetype
   )
 
-  if(USE_BOOST)
-    target_compile_definitions(${test_TARGET} PRIVATE USE_BOOST)
+#  if(USE_BOOST)
+#    target_compile_definitions(${test_TARGET} PRIVATE USE_BOOST)
+#
+#    # Boost
+#    target_link_libraries(${test_TARGET} PRIVATE
+#      Boost::disable_autolinking Boost::filesystem Boost::system
+#    )
+#  endif()
 
-    # Boost
-    target_link_libraries(${test_TARGET} PRIVATE
-      Boost::disable_autolinking Boost::filesystem Boost::system
-    )
-  endif()
+  # POCO
+  target_link_libraries(${test_TARGET} PRIVATE Poco::Foundation)
 
   # SQLiteModernCPP
   target_include_directories(

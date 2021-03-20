@@ -47,17 +47,16 @@ Font::Font(FtLibraryPtr ftLibrary, const int textCacheSize)
 
 Font::~Font() {}
 
-bool Font::createFtFace(
-    const fg::filesystem::path& fontFilePath, const int pixelSize)
+bool Font::createFtFace(const Poco::File& fontFilePath, const int pixelSize)
 {
   // NOTE: px = pt * DPI / 72
   mPixelSize = pixelSize;
 
   // FIXME: fileName.string() can be used on Windows only for ASCII code page.
   // TODO: see: https://stackoverflow.com/questions/10075032/can-freetype-functions-accept-unicode-filenames
-  const std::string pathStr(fontFilePath.string());
   FT_Face ftFace;
-  if(FT_New_Face(mFtLibrary.get(), pathStr.c_str(), 0, &ftFace) != FT_Err_Ok) {
+  if(FT_New_Face(mFtLibrary.get(), fontFilePath.path().c_str(), 0, &ftFace)
+     != FT_Err_Ok) {
     throw std::logic_error("FT_New_Face() != FT_Err_Ok");
   }
   mFtFace = {ftFace, FT_Done_Face};

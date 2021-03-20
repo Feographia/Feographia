@@ -21,27 +21,31 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-#include "gtest/gtest.h"
-
 #include <iostream>
 #include <sstream>
 #include <utility>
 
-#include "Fg/Module/Bible/Text/Text.h"
-#include "Fg/Util/Filesystem.h"
+#include "Poco/Exception.h"
+#include "Poco/File.h"
+#include "Poco/Path.h"
 
-extern fg::filesystem::path testDir;
+#include "gtest/gtest.h"
+
+#include "Fg/Module/Bible/Text/Text.h"
+
+extern Poco::Path testDir;
 
 TEST(TextTest, sqlCreateModule)
 {
   try {
-    EXPECT_TRUE(fg::filesystem::exists(testDir));
+    EXPECT_TRUE(Poco::File {testDir}.exists());
 
-    fg::filesystem::path moduleFile = testDir / "testModule.SQLite3";
-    if(fg::filesystem::exists(moduleFile)) {
-      fg::filesystem::remove(moduleFile);
+    Poco::File moduleFile {
+        Poco::Path {testDir}.setFileName("testModule.SQLite3")};
+    if(moduleFile.exists()) {
+      moduleFile.remove();
     }
-    EXPECT_FALSE(fg::filesystem::exists(moduleFile));
+    EXPECT_FALSE(moduleFile.exists());
 
     {
       std::vector<fg::Word> words;
@@ -95,7 +99,7 @@ TEST(TextTest, sqlCreateModule)
     }
 
     EXPECT_TRUE(true);
-  } catch(const fg::filesystem::filesystem_error& /*e*/) {
+  } catch(const Poco::FileException& /*e*/) {
     EXPECT_TRUE(false);
   } catch(const sqlite::sqlite_exception& e) {
     std::cout << "SQLITE ERROR CODE: " << e.get_code() << "\n"

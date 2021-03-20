@@ -58,8 +58,9 @@
 #pragma clang diagnostic pop
 #pragma GCC diagnostic pop
 
+#include "Poco/File.h"
+
 #include "Fg/Shared/Types.h"
-#include "Fg/Util/Filesystem.h"
 
 namespace fg
 {
@@ -201,7 +202,7 @@ public:
   Text(const Text& other) = default;
   Text(Text&& other) = default;
 
-  Text(fg::filesystem::path moduleFile);
+  Text(Poco::File moduleFile);
   ~Text();
 
   void sqlCreateDatabase();
@@ -219,14 +220,14 @@ protected:
   void sqlOpenDatabase(sqlite::OpenFlags flags);
 
 private:
-  fg::filesystem::path mModuleFile;
+  Poco::File mModuleFile;
   sqlite::connection_type mDbConnection;
 
   std::deque<Word> mWords;
 };
 
-inline Text::Text(fg::filesystem::path module)
-    : mModuleFile {std::move(module)}
+inline Text::Text(Poco::File moduleFile)
+    : mModuleFile {std::move(moduleFile)}
     , mDbConnection {nullptr}
     , mWords {}
 {

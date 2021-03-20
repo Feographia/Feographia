@@ -28,26 +28,28 @@
 
 #include <cairo/cairo.h>
 
+#include "Poco/File.h"
+#include "Poco/Path.h"
+
 #include "gtest/gtest.h"
 
 #include "Fg/Renderer/Cairo.h"
 #include "Fg/Renderer/FontLibrary/Font.h"
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Util/FileUtil.h"
-#include "Fg/Util/Filesystem.h"
 #include "Fg/Util/StringUtil.h"
 
-extern fg::filesystem::path testDir;
-extern fg::filesystem::path fontDir;
-extern fg::filesystem::path dataDir;
+extern Poco::Path testDir;
+extern Poco::Path fontDir;
+extern Poco::Path dataDir;
 
 TEST(FontTest, FontTest)
 {
   //////// Init part.
 
-  EXPECT_TRUE(fg::filesystem::exists(testDir));
-  EXPECT_TRUE(fg::filesystem::exists(fontDir));
-  EXPECT_TRUE(fg::filesystem::exists(dataDir));
+  EXPECT_TRUE(Poco::File {testDir}.exists());
+  EXPECT_TRUE(Poco::File {fontDir}.exists());
+  EXPECT_TRUE(Poco::File {dataDir}.exists());
 
   //// Cairo init.
 
@@ -74,8 +76,8 @@ TEST(FontTest, FontTest)
   // Init FontLibrary.
   fg::FontLibrary fontLibrary;
 
-  fg::filesystem::path fontConfFile = fontDir / "fonts.conf";
-  EXPECT_TRUE(fg::filesystem::exists(fontConfFile));
+  Poco::File fontConfFile {Poco::Path {fontDir}.setFileName("fonts.conf")};
+  EXPECT_TRUE(fontConfFile.exists());
   std::string fontConfig = fg::util::readFile(fontConfFile);
   EXPECT_FALSE(fontConfig.empty());
 
@@ -89,10 +91,11 @@ TEST(FontTest, FontTest)
   fg::FontStyle fontStyle = fg::FontStyle::fontStyleNormal;
 
   uint_least8_t result;
-  fg::filesystem::path filePath = fontLibrary.getFontFilePath(
+  Poco::File filePath = fontLibrary.getFontFilePath(
       {"Tinos"}, pixelSize, weight, fontStyle, &result);
   EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
-  EXPECT_TRUE(filePath.filename() == "Tinos-Regular.ttf");
+  EXPECT_TRUE(
+      Poco::Path {filePath.path()}.getFileName() == "Tinos-Regular.ttf");
 
   // Create Font with FontLibrary.
   fg::Font font(fontLibrary.ftLibrary(), 1000);
@@ -137,12 +140,12 @@ TEST(FontTest, FontTest)
 
   // Write our picture to file.
   std::string fileName1 = "FontTest_1.ppm";
-  fg::filesystem::path fileOutTest1 = testDir / fileName1;
+  Poco::File fileOutTest1 {Poco::Path {testDir}.setFileName(fileName1)};
   fg::util::writePpmFile(
       frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL, fileOutTest1);
 
   // Compare our file with prototype.
-  fg::filesystem::path fileTest1 = dataDir / fileName1;
+  Poco::File fileTest1 {Poco::Path {dataDir}.setFileName(fileName1)};
   EXPECT_TRUE(fg::util::compareFiles(fileTest1, fileOutTest1));
 
   //////// Repeat tests for new text.
@@ -172,13 +175,12 @@ TEST(FontTest, FontTest)
 
   // Write our picture to file.
   std::string fileName2 = "FontTest_2.ppm";
-  fg::filesystem::path fileOutTest2 = testDir / fileName2;
+  Poco::File fileOutTest2 {Poco::Path {testDir}.setFileName(fileName2)};
   fg::util::writePpmFile(
-      frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL,
-      fileOutTest2.c_str());
+      frameBuf.data(), frameWidth, frameHeight, BYTES_PER_PIXEL, fileOutTest2);
 
   // Compare our file with prototype.
-  fg::filesystem::path fileTest2 = dataDir / fileName2;
+  Poco::File fileTest2 {Poco::Path {dataDir}.setFileName(fileName2)};
   EXPECT_TRUE(fg::util::compareFiles(fileTest2, fileOutTest2));
 
   //////// Test Font::xHeight().

@@ -23,7 +23,13 @@
 
 #include "gtest/gtest.h"
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 5039 4619)
+
 #include "Poco/Path.h"
+
+#pragma warning(pop)
 
 //#include <unistd.h>
 //extern char **environ;

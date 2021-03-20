@@ -23,7 +23,13 @@
 
 #include "Fg/Module/Bible/Text/Text.h"
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
+
 #include "Poco/Exception.h"
+
+#pragma warning(pop)
 
 namespace fg
 {

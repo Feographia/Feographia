@@ -37,7 +37,13 @@
 
 #pragma warning(pop)
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 5039 4619)
+
 #include "Poco/File.h"
+
+#pragma warning(pop)
 
 #include "Fg/Renderer/FontLibrary/FontLibrary.h"
 #include "Fg/Shared/Types.h"

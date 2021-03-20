@@ -25,9 +25,15 @@
 #include <sstream>
 #include <utility>
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 5039 4619)
+
 #include "Poco/Exception.h"
 #include "Poco/File.h"
 #include "Poco/Path.h"
+
+#pragma warning(pop)
 
 #include "gtest/gtest.h"
 

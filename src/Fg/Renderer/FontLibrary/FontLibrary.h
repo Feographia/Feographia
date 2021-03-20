@@ -34,8 +34,19 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+// MSVC pragmas
+#pragma warning(push)
+#pragma warning(disable : 5039 4619)
+
 #include "Poco/File.h"
+
+#pragma warning(push)
+#pragma warning(disable : 4251)
+
 #include "Poco/Path.h"
+
+#pragma warning(pop)
+#pragma warning(pop)
 
 #include "Fg/Shared/Types.h"
 

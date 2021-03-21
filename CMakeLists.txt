@@ -30,7 +30,7 @@ if(NOT DEFINED CMAKE_INSTALL_PREFIX)
   option(cmr_DEFAULT_CMAKE_INSTALL_PREFIX "cmr_DEFAULT_CMAKE_INSTALL_PREFIX" ON)
 endif()
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.9)
 # C++17 compiler:
 #   GCC 8
 #   Clang 8 (Android NDK r19)
@@ -38,7 +38,17 @@ cmake_minimum_required(VERSION 3.8)
 #   MSVC 19.15, VS 2017 15.8
 # See: https://en.cppreference.com/w/cpp/compiler_support
 
-project(Feographia CXX)
+# If LTO is used, all these languages must be enabled.
+project(Feographia CXX C ASM)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT is_ipo_supported)
+if(is_ipo_supported)
+  # NOTE: Turn OFF ccache if there are problems with linking and LTO.
+  option(CMAKE_INTERPROCEDURAL_OPTIMIZATION
+    "CMAKE_INTERPROCEDURAL_OPTIMIZATION" OFF
+  )
+endif()
 
 option(USE_BOOST_LIB "USE_BOOST_LIB" OFF)
 

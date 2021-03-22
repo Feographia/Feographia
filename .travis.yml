@@ -40,10 +40,10 @@ env:
     # of the repository currently being built.
     - cmr_REPO_MAIN_DIR=${HOME}/build/${TRAVIS_REPO_SLUG}
 
-    - cmr_PERSISTENT_CACHE=${HOME}/build/persistent_cache_NEW2
+    - cmr_PERSISTENT_CACHE=${HOME}/build/persistent_cache_NEW3
     - cmr_INSTALL_DIR=${cmr_PERSISTENT_CACHE}/install
 
-    - cmr_WORK_DIR=${HOME}/build/work_NEW2
+    - cmr_WORK_DIR=${HOME}/build/work_NEW3
     - cmr_REPO_DIR=${cmr_WORK_DIR}/${cmr_APP_NAME}
 
     - cmr_DOWNLOAD_DIR=${cmr_WORK_DIR}/download

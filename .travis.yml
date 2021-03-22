@@ -104,24 +104,28 @@ debug_shared_env:
   env: &debug_shared_env
     - cmr_CMAKE_BUILD_TYPE=Debug
     - cmr_BUILD_SHARED_LIBS=ON
+    - cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF
     - cmr_ANDROID_STL=c++_shared  # For Android only
 
 debug_static_env:
   env: &debug_static_env
     - cmr_CMAKE_BUILD_TYPE=Debug
     - cmr_BUILD_SHARED_LIBS=OFF
+    - cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF
     - cmr_ANDROID_STL=c++_static  # For Android only
 
 release_shared_env:
   env: &release_shared_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=ON
+    - cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
     - cmr_ANDROID_STL=c++_shared  # For Android only
 
 release_static_env:
   env: &release_static_env
     - cmr_CMAKE_BUILD_TYPE=Release
     - cmr_BUILD_SHARED_LIBS=OFF
+    - cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
     - cmr_ANDROID_STL=c++_static  # For Android only
 
 

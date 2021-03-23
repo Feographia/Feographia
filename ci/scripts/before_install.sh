@@ -4,13 +4,10 @@ set -ev
 
 echo "==== Debug: Begin before_install.sh"
 
-if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
-    ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" &&
-      ( ${cmr_TARGET_OS} == "Linux" ||
-        ${cmr_TARGET_OS} == "Windows" ||
-        ${cmr_TARGET_OS} == "macOS" ) ) ]] ; then
+script_dir=`dirname "$(realpath "$0")"`
 
-  echo "==== Debug: Stage 'Build Host Tools' or 'Build Project'"
+if [[ ${script_dir} == ${cmr_STAGE0_CI_SCRIPTS_DIR} ]] ; then
+  echo "==== Debug: Stage0"
   echo "==== Debug: Init work dir"
 
   # ==== Clean not persistent cache dirs ====
@@ -66,7 +63,7 @@ if [[ ( "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ) ||
   fi
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ]] ; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
   # ==== Make work dirs ====
   echo "==== Debug: Stage 'Build Host Tools'"
   echo "==== Debug: Make work dirs"
@@ -76,8 +73,10 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Host Tools" ]] ; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
-  echo "==== Debug: Stage 'Build Project'"
+if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure Project"* ) ||
+   ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ) ]] ; then
+
+  echo "==== Debug: Stage 'Configure Project' or 'Build Project'"
 
   cd ${cmr_REPO_DIR}
 
@@ -123,7 +122,7 @@ if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Build Project" ]] ; then
   fi
 fi
 
-if [[ "${TRAVIS_BUILD_STAGE_NAME}" == "Test Project" ]] ; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Project" ]] ; then
   echo "==== Debug: Stage 'Test Project'"
 
   cd ${cmr_REPO_DIR}

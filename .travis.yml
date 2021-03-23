@@ -21,7 +21,10 @@
 #     along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# === Common ===
+
+##############################################################################
+#     === Common ===
+##############################################################################
 
 sudo: false
 
@@ -44,7 +47,16 @@ env:
     - cmr_INSTALL_DIR=${cmr_PERSISTENT_CACHE}/install
 
     - cmr_WORK_DIR=${HOME}/build/work_NEW3
+    - cmr_STAGE0_REPO_DIR=${cmr_REPO_MAIN_DIR}
     - cmr_REPO_DIR=${cmr_WORK_DIR}/${cmr_APP_NAME}
+
+    - cmr_STAGE0_CI_SCRIPTS_DIR=${cmr_STAGE0_REPO_DIR}/ci/scripts
+    - cmr_CI_SCRIPTS_DIR=${cmr_REPO_DIR}/ci/scripts
+
+    - cmr_BEFORE_INSTALL=before_install.sh
+    - cmr_BUILD_HOST_TOOLS=build_host_tools.sh
+    - cmr_BUILD_PROJECT=build_project.sh
+    - cmr_TEST_PROJECT=test_project.sh
 
     - cmr_DOWNLOAD_DIR=${cmr_WORK_DIR}/download
     - cmr_UNPACKED_DIR=${cmr_WORK_DIR}/unpacked
@@ -58,7 +70,10 @@ env:
     - cmr_HOST_TOOLS_STAMP_FILE_NAME="host_tools_stamp"
 
 
-# === Cache ===
+
+##############################################################################
+#     === Cache ===
+##############################################################################
 
 before_cache:
   - rm -f -r -d ${cmr_BUILD_DIR}/build_libs
@@ -78,7 +93,10 @@ cache:
 #cache: false
 
 
-# === Env variables ===
+
+##############################################################################
+#     === Env variables ===
+##############################################################################
 
 # === CMake env ===
 cmake_1st_env:
@@ -299,48 +317,42 @@ ios_cmake_env:
     - cmr_CMAKE_DIR=${cmr_INSTALL_DIR}/${cmr_CMAKE_RELEASE}/CMake.app/Contents
 
 
-# === Scripts ===
+
+##############################################################################
+#     === Scripts ===
+##############################################################################
 
 # === Before install script ===
-desctop_before_install_script: &desctop_before_install_script
+stage0_before_install_script: &stage0_before_install_script
   git:
     submodules: false
-  before_install: ${cmr_REPO_MAIN_DIR}/ci/scripts/before_install.sh
+  before_install: ${cmr_STAGE0_CI_SCRIPTS_DIR}/${cmr_BEFORE_INSTALL}
 
-host_tools_before_install_script: &host_tools_before_install_script
-  git:
-    submodules: false
-  before_install: ${cmr_REPO_MAIN_DIR}/ci/scripts/before_install.sh
-
-mobile_before_install_script: &mobile_before_install_script
+before_install_script: &before_install_script
   git:
     clone: false
-  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
-
-test_before_install_script: &test_before_install_script
-  git:
-    clone: false
-  before_install: ${cmr_REPO_DIR}/ci/scripts/before_install.sh
+  before_install: ${cmr_CI_SCRIPTS_DIR}/${cmr_BEFORE_INSTALL}
 
 
 # === Build Host Tools script ===
 build_host_tools_script: &build_host_tools_script
-  git:
-    submodules: false
-  script: ${cmr_REPO_DIR}/ci/scripts/build_host_tools.sh
+  script: ${cmr_CI_SCRIPTS_DIR}/${cmr_BUILD_HOST_TOOLS}
 
 
 # === Build Project script ===
 build_script: &build_script
-  script: ${cmr_REPO_DIR}/ci/scripts/build_project.sh
+  script: ${cmr_CI_SCRIPTS_DIR}/${cmr_BUILD_PROJECT}
 
 
 # === Test script ===
 test_script: &test_script
-  script: ${cmr_REPO_DIR}/ci/scripts/test_project.sh
+  script: ${cmr_CI_SCRIPTS_DIR}/${cmr_TEST_PROJECT}
 
 
-# === Configs ===
+
+##############################################################################
+#     === Configs ===
+##############################################################################
 
 # === Images ===
 linux_img: &linux_img
@@ -413,7 +425,10 @@ android_addons: &android_addons
       - ninja-build
 
 
-# === Job templates ===
+
+##############################################################################
+#     === Job templates ===
+##############################################################################
 
 # === Linux ===
 
@@ -842,7 +857,10 @@ ios_clang_xcode_release_static: &ios_clang_xcode_release_static
     - *cmake_2nd_env
 
 
-# === Build matrix ===
+
+##############################################################################
+#     === Build matrix ===
+##############################################################################
 
 # === Stages ===
 stages:
@@ -863,131 +881,134 @@ jobs:
 # Linux, GCC
     - stage: "Build Project"
       <<: *linux_gcc_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *linux_gcc_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *linux_gcc_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *linux_gcc_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Linux, Clang
     - stage: "Build Project"
       <<: *linux_clang_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *linux_clang_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *linux_clang_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *linux_clang_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
+
+
+# === Windows ===
 
 # Windows, MSVC, x64
     - stage: "Build Project"
       <<: *windows_msvc_x64_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_x64_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *windows_msvc_x64_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_x64_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Windows, MSVC, Win32
     - stage: "Build Project"
       <<: *windows_msvc_win32_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_win32_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *windows_msvc_win32_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_win32_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Windows, MSVC, WinXP
     - stage: "Build Project"
       <<: *windows_msvc_winxp_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_winxp_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *windows_msvc_winxp_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_msvc_winxp_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Windows, MinGW-w64, x64
     - stage: "Configure Project Stage 1"
       <<: *windows_mingw_x64_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Configure Project Stage 2"
       <<: *windows_mingw_x64_debug_shared
-      <<: *desctop_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_debug_shared
-      <<: *desctop_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_mingw_x64_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Configure Project Stage 1"
       <<: *windows_mingw_x64_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Configure Project Stage 2"
       <<: *windows_mingw_x64_release_static
-      <<: *desctop_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *windows_mingw_x64_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 
@@ -996,40 +1017,40 @@ jobs:
 # macOS, Xcode
     - stage: "Build Project"
       <<: *macos_clang_xcode_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *macos_clang_xcode_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *macos_clang_xcode_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *macos_clang_xcode_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 
 # macOS, Unix Makefiles
     - stage: "Build Project"
       <<: *macos_clang_make_debug_shared
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *macos_clang_make_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Project"
       <<: *macos_clang_make_release_static
-      <<: *desctop_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *macos_clang_make_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 
@@ -1038,109 +1059,109 @@ jobs:
 # Android, armeabi-v7a
     - stage: "Build Host Tools"
       <<: *android_armeabi_v7a_debug_shared
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_armeabi_v7a_debug_shared
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_armeabi_v7a_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Host Tools"
       <<: *android_armeabi_v7a_release_static
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_armeabi_v7a_release_static
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_armeabi_v7a_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Android, arm64-v8a
     - stage: "Build Host Tools"
       <<: *android_arm64_v8a_debug_shared
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_arm64_v8a_debug_shared
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_arm64_v8a_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Host Tools"
       <<: *android_arm64_v8a_release_static
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_arm64_v8a_release_static
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_arm64_v8a_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Android, x86
     - stage: "Build Host Tools"
       <<: *android_x86_debug_shared
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_x86_debug_shared
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_x86_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Host Tools"
       <<: *android_x86_release_static
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_x86_release_static
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_x86_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 # Android, x86_64
     - stage: "Build Host Tools"
       <<: *android_x86_64_debug_shared
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_x86_64_debug_shared
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_x86_64_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Host Tools"
       <<: *android_x86_64_release_static
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *android_x86_64_release_static
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *android_x86_64_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 
@@ -1148,32 +1169,35 @@ jobs:
 
     - stage: "Build Host Tools"
       <<: *ios_clang_xcode_debug_shared
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *ios_clang_xcode_debug_shared
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *ios_clang_xcode_debug_shared
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
     - stage: "Build Host Tools"
       <<: *ios_clang_xcode_release_static
-      <<: *host_tools_before_install_script
+      <<: *stage0_before_install_script
       <<: *build_host_tools_script
     - stage: "Build Project"
       <<: *ios_clang_xcode_release_static
-      <<: *mobile_before_install_script
+      <<: *before_install_script
       <<: *build_script
     - stage: "Test Project"
       <<: *ios_clang_xcode_release_static
-      <<: *test_before_install_script
+      <<: *before_install_script
       <<: *test_script
 
 
-# === Trigger downstreams ===
+
+##############################################################################
+#     === Trigger downstreams ===
+##############################################################################
 
 # Trigger the building of the dependent libs.
     - stage: "Trigger downstreams"
@@ -1195,7 +1219,10 @@ jobs:
         - ./trigger.sh LibCMaker LibCMaker_FontConfig       master $TRAVIS_ACCESS_TOKEN
 
 
-# === Notifications ===
+
+##############################################################################
+#     === Notifications ===
+##############################################################################
 
 notifications:
   email:

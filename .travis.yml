@@ -847,6 +847,8 @@ ios_clang_xcode_release_static: &ios_clang_xcode_release_static
 # === Stages ===
 stages:
   - "Build Host Tools"
+  - "Configure Project Stage 1"
+  - "Configure Project Stage 2"
   - "Build Project"
   - "Test Project"
 

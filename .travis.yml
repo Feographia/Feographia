@@ -954,6 +954,14 @@ jobs:
       <<: *test_script
 
 # Windows, MinGW-w64, x64
+    - stage: "Configure Project Stage 1"
+      <<: *windows_mingw_x64_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Configure Project Stage 2"
+      <<: *windows_mingw_x64_debug_shared
+      <<: *desctop_before_install_script
+      <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_debug_shared
       <<: *desctop_before_install_script
@@ -963,6 +971,14 @@ jobs:
       <<: *test_before_install_script
       <<: *test_script
 
+    - stage: "Configure Project Stage 1"
+      <<: *windows_mingw_x64_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
+    - stage: "Configure Project Stage 2"
+      <<: *windows_mingw_x64_release_static
+      <<: *desctop_before_install_script
+      <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_release_static
       <<: *desctop_before_install_script

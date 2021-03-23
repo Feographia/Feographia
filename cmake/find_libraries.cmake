@@ -132,29 +132,35 @@ option(SQLITE_ENABLE_ICU "the ICU extension to SQLite to be added" ON)
 option(BUILD_TESTING "Build the testing tree." OFF)
 if(BUILD_TESTING)
   enable_testing()
-  include(${LibCMaker_LIB_DIR}/LibCMaker_GoogleTest/cmr_build_googletest.cmake)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_GoogleTest/cmr_build_googletest.cmake)  # 02:20
 endif()
 
 # wxWidgets must be 1st, before Cairo and other libs
 if(WIN32 OR (UNIX AND NOT APPLE AND NOT ANDROID) OR (APPLE AND NOT IOS))
   set(wxWidgets_PLATFORM ON)
-  include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_wxWidgets/cmr_build_wxwidgets.cmake)  # 17:10
 endif()
 
 find_package(Threads REQUIRED)  # Used in Cairo and ICU
 
 if(MSVC)
-  include(${LibCMaker_LIB_DIR}/LibCMaker_Dirent/cmr_build_dirent.cmake)
+  include(${LibCMaker_LIB_DIR}/LibCMaker_Dirent/cmr_build_dirent.cmake)  # 00:30
 endif()
-include(${LibCMaker_LIB_DIR}/LibCMaker_zlib/cmr_build_zlib.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_libpng/cmr_build_libpng.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_fmt/cmr_build_fmt.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_spdlog/cmr_build_spdlog.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_STLCache/cmr_build_stlcache.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_zlib/cmr_build_zlib.cmake)  # 01:00
+include(${LibCMaker_LIB_DIR}/LibCMaker_libpng/cmr_build_libpng.cmake)  # 00:40
+include(${LibCMaker_LIB_DIR}/LibCMaker_fmt/cmr_build_fmt.cmake)  # 01:20
+include(${LibCMaker_LIB_DIR}/LibCMaker_spdlog/cmr_build_spdlog.cmake)  # 01:00
+include(${LibCMaker_LIB_DIR}/LibCMaker_STLCache/cmr_build_stlcache.cmake)  # 00:10
+include(${LibCMaker_LIB_DIR}/LibCMaker_Expat/cmr_build_expat.cmake)  # 02:20
+include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu.cmake)  # 11:20
+include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)  # 03:20
+include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)  # 00:10
+
+# For Travis CI time limits.
+if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure Project Stage 1")
+  return()
+endif()
+
 #if(USE_BOOST_LIB OR ANDROID OR APPLE)
 #  # TODO: Android std::filesystem support:
 #  # https://developer.android.com/ndk/downloads/revision_history
@@ -176,14 +182,19 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp
 #    filesystem system
 #    CACHE STRING "BOOST_lib_COMPONENTS"
 #  )
-#  include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)
+#  include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost.cmake)  # 10:00
 #endif()
-include(${LibCMaker_LIB_DIR}/LibCMaker_POCO/cmr_build_poco.cmake)
-#include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_POCO/cmr_build_poco.cmake)  # 05:10
+#include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)  # 02:00
 include(
-  ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake
+  ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake  # 01:30, 04:30 (with HarfBuzz)
 )
-include(${LibCMaker_LIB_DIR}/LibCMaker_FontConfig/cmr_build_fontconfig.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_Pixman/cmr_build_pixman.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_Cairo/cmr_build_cairo.cmake)
-include(${LibCMaker_LIB_DIR}/LibCMaker_litehtml/cmr_build_litehtml.cmake)
+include(${LibCMaker_LIB_DIR}/LibCMaker_FontConfig/cmr_build_fontconfig.cmake)  # 08:20
+include(${LibCMaker_LIB_DIR}/LibCMaker_Pixman/cmr_build_pixman.cmake)  # 04:00
+include(${LibCMaker_LIB_DIR}/LibCMaker_Cairo/cmr_build_cairo.cmake)  # 07:10
+include(${LibCMaker_LIB_DIR}/LibCMaker_litehtml/cmr_build_litehtml.cmake)  # 01:10
+
+# For Travis CI time limits.
+if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure Project Stage 2")
+  return()
+endif()

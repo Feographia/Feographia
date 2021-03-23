@@ -86,7 +86,15 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 include(target_settings)
 include(compile_flags)
+
+# For Travis CI time limits.
+set(TRAVIS_BUILD_STAGE_NAME $ENV{TRAVIS_BUILD_STAGE_NAME})
 include(find_libraries)
+if(TRAVIS_BUILD_STAGE_NAME MATCHES "Configure Project Stage")
+  message(STATUS "Exit from Travis CI stage \"${TRAVIS_BUILD_STAGE_NAME}\"")
+  return()
+endif()
+
 # TODO: Use litehtml for viewing of dictionaries and other HTML texts.
 #include(htmlgrapheas)
 

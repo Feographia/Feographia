@@ -15,7 +15,7 @@ if [[ ${cmr_TARGET_OS} == "Linux" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -24,7 +24,9 @@ if [[ ${cmr_TARGET_OS} == "Linux" ]] ; then
       -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
       -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=${cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION} \
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]] ; then
@@ -48,7 +50,9 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]] ; then
       -DCMAKE_CONFIGURATION_TYPES:STRING="${cmr_CMAKE_BUILD_TYPE}" \
     -DATTACH_WX_CONSOLE:BOOL=${cmr_ATTACH_WX_CONSOLE} \
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
@@ -58,7 +62,7 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -68,7 +72,9 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
     -DATTACH_WX_CONSOLE:BOOL=${cmr_ATTACH_WX_CONSOLE} \
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
@@ -78,7 +84,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -92,7 +98,9 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
     # The job exceeded the maximum log length, and has been terminated.
     #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
@@ -102,7 +110,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -111,7 +119,9 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
       -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
     -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
@@ -121,7 +131,7 @@ if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -138,7 +148,9 @@ if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
       -DANDROID_CPP_FEATURES:STRING="${cmr_ANDROID_CPP_FEATURES}" \
     -Dcmr_HOST_BUILD_DIR:PATH=${cmr_HOST_BUILD_DIR} \
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
+  fi
 fi
 
 if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
@@ -148,7 +160,7 @@ if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
     -Dcmr_BUILD_MULTIPROC_CNT:STRING=${cmr_JOBS_CNT} \
     -Dcmr_PRINT_DEBUG:BOOL=ON \
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=ON \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_TESTING:BOOL=${cmr_BUILD_TESTING} \
     -DCMAKE_INSTALL_PREFIX:PATH=${cmr_INSTALL_DIR} \
     -Dcmr_DOWNLOAD_DIR:PATH=${cmr_DOWNLOAD_DIR} \
@@ -166,7 +178,9 @@ if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
     # The job exceeded the maximum log length, and has been terminated.
     #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
-  ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+    ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
+  fi
 fi
 
 echo "==== Debug: End build_project.sh"

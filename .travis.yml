@@ -420,6 +420,7 @@ linux_clang_addons: &linux_clang_addons
       - gcc-9  # g++-9 is needed as clang uses its libraries by default.
       - g++-9
       - clang-11
+      - llvm-11-dev  # Required for clang with LTO.
 
 android_addons: &android_addons
   apt:

@@ -38,7 +38,7 @@ env:
     - cmr_BUILD_TESTING=ON
     - cmr_JOBS_CNT=4
 
-    - cmr_CACHE_SUFFIX=20210324_01
+    - cmr_CACHE_SUFFIX=0
 
 #    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
     # TRAVIS_REPO_SLUG: The slug (in form: owner_name/repo_name)
@@ -868,7 +868,7 @@ ios_clang_xcode_release_static: &ios_clang_xcode_release_static
 stages:
   - "Build Host Tools"
   - "Configure Project Stage 1"
-  - "Configure Project Stage 2"
+#  - "Configure Project Stage 2"
   - "Build Project"
   - "Test Project"
 
@@ -983,10 +983,10 @@ jobs:
       <<: *windows_mingw_x64_debug_shared
       <<: *stage0_before_install_script
       <<: *build_script
-    - stage: "Configure Project Stage 2"
-      <<: *windows_mingw_x64_debug_shared
-      <<: *before_install_script
-      <<: *build_script
+#    - stage: "Configure Project Stage 2"
+#      <<: *windows_mingw_x64_debug_shared
+#      <<: *before_install_script
+#      <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_debug_shared
       <<: *before_install_script
@@ -999,10 +999,6 @@ jobs:
     - stage: "Configure Project Stage 1"
       <<: *windows_mingw_x64_release_static
       <<: *stage0_before_install_script
-      <<: *build_script
-    - stage: "Configure Project Stage 2"
-      <<: *windows_mingw_x64_release_static
-      <<: *before_install_script
       <<: *build_script
     - stage: "Build Project"
       <<: *windows_mingw_x64_release_static

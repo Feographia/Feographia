@@ -73,7 +73,7 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure Project"* ) ||
+if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure Project Stage"* ) ||
    ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ) ]] ; then
 
   echo "==== Debug: Stage 'Configure Project' or 'Build Project'"

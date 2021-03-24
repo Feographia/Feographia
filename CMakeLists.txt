@@ -84,6 +84,9 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+include(print_system_info)
+print_system_info()
+
 include(target_settings)
 include(compile_flags)
 

@@ -5,7 +5,7 @@ The application to work with the biblical text.
 
 ## Requirements
 
-1. The Feographia building requires CMake 3.11+ for "Visual Studio" generator on Windows, CMake 3.12+ for "Xcode" generator on macOS, CMake 3.8+ for "Unix Makefiles" generator on macOS, CMake 3.15+ for "Xcode" generator on iOS and CMake 3.8+ for others.
+1. The Feographia building requires CMake 3.11+ for "Visual Studio" generator on Windows, CMake 3.12+ for "Xcode" generator on macOS, CMake 3.15+ for "Xcode" generator on iOS and CMake 3.9+ for others.
 
 2. TODO: compilers with C++17 support, Android SDK and NDK versions, Swift tools versions.
 
@@ -19,7 +19,7 @@ The user interface is made with wxWidgets on Linux, Windows, macOS, with Android
 
 ## Building
 
-Feographia's build system is based on the CMake and CMake build scripts from LibCMaker project.
+The Feographia's build system is based on the CMake and the CMake build scripts from the LibCMaker project.
 
 See the [LibCMaker](https://github.com/LibCMaker/LibCMaker) repository for the documentation, known build issues, build status, etc. of the library dependencies.
 
@@ -68,4 +68,4 @@ Following configurations are in the Travis CI (2020-05-24):
 
  *Application*   | *Travis CI* <br> Linux <br> Windows <br> macOS <br> Android <br> iOS   | *Built with dependencies*
  --------------- | ---------------------------------------------------------------------- | ---------------------------
- [Feographia](https://github.com/Feographia/Feographia) <br> [Feographia's site](https://github.com/Feographia/Feographia) | [![Build Status](https://travis-ci.com/Feographia/Feographia.svg?branch=master)](https://travis-ci.com/Feographia/Feographia) | GTest, Dirent (only for Windows), zlib, libpng, fmt, spdlog, STLCache, Expat, ICU, SQLite3, SQLiteModernCPP, Boost (macOS, Android, iOS), HarfBuzz, FreeType, FontConfig, Pixman, Cairo, gumbo (embedded into litehtml), litehtml, wxWidgets (Linux, Windows, macOS)
+ [Feographia](https://github.com/Feographia/Feographia) <br> [Feographia's site](https://github.com/Feographia/Feographia) | [![Build Status](https://travis-ci.com/Feographia/Feographia.svg?branch=master)](https://travis-ci.com/Feographia/Feographia) | GTest, Dirent (only for Windows), zlib, libpng, fmt, spdlog, STLCache, Expat, ICU, SQLite3, SQLiteModernCPP, ~~Boost (macOS, Android, iOS)~~[disabled], POCO, HarfBuzz, FreeType, FontConfig, Pixman, Cairo, gumbo (embedded into litehtml), litehtml, wxWidgets (Linux, Windows, macOS)

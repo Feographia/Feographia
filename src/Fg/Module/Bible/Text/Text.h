@@ -29,6 +29,8 @@
 #include <utility>
 #include <vector>
 
+#include "unicode/unistr.h"
+
 // GCC pragmas
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -163,19 +165,29 @@ public:
   ~Word() = default;
 
   explicit Word(
-      const ItemId& id, const String& text, const ItemUuid& uuid = {});
-  explicit Word(ItemId&& id, String&& text, ItemUuid&& uuid = {});
+      const ItemId& id,
+      const icu::UnicodeString& text,
+      const ItemUuid& uuid = {});
+  explicit Word(ItemId&& id, icu::UnicodeString&& text, ItemUuid&& uuid = {});
+
+  explicit Word(
+      const ItemId& id, const std::string& utf8Text, const ItemUuid& uuid = {});
+  explicit Word(ItemId&& id, std::string&& utf8Text, ItemUuid&& uuid = {});
 
   const ItemId& getId() const { return mId; }
   const ItemUuid& getUuid() const { return mUuid; }
 
-  const String& getText() const { return mText; }
-  void setText(const String& text) { mText = text; }
-  void setText(String&& text) { mText = std::move(text); }
+  const icu::UnicodeString& getText() const { return mText; }
+  void setText(const icu::UnicodeString& text) { mText = text; }
+  void setText(icu::UnicodeString&& text) { mText = std::move(text); }
+
+  std::string getUtf8Text() const;
+  void setText(const std::string& utf8Text);
+  void setText(std::string&& utf8Text);
 
 private:
   ItemId mId;
-  String mText;
+  icu::UnicodeString mText;
   const ItemUuid mUuid;
 
   // IF uuid != NULL THEN uuid ELSE id.
@@ -183,18 +195,50 @@ private:
   // See: https://www.sqlitetutorial.net/sqlite-functions/sqlite-ifnull/
 };
 
-inline Word::Word(const ItemId& id, const String& text, const ItemUuid& uuid)
+inline Word::Word(
+    const ItemId& id, const icu::UnicodeString& text, const ItemUuid& uuid)
     : mId {id}
     , mText {text}
     , mUuid {uuid}
 {
 }
 
-inline Word::Word(ItemId&& id, String&& text, ItemUuid&& uuid)
+inline Word::Word(ItemId&& id, icu::UnicodeString&& text, ItemUuid&& uuid)
     : mId {std::move(id)}
     , mText {std::move(text)}
     , mUuid {std::move(uuid)}
 {
+}
+
+inline Word::Word(
+    const ItemId& id, const std::string& utf8Text, const ItemUuid& uuid)
+    : mId {id}
+    , mText {icu::UnicodeString::fromUTF8(utf8Text)}
+    , mUuid {uuid}
+{
+}
+
+inline Word::Word(ItemId&& id, std::string&& utf8Text, ItemUuid&& uuid)
+    : mId {std::move(id)}
+    , mText {icu::UnicodeString::fromUTF8(std::move(utf8Text))}
+    , mUuid {std::move(uuid)}
+{
+}
+
+inline std::string Word::getUtf8Text() const
+{
+  std::string result;
+  return mText.toUTF8String(result);
+}
+
+inline void Word::setText(const std::string& utf8Text)
+{
+  mText = icu::UnicodeString::fromUTF8(utf8Text);
+}
+
+inline void Word::setText(std::string&& utf8Text)
+{
+  mText = icu::UnicodeString::fromUTF8(std::move(utf8Text));
 }
 
 

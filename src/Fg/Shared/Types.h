@@ -28,7 +28,6 @@
 
 namespace fg
 {
-using String = std::string;
 using Coordinate = double;
 
 enum class FontStyle
@@ -40,21 +39,22 @@ enum class FontStyle
 struct Color
 {
   explicit Color()
-      : mRed{0.0}
-      , mGreen{0.0}
-      , mBlue{0.0}
-      , mAlpha{1.0}
+      : mRed {0.0}
+      , mGreen {0.0}
+      , mBlue {0.0}
+      , mAlpha {1.0}
   {
   }
 
-  explicit Color(const double red,
+  explicit Color(
+      const double red,
       const double green,
       const double blue,
       const double alpha)
-      : mRed{red}
-      , mGreen{green}
-      , mBlue{blue}
-      , mAlpha{alpha}
+      : mRed {red}
+      , mGreen {green}
+      , mBlue {blue}
+      , mAlpha {alpha}
   {
   }
 

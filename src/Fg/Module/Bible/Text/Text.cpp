@@ -95,7 +95,7 @@ void Text::sqlInsertWords(const std::vector<Word> words)
   for(const auto& word : words) {
     const auto& id = word.getId();
     stmt << id.getBookId() << id.getChapterId() << id.getVerseId()
-         << id.getWordId() << word.getText();
+         << id.getWordId() << word.getUtf8Text();
     stmt++;
   }
 }
@@ -114,14 +114,14 @@ void Text::sqlSelectWords(const ItemId& fromId, const ItemId& toId)
        << toId.getWordId();
 
   stmt >> [&](WordId&& bookId, WordId&& chapterId, WordId&& verseId,
-              WordId&& wordId, String&& text, ItemUuid&& uuid) {
+              WordId&& wordId, std::string&& utf8Text, ItemUuid&& uuid) {
     ItemId id {
         std::move(bookId), std::move(chapterId), std::move(verseId),
         std::move(wordId)};
     // TODO: 1) use direction and pop from deque if deque size is bigger.then value.
     // TODO: 2) check if words is existing in deque
     // TODO: 1) and 2) in seperated method.
-    mWords.emplace_back(std::move(id), std::move(text), std::move(uuid));
+    mWords.emplace_back(std::move(id), std::move(utf8Text), std::move(uuid));
   };
 }
 

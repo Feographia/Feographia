@@ -192,6 +192,10 @@ if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(${fgkardia_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
 endif()
 target_link_libraries(${fgkardia_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
+target_compile_definitions(${fgkardia_TARGET} PRIVATE
+  UNISTR_FROM_CHAR_EXPLICIT=explicit
+  UNISTR_FROM_STRING_EXPLICIT=explicit
+)
 
 # Expat
 target_include_directories(${fgkardia_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})

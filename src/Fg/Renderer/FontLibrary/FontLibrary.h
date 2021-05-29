@@ -81,7 +81,7 @@ public:
   bool addFontDir(const Poco::File& dirPath);
 
   Poco::File getFontFilePath(
-      const std::vector<String>& fontNames,
+      const std::vector<std::string>& fontNames,
       const int pixelSize,
       const int weight,
       const FontStyle fontStyle,

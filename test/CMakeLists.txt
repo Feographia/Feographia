@@ -248,6 +248,10 @@ if(BUILD_TESTING)
     target_compile_definitions(${test_TARGET} PRIVATE U_STATIC_IMPLEMENTATION)
   endif()
   target_link_libraries(${test_TARGET} PRIVATE ICU::i18n ICU::uc ICU::data)
+  target_compile_definitions(${test_TARGET} PRIVATE
+    UNISTR_FROM_CHAR_EXPLICIT=explicit
+    UNISTR_FROM_STRING_EXPLICIT=explicit
+  )
 
   # Expat
   target_include_directories(${test_TARGET} PRIVATE ${EXPAT_INCLUDE_DIR})

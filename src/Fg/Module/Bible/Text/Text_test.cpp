@@ -73,7 +73,7 @@ TEST(TextTest, sqlCreateModule)
       for(const auto& word : words) {
         EXPECT_EQ(word.getId().getWordTextId(), id++);
         EXPECT_EQ(word.getUuid(), 0);
-        ss << word.getText() << " ";
+        ss << word.getUtf8Text() << " ";
       }
       EXPECT_STREQ(
           ss.str().c_str(),
@@ -99,7 +99,7 @@ TEST(TextTest, sqlCreateModule)
       for(const auto& word : module.getWords()) {
         EXPECT_EQ(word.getId().getWordTextId(), id);
         EXPECT_EQ(word.getUuid(), id++);
-        ss << word.getText() << " ";
+        ss << word.getUtf8Text() << " ";
       }
       EXPECT_STREQ(ss.str().c_str(), "God created the heaven ");
     }

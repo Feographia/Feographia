@@ -55,11 +55,12 @@ if(BUILD_TESTING)
   set(test_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
   set(font_SRC_DIR "${PROJECT_SOURCE_DIR}/fonts")
   set(data_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/data")
-  set(graphics_SRC_DIR "${data_SRC_DIR}/graphics_1")
+  set(graphics_SRC_DIR "${data_SRC_DIR}/graphics")
+  set(platform_graphics_SRC_DIR "${data_SRC_DIR}/graphics_1")
   if(MINGW OR (ANDROID AND
       (ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "x86")))
     # graphics_1 and graphics_2 differ in some bits.
-    set(graphics_SRC_DIR "${data_SRC_DIR}/graphics_2")
+    set(platform_graphics_SRC_DIR "${data_SRC_DIR}/graphics_2")
   endif()
 
   set(test_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}")
@@ -120,20 +121,24 @@ if(BUILD_TESTING)
 
     # Graphic data
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/FontTest_1.ppm"
-      "${data_BIN_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/FontTest_2.ppm"
+      "${graphics_SRC_DIR}/CairoTest_1.ppm"
       "${data_BIN_DIR}"
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/LiteHtmlContainer_1.ppm"
+      "${platform_graphics_SRC_DIR}/FontTest_1.ppm"
       "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/LiteHtmlContainer_2.ppm"
+      "${platform_graphics_SRC_DIR}/FontTest_2.ppm"
+      "${data_BIN_DIR}"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${platform_graphics_SRC_DIR}/LiteHtmlContainer_1.ppm"
       "${data_BIN_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      "${graphics_SRC_DIR}/LiteHtmlDocument_1.ppm"
+      "${platform_graphics_SRC_DIR}/LiteHtmlContainer_2.ppm"
+      "${data_BIN_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${platform_graphics_SRC_DIR}/LiteHtmlDocument_1.ppm"
       "${data_BIN_DIR}"
 
     # master.css
@@ -161,6 +166,7 @@ if(BUILD_TESTING)
       ${test_SRC_DIR}/Fg/UnitTests/main.cpp
       ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
       ${test_SRC_DIR}/Fg/Module/Bible/Text/Text_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/Cairo_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp

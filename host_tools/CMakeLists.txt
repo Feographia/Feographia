@@ -25,7 +25,7 @@ if(NOT DEFINED CMAKE_INSTALL_PREFIX)
   set(cmr_DEFAULT_CMAKE_INSTALL_PREFIX ON)
 endif()
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.9)
 
 project(FeographiaHostTools CXX)
 set(lib_NAME "feographia_host_tools")
@@ -124,7 +124,7 @@ find_package(Threads REQUIRED)
 
 include(${LibCMaker_LIB_DIR}/LibCMaker_ICU/cmr_build_icu_host_tools.cmake)
 # NOTE: See notes in 'cmake/find_libraries.cmake' in the main project.
-include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost_host_tools.cmake)
+#include(${LibCMaker_LIB_DIR}/LibCMaker_Boost/cmr_build_boost_host_tools.cmake)
 
 
 #-----------------------------------------------------------------------

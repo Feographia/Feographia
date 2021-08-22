@@ -51,7 +51,7 @@ extern Poco::Path dataDir;
 
 // Failed configurationns:
 //  Windows, x64, GCC, MinGW-w64, Debug, shared
-TEST(FontTest, DISABLED_FontTest)
+TEST(FontTest, FontTest)
 {
   //////// Init part.
 

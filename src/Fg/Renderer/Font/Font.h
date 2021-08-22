@@ -64,22 +64,25 @@
 #pragma warning(pop)
 
 #include "Fg/Renderer/Cairo.h"
-#include "Fg/Renderer/FontLibrary/FontLibrary.h"
-#include "Fg/Shared/Types.h"
+#include "Fg/Renderer/Font/Types.h"
 
 namespace fg
 {
-class Font;
-
-using FontPtr = std::shared_ptr<Font>;
+namespace font
+{
+class Case;
 
 class Font
 {
 public:
+  // delete
   explicit Font() = delete;
+  Font(const Font&) = delete;
+  Font& operator=(const Font&) = delete;
 
-  // TODO: Copy/move constructors/operators.
-  explicit Font(FtLibraryPtr ftLibrary, const int textCacheSize = 1000);
+  // default
+  Font(Font&&);
+  Font& operator=(Font&&);
   ~Font();
 
   bool createFtFace(const Poco::File& fontFilePath, const int pixelSize);
@@ -113,6 +116,11 @@ public:
   bool underline() { return mUnderline; }
   bool strikeout() { return mStrikeout; }
 
+protected:
+  friend Case;
+
+  explicit Font(FtLibraryPtr ftLibrary, const int textCacheSize = 1000);
+
 private:
   static constexpr int FT_64_INT = 64;
   static constexpr double FT_64_DOUBLE = static_cast<double>(FT_64_INT);
@@ -125,11 +133,7 @@ private:
   {
     explicit TextLayout(
         Cairo::GlyphVectorPtr glyphs,
-        Cairo::TextExtentsPtr textExtents) noexcept
-        : mGlyphs {glyphs}
-        , mExtents {textExtents}
-    {
-    }
+        Cairo::TextExtentsPtr textExtents) noexcept;
 
     Cairo::GlyphVectorPtr mGlyphs;
     Cairo::TextExtentsPtr mExtents;
@@ -176,6 +180,7 @@ inline int Font::f26Dot6ToInt(FT_F26Dot6 f26Dot6Pixels)
   return static_cast<int>(f26Dot6Pixels / FT_64_INT);
 }
 
+}  // namespace font
 }  // namespace fg
 
 #endif  // FG_FONT_H

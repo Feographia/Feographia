@@ -21,7 +21,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-#include "Fg/Renderer/FontLibrary/Font.h"
+#include "Fg/Renderer/Font/Font.h"
 
 #include <cassert>
 #include <cstdio>
@@ -30,6 +30,13 @@
 
 namespace fg
 {
+namespace font
+{
+// default
+Font::Font(Font&&) = default;
+Font& Font::operator=(Font&&) = default;
+Font::~Font() = default;
+
 Font::Font(FtLibraryPtr ftLibrary, const int textCacheSize)
     : mFtLibrary {ftLibrary}
     , mFtFace {nullptr}
@@ -44,8 +51,6 @@ Font::Font(FtLibraryPtr ftLibrary, const int textCacheSize)
     , mxHeight {0.0}
 {
 }
-
-Font::~Font() {}
 
 bool Font::createFtFace(const Poco::File& fontFilePath, const int pixelSize)
 {
@@ -222,4 +227,12 @@ double Font::xHeight()
   return mxHeight;
 }
 
+Font::TextLayout::TextLayout(
+    Cairo::GlyphVectorPtr glyphs, Cairo::TextExtentsPtr textExtents) noexcept
+    : mGlyphs {glyphs}
+    , mExtents {textExtents}
+{
+}
+
+}  // namespace font
 }  // namespace fg

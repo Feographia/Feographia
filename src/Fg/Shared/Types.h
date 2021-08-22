@@ -30,12 +30,6 @@ namespace fg
 {
 using Coordinate = double;
 
-enum class FontStyle
-{
-  fontStyleNormal,
-  fontStyleItalic,
-};
-
 struct Color
 {
   explicit Color()

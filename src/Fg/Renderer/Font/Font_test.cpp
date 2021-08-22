@@ -40,8 +40,8 @@
 #include "gtest/gtest.h"
 
 #include "Fg/Renderer/Cairo.h"
-#include "Fg/Renderer/FontLibrary/Font.h"
-#include "Fg/Renderer/FontLibrary/FontLibrary.h"
+#include "Fg/Renderer/Font/Case.h"
+#include "Fg/Renderer/Font/Font.h"
 #include "Fg/Util/FileUtil.h"
 #include "Fg/Util/StringUtil.h"
 
@@ -81,32 +81,33 @@ TEST(FontTest, DISABLED_FontTest)
 
   //// Init.
 
-  // Init FontLibrary.
-  fg::FontLibrary fontLibrary;
+  // Init font Case.
+  fg::font::Case fontCase;
 
   Poco::File fontConfFile {Poco::Path {fontDir}.setFileName("fonts.conf")};
   EXPECT_TRUE(fontConfFile.exists());
   std::string fontConfig = fg::util::readFile(fontConfFile);
   EXPECT_FALSE(fontConfig.empty());
 
-  EXPECT_TRUE(fontLibrary.parseAndLoadConfigFromMemory(fontConfig, true));
+  EXPECT_TRUE(fontCase.parseAndLoadConfigFromMemory(fontConfig, true));
 
-  EXPECT_TRUE(fontLibrary.addFontDir(fontDir));
+  EXPECT_TRUE(fontCase.addFontDir(fontDir));
 
   // NOTE: px = pt * DPI / 72
   int pixelSize = 16;
   int weight = 400;
-  fg::FontStyle fontStyle = fg::FontStyle::fontStyleNormal;
+  fg::font::Case::FontStyle fontStyle =
+      fg::font::Case::FontStyle::fontStyleNormal;
 
-  uint_least8_t result;
-  Poco::File filePath = fontLibrary.getFontFilePath(
+  fg::font::Case::FontMatches result;
+  Poco::File filePath = fontCase.getFontFilePath(
       {"Tinos"}, pixelSize, weight, fontStyle, &result);
-  EXPECT_EQ(fg::FontLibrary::FontMatches::allMatched, result);
+  EXPECT_EQ(fg::font::Case::FontMatches::allMatched, result);
   EXPECT_TRUE(
       Poco::Path {filePath.path()}.getFileName() == "Tinos-Regular.ttf");
 
-  // Create Font with FontLibrary.
-  fg::Font font(fontLibrary.ftLibrary(), 1000);
+  // Create Font with font Case.
+  fg::font::Font font = fontCase.createFont(1000);
 
   //////// Test Font::createFtFace().
 

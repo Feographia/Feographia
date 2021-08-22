@@ -21,13 +21,22 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-#include "Fg/Renderer/FontLibrary/FontLibrary.h"
+#include "Fg/Renderer/Font/Case.h"
 
 #include <vector>
 
+#include "Fg/Renderer/Font/Font.h"
+
 namespace fg
 {
-FontLibrary::FontLibrary()
+namespace font
+{
+// default
+Case::Case(Case&& other) = default;
+Case::~Case() = default;
+Case& Case::operator=(Case&& other) = default;
+
+Case::Case()
     : mFcConfig {FcInitLoadConfig(), FcConfigDestroy}
     , mFtLibrary {nullptr}
 {
@@ -36,9 +45,7 @@ FontLibrary::FontLibrary()
   mFtLibrary = {frLibrary, FT_Done_FreeType};
 }
 
-FontLibrary::~FontLibrary() {}
-
-bool FontLibrary::parseAndLoadConfigFromMemory(
+bool Case::parseAndLoadConfigFromMemory(
     const std::string& fontConfig, const bool complain)
 {
   const FcChar8* config = reinterpret_cast<const FcChar8*>(fontConfig.c_str());
@@ -46,19 +53,19 @@ bool FontLibrary::parseAndLoadConfigFromMemory(
       && FcConfigSetCurrent(mFcConfig.get());
 }
 
-bool FontLibrary::addFontDir(const Poco::File& dirPath)
+bool Case::addFontDir(const Poco::File& dirPath)
 {
-  // FIXME: fileName.string() can be used on Windows only for ASCII code page.
+  // FIXME: std::fileName.string() can be used on Windows only for ASCII code page.
   const FcChar8* dir = reinterpret_cast<const FcChar8*>(dirPath.path().c_str());
   return FcConfigAppFontAddDir(mFcConfig.get(), dir);
 }
 
-Poco::File FontLibrary::getFontFilePath(
+Poco::File Case::getFontFilePath(
     const std::vector<std::string>& fontNames,
     const int pixelSize,
     const int weight,
     const FontStyle fontStyle,
-    uint_least8_t* result) const
+    FontMatches* result) const
 {
   Poco::File ret;
 
@@ -133,4 +140,57 @@ Poco::File FontLibrary::getFontFilePath(
   return ret;
 }
 
+Font Case::createFont(const int textCacheSize /*= 1000*/)
+{
+  return fg::font::Font {mFtLibrary, textCacheSize};
+}
+
+Font* Case::createNewFont(const int textCacheSize /*= 1000*/)
+{
+  return new fg::font::Font {mFtLibrary, textCacheSize};
+}
+
+void Case::deleteFont(Font* font)
+{
+  if(font) {
+    delete font;
+  }
+}
+
+inline int Case::weightToFcWeight(const int weight) const
+{
+  if(weight >= 0 && weight < 150)
+    return FC_WEIGHT_THIN;
+  else if(weight >= 150 && weight < 250)
+    return FC_WEIGHT_EXTRALIGHT;
+  else if(weight >= 250 && weight < 350)
+    return FC_WEIGHT_LIGHT;
+  else if(weight >= 350 && weight < 450)
+    return FC_WEIGHT_NORMAL;
+  else if(weight >= 450 && weight < 550)
+    return FC_WEIGHT_MEDIUM;
+  else if(weight >= 550 && weight < 650)
+    return FC_WEIGHT_SEMIBOLD;
+  else if(weight >= 650 && weight < 750)
+    return FC_WEIGHT_BOLD;
+  else if(weight >= 750 && weight < 850)
+    return FC_WEIGHT_EXTRABOLD;
+  else if(weight >= 950)
+    return FC_WEIGHT_BLACK;
+  else
+    return FC_WEIGHT_NORMAL;
+}
+
+inline int Case::fontStyleToFcSlant(const FontStyle fontStyle) const
+{
+  switch(fontStyle) {
+    case FontStyle::fontStyleItalic:
+      return FC_SLANT_ITALIC;
+    case FontStyle::fontStyleNormal:
+    default:
+      return FC_SLANT_ROMAN;
+  }
+}
+
+}  // namespace font
 }  // namespace fg

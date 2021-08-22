@@ -24,13 +24,13 @@
 #include "Fg/Renderer/litehtml/LiteHtmlContainer.h"
 
 #include "Fg/Renderer/Cairo.h"
-#include "Fg/Renderer/FontLibrary/Font.h"
-#include "Fg/Renderer/FontLibrary/FontLibrary.h"
+#include "Fg/Renderer/Font/Case.h"
+#include "Fg/Renderer/Font/Font.h"
 
 namespace fg
 {
 LiteHtmlContainer::LiteHtmlContainer()
-    : mFontLibrary {std::make_shared<FontLibrary>()}
+    : mFontCase {std::make_shared<font::Case>()}
     , mFontDefaultName {"Times New Roman"}
     , mDefaultFontSize {16}
     , mFontTextCacheSize {1000}
@@ -52,12 +52,12 @@ LiteHtmlContainer::~LiteHtmlContainer() = default;
 bool LiteHtmlContainer::parseAndLoadFontConfigFromMemory(
     const std::string& fontConfig, bool complain)
 {
-  return mFontLibrary->parseAndLoadConfigFromMemory(fontConfig, complain);
+  return mFontCase->parseAndLoadConfigFromMemory(fontConfig, complain);
 }
 
 bool LiteHtmlContainer::addFontDir(const Poco::File& dirPath)
 {
-  return mFontLibrary->addFontDir(dirPath);
+  return mFontCase->addFontDir(dirPath);
 }
 
 litehtml::uint_ptr LiteHtmlContainer::create_font(
@@ -78,17 +78,16 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
     litehtml::trim(font);
   }
 
-  uint_least8_t result;
+  font::Case::FontMatches result;
   // TODO: convert fonts to std::vector<String>.
   // TODO: convert italic to FontStyle.
-  Poco::File filePath = mFontLibrary->getFontFilePath(
-      fonts, size, weight, static_cast<FontStyle>(italic), &result);
-  if(filePath.path().empty()
-     || FontLibrary::FontMatches::allMatched != result) {
+  Poco::File filePath = mFontCase->getFontFilePath(
+      fonts, size, weight, static_cast<font::Case::FontStyle>(italic), &result);
+  if(filePath.path().empty() || font::Case::FontMatches::allMatched != result) {
     return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
 
-  Font* font = new Font(mFontLibrary->ftLibrary(), mFontTextCacheSize);
+  font::Font* font = mFontCase->createNewFont(mFontTextCacheSize);
   if(!font->createFtFace(filePath, size)) {
     return reinterpret_cast<litehtml::uint_ptr>(nullptr);
   }
@@ -113,16 +112,14 @@ litehtml::uint_ptr LiteHtmlContainer::create_font(
 
 void LiteHtmlContainer::delete_font(litehtml::uint_ptr hFont)
 {
-  Font* font = reinterpret_cast<Font*>(hFont);
-  if(font) {
-    delete font;
-  }
+  font::Font* font = reinterpret_cast<font::Font*>(hFont);
+  mFontCase->deleteFont(font);
 }
 
 int LiteHtmlContainer::text_width(
     const litehtml::tchar_t* text, litehtml::uint_ptr hFont)
 {
-  Font* font = reinterpret_cast<Font*>(hFont);
+  font::Font* font = reinterpret_cast<font::Font*>(hFont);
   if(!font) {
     return 0;
   }
@@ -147,7 +144,7 @@ void LiteHtmlContainer::draw_text(
     return;
   }
 
-  Font* font = reinterpret_cast<Font*>(hFont);
+  font::Font* font = reinterpret_cast<font::Font*>(hFont);
   if(!font) {
     return;
   }

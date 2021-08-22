@@ -45,7 +45,7 @@
 
 #pragma warning(pop)
 
-#include "Fg/Renderer/FontLibrary/FontLibrary.h"
+#include "Fg/Renderer/Font/Case.h"
 #include "Fg/Shared/Types.h"
 
 namespace fg
@@ -154,7 +154,7 @@ public:
   //    const litehtml::tstring& color) const override;
 
 private:
-  FontLibraryPtr mFontLibrary;
+  font::CasePtr mFontCase;
 
   std::string mFontDefaultName;
   int mDefaultFontSize;

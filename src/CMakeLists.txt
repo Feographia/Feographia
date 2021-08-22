@@ -93,8 +93,8 @@ target_sources(${fgkardia_TARGET}
 
     ${private_src_DIR}/Fg/Renderer/Cairo.cpp
 
-    ${private_src_DIR}/Fg/Renderer/FontLibrary/Font.cpp
-    ${private_src_DIR}/Fg/Renderer/FontLibrary/FontLibrary.cpp
+    ${private_src_DIR}/Fg/Renderer/Font/Case.cpp
+    ${private_src_DIR}/Fg/Renderer/Font/Font.cpp
 
     ${private_src_DIR}/Fg/Util/FileUtil.cpp
 
@@ -120,8 +120,9 @@ target_sources(${fgkardia_TARGET}
 
     ${public_src_DIR}/Fg/Renderer/Cairo.h
 
-    ${public_src_DIR}/Fg/Renderer/FontLibrary/Font.h
-    ${public_src_DIR}/Fg/Renderer/FontLibrary/FontLibrary.h
+    ${public_src_DIR}/Fg/Renderer/Font/Case.h
+    ${public_src_DIR}/Fg/Renderer/Font/Font.h
+    ${public_src_DIR}/Fg/Renderer/Font/Types.h
 
     ${public_src_DIR}/Fg/Util/FileUtil.h
 #    ${public_src_DIR}/Fg/Util/Filesystem.h

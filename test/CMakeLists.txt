@@ -167,8 +167,8 @@ if(BUILD_TESTING)
       ${test_SRC_DIR}/Fg/Util/StringUtil_test.cpp
       ${test_SRC_DIR}/Fg/Module/Bible/Text/Text_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/Cairo_test.cpp
-      ${test_SRC_DIR}/Fg/Renderer/FontLibrary/FontLibrary_test.cpp
-      ${test_SRC_DIR}/Fg/Renderer/FontLibrary/Font_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/Font/Case_test.cpp
+      ${test_SRC_DIR}/Fg/Renderer/Font/Font_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlContainer_test.cpp
       ${test_SRC_DIR}/Fg/Renderer/litehtml/LiteHtmlRenderer_test.cpp
   )

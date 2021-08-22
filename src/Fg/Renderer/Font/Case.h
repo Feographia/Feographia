@@ -21,8 +21,8 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-#ifndef FG_FONT_LIBRARY_H
-#define FG_FONT_LIBRARY_H
+#ifndef FG_FONT_CASE_H
+#define FG_FONT_CASE_H
 
 #include <cstdint>
 #include <memory>
@@ -48,22 +48,18 @@
 #pragma warning(pop)
 #pragma warning(pop)
 
-#include "Fg/Shared/Types.h"
+#include "Fg/Renderer/Font/Types.h"
 
 namespace fg
 {
-class FontLibrary;
+namespace font
+{
+class Font;
 
-using FontLibraryPtr = std::shared_ptr<FontLibrary>;
-
-using FcConfigPtr = std::shared_ptr<FcConfig>;
-using FcPatternPtr = std::shared_ptr<FcPattern>;
-using FtLibraryPtr = std::shared_ptr<FT_LibraryRec_>;
-
-class FontLibrary
+class Case
 {
 public:
-  enum FontMatches : uint_least8_t
+  enum class FontMatches : uint8_t
   {
     allMatched = 0,
     notMatchedFaceName = 1 << 0,
@@ -72,9 +68,22 @@ public:
     notMatchedWeight = 1 << 3,
   };
 
-  // TODO: Copy/move constructors/operators.
-  explicit FontLibrary();
-  ~FontLibrary();
+  enum class FontStyle
+  {
+    fontStyleNormal = 0,
+    fontStyleItalic,
+  };
+
+  // delete
+  Case(const Case& other) = delete;
+  Case& operator=(const Case& other) = delete;
+
+  // default
+  Case(Case&& other);
+  ~Case();
+  Case& operator=(Case&& other);
+
+  explicit Case();
 
   bool parseAndLoadConfigFromMemory(
       const std::string& fontConfig, const bool complain);
@@ -85,54 +94,32 @@ public:
       const int pixelSize,
       const int weight,
       const FontStyle fontStyle,
-      uint_least8_t* result) const;
+      FontMatches* result) const;
 
-  FtLibraryPtr ftLibrary() { return mFtLibrary; }
+  Font createFont(const int textCacheSize = 1000);
+  Font* createNewFont(const int textCacheSize = 1000);
+  void deleteFont(Font* font);
 
 private:
   int weightToFcWeight(const int weigh) const;
   int fontStyleToFcSlant(const FontStyle fontStyle) const;
 
 private:
+  using FcConfigPtr = std::shared_ptr<FcConfig>;
+  using FcPatternPtr = std::shared_ptr<FcPattern>;
+
   FcConfigPtr mFcConfig;
   FtLibraryPtr mFtLibrary;
-};  // class FontLibrary
+};  // class Case
 
-inline int FontLibrary::weightToFcWeight(const int weight) const
+inline Case::FontMatches operator|=(
+    Case::FontMatches a, const Case::FontMatches b)
 {
-  if(weight >= 0 && weight < 150)
-    return FC_WEIGHT_THIN;
-  else if(weight >= 150 && weight < 250)
-    return FC_WEIGHT_EXTRALIGHT;
-  else if(weight >= 250 && weight < 350)
-    return FC_WEIGHT_LIGHT;
-  else if(weight >= 350 && weight < 450)
-    return FC_WEIGHT_NORMAL;
-  else if(weight >= 450 && weight < 550)
-    return FC_WEIGHT_MEDIUM;
-  else if(weight >= 550 && weight < 650)
-    return FC_WEIGHT_SEMIBOLD;
-  else if(weight >= 650 && weight < 750)
-    return FC_WEIGHT_BOLD;
-  else if(weight >= 750 && weight < 850)
-    return FC_WEIGHT_EXTRABOLD;
-  else if(weight >= 950)
-    return FC_WEIGHT_BLACK;
-  else
-    return FC_WEIGHT_NORMAL;
+  uint8_t c = static_cast<uint8_t>(a) | static_cast<uint8_t>(b);
+  return static_cast<Case::FontMatches>(c);
 }
 
-inline int FontLibrary::fontStyleToFcSlant(const FontStyle fontStyle) const
-{
-  switch(fontStyle) {
-    case FontStyle::fontStyleItalic:
-      return FC_SLANT_ITALIC;
-    case FontStyle::fontStyleNormal:
-    default:
-      return FC_SLANT_ROMAN;
-  }
-}
-
+}  // namespace font
 }  // namespace fg
 
-#endif  // FG_FONT_LIBRARY_H
+#endif  // FG_FONT_CASE_H

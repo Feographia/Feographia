@@ -38,7 +38,7 @@ env:
     - cmr_BUILD_TESTING=ON
     - cmr_JOBS_CNT=4
 
-    - cmr_CACHE_SUFFIX=0
+    - cmr_CACHE_SUFFIX=1
 
 #    - cmr_REPO_DIR=${HOME}/build/${cmr_APP_NAME}/${cmr_APP_NAME}
     # TRAVIS_REPO_SLUG: The slug (in form: owner_name/repo_name)

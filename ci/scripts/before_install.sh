@@ -3,6 +3,7 @@
 set -ev
 
 echo "==== Debug: Begin before_install.sh"
+echo "==== Debug: TRAVIS_BUILD_STAGE_NAME == ${TRAVIS_BUILD_STAGE_NAME}"
 
 script_dir=`dirname "$(realpath "$0")"`
 
@@ -63,7 +64,7 @@ if [[ ${script_dir} == ${cmr_STAGE0_CI_SCRIPTS_DIR} ]] ; then
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build host tools" ]] ; then
   # ==== Make work dirs ====
   echo "==== Debug: Stage 'Build Host Tools'"
   echo "==== Debug: Make work dirs"
@@ -73,8 +74,8 @@ if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Host Tools" ]] ; then
   mkdir -p ${cmr_HOST_BUILD_DIR}
 fi
 
-if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure Project Stage"* ) ||
-   ( ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ) ]] ; then
+if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure project stage"* ) ||
+   ( ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ) ]] ; then
 
   echo "==== Debug: Stage 'Configure Project' or 'Build Project'"
 
@@ -122,7 +123,7 @@ if [[ ( ${TRAVIS_BUILD_STAGE_NAME} == *"Configure Project Stage"* ) ||
   fi
 fi
 
-if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test Project" ]] ; then
+if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Test project" ]] ; then
   echo "==== Debug: Stage 'Test Project'"
 
   cd ${cmr_REPO_DIR}

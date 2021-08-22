@@ -3,6 +3,7 @@
 set -ev
 
 echo "==== Debug: Begin build_project.sh"
+echo "==== Debug: TRAVIS_BUILD_STAGE_NAME == ${TRAVIS_BUILD_STAGE_NAME}"
 
 ${cmr_CMAKE_CMD} --version
 
@@ -24,7 +25,7 @@ if [[ ${cmr_TARGET_OS} == "Linux" ]] ; then
       -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
       -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=${cmr_CMAKE_INTERPROCEDURAL_OPTIMIZATION} \
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
   fi
 fi
@@ -50,7 +51,7 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MSVC} == "ON" ]] ; then
       -DCMAKE_CONFIGURATION_TYPES:STRING="${cmr_CMAKE_BUILD_TYPE}" \
     -DATTACH_WX_CONSOLE:BOOL=${cmr_ATTACH_WX_CONSOLE} \
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
   fi
 fi
@@ -72,7 +73,7 @@ if [[ ${cmr_TARGET_OS} == "Windows" && ${cmr_MINGW} == "ON" ]] ; then
     -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
     -DATTACH_WX_CONSOLE:BOOL=${cmr_ATTACH_WX_CONSOLE} \
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
   fi
 fi
@@ -98,7 +99,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_XCODE} == "ON" ]] ; then
     # The job exceeded the maximum log length, and has been terminated.
     #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
   fi
 fi
@@ -119,7 +120,7 @@ if [[ ${cmr_TARGET_OS} == "macOS" && ${cmr_UNIX_MAKE_FILES} == "ON" ]] ; then
       -DBUILD_SHARED_LIBS:BOOL=${cmr_BUILD_SHARED_LIBS} \
     -DCMAKE_GENERATOR:STRING="${cmr_CMAKE_GENERATOR}" \
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
   fi
 fi
@@ -148,7 +149,7 @@ if [[ ${cmr_TARGET_OS} == "Android" ]] ; then
       -DANDROID_CPP_FEATURES:STRING="${cmr_ANDROID_CPP_FEATURES}" \
     -Dcmr_HOST_BUILD_DIR:PATH=${cmr_HOST_BUILD_DIR} \
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT}
   fi
 fi
@@ -178,7 +179,7 @@ if [[ ${cmr_TARGET_OS} == "iOS" ]] ; then
     # The job exceeded the maximum log length, and has been terminated.
     #-Dcmr_XCODE_GENERATOR_VERBOSITY_LEVEL:STRING="-quiet"
 
-  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build Project" ]] ; then
+  if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build project" ]] ; then
     ${cmr_CMAKE_CMD} --build . --parallel ${cmr_JOBS_CNT} --config ${cmr_CMAKE_BUILD_TYPE}
   fi
 fi

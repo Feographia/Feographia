@@ -93,7 +93,7 @@ include(compile_flags)
 # For Travis CI time limits.
 set(TRAVIS_BUILD_STAGE_NAME $ENV{TRAVIS_BUILD_STAGE_NAME})
 include(find_libraries)
-if(TRAVIS_BUILD_STAGE_NAME MATCHES "Configure Project Stage")
+if(TRAVIS_BUILD_STAGE_NAME MATCHES "Configure project stage")
   message(STATUS "Exit from Travis CI stage \"${TRAVIS_BUILD_STAGE_NAME}\"")
   return()
 endif()

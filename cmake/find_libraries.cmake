@@ -157,7 +157,7 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_SQLite3/cmr_build_sqlite3.cmake)  # 03:20
 include(${LibCMaker_LIB_DIR}/LibCMaker_SQLiteModernCPP/cmr_build_sqlitemoderncpp.cmake)  # 00:10
 
 # For Travis CI time limits.
-if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure Project Stage 1")
+if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure project stage 1")
   return()
 endif()
 
@@ -195,6 +195,6 @@ include(${LibCMaker_LIB_DIR}/LibCMaker_Cairo/cmr_build_cairo.cmake)  # 07:10
 include(${LibCMaker_LIB_DIR}/LibCMaker_litehtml/cmr_build_litehtml.cmake)  # 01:10
 
 # For Travis CI time limits.
-if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure Project Stage 2")
+if(TRAVIS_BUILD_STAGE_NAME STREQUAL "Configure project stage 2")
   return()
 endif()

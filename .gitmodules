@@ -16,6 +16,9 @@
 [submodule "libs/LibCMaker_SQLiteModernCPP"]
   path = libs/LibCMaker_SQLiteModernCPP
   url = git@github.com:LibCMaker/LibCMaker_SQLiteModernCPP.git
+[submodule "libs/LibCMaker_Skia"]
+  path = libs/LibCMaker_Skia
+  url = git@github.com:LibCMaker/LibCMaker_Skia.git
 [submodule "libs/LibCMaker_fmt"]
   path = libs/LibCMaker_fmt
   url = git@github.com:LibCMaker/LibCMaker_fmt.git

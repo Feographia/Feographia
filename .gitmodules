@@ -28,3 +28,6 @@
 [submodule "libs/LibCMaker_spdlog"]
   path = libs/LibCMaker_spdlog
   url = git@github.com:LibCMaker/LibCMaker_spdlog.git
+[submodule "libs/LibCMaker_RmlUi"]
+	path = libs/LibCMaker_RmlUi
+	url = git@github.com:LibCMaker/LibCMaker_RmlUi.git

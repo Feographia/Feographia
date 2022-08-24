@@ -10,6 +10,12 @@
 [submodule "libs/LibCMaker_POCO"]
   path = libs/LibCMaker_POCO
   url = git@github.com:LibCMaker/LibCMaker_POCO.git
+[submodule "libs/LibCMaker_RmlUi"]
+  path = libs/LibCMaker_RmlUi
+  url = git@github.com:LibCMaker/LibCMaker_RmlUi.git
+[submodule "libs/LibCMaker_SDL2"]
+  path = libs/LibCMaker_SDL2
+  url = git@github.com:LibCMaker/LibCMaker_SDL2.git
 [submodule "libs/LibCMaker_SQLite3"]
   path = libs/LibCMaker_SQLite3
   url = git@github.com:LibCMaker/LibCMaker_SQLite3.git
@@ -28,6 +34,3 @@
 [submodule "libs/LibCMaker_spdlog"]
   path = libs/LibCMaker_spdlog
   url = git@github.com:LibCMaker/LibCMaker_spdlog.git
-[submodule "libs/LibCMaker_RmlUi"]
-	path = libs/LibCMaker_RmlUi
-	url = git@github.com:LibCMaker/LibCMaker_RmlUi.git
